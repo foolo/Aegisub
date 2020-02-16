@@ -44,6 +44,20 @@
 /lib
 /obj
 /tests/data
+/m4/
+
+ABOUT-NLS
+config.rpath
+po/Makefile.in.in
+po/Makevars.template
+po/Rules-quot
+po/boldquot.sed
+po/en@boldquot.header
+po/en@quot.header
+po/insert-header.sin
+po/quot.sed
+po/remove-potcdate.sin
+packages/desktop/aegisub.appdata.xml.template
 
 .lvimrc
 .syntastic_cpp_config
