@@ -124,7 +124,9 @@ size_t CharacterCount(std::string::const_iterator begin, std::string::const_iter
 }
 
 size_t CharacterCount(std::string const& str, int mask) {
-	return CharacterCount(begin(str), end(str), mask);
+	auto flagStart = str.find("+[");
+	auto endPos = (flagStart != std::string::npos) ? (str.begin() + flagStart) : (end(str));
+	return CharacterCount(begin(str), endPos, mask);
 }
 
 size_t MaxLineLength(std::string const& text, int mask) {
