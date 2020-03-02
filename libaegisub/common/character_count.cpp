@@ -124,7 +124,7 @@ size_t CharacterCount(std::string::const_iterator begin, std::string::const_iter
 }
 
 size_t CharacterCount(std::string const& str, int mask) {
-	auto flagStart = str.find("+[");
+	auto flagStart = str.find("\\N+[");
 	auto endPos = (flagStart != std::string::npos) ? (str.begin() + flagStart) : (end(str));
 	return CharacterCount(begin(str), endPos, mask);
 }
