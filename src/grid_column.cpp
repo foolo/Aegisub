@@ -347,15 +347,20 @@ public:
 class GridColumnText final : public GridColumn {
 	const agi::OptionValue *override_mode;
 	wxString replace_char;
+	wxString newline_representation_str;
 
 	agi::signal::Connection replace_char_connection;
+	agi::signal::Connection newline_representation_str_connection;
 
 public:
 	GridColumnText()
 	: override_mode(OPT_GET("Subtitle/Grid/Hide Overrides"))
 	, replace_char(to_wx(OPT_GET("Subtitle/Grid/Hide Overrides Char")->GetString()))
+	, newline_representation_str(to_wx(OPT_GET("Subtitle/Grid/Newline Representation")->GetString()))
 	, replace_char_connection(OPT_SUB("Subtitle/Grid/Hide Overrides Char",
 		[&](agi::OptionValue const& v) { replace_char = to_wx(v.GetString()); }))
+	, newline_representation_str_connection(OPT_SUB("Subtitle/Grid/Newline Representation",
+		[&](agi::OptionValue const& v) { newline_representation_str = to_wx(v.GetString()); }))
 	{
 	}
 
@@ -387,6 +392,8 @@ public:
 			if (start != std::string::npos)
 				str += to_wx(text.substr(start));
 		}
+
+		str.Replace("\\N", newline_representation_str);
 
 		// Cap length and set text
 		if (str.size() > 512)
