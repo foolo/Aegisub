@@ -223,7 +223,7 @@ void Interface(wxTreebook *book, Preferences *parent) {
 
 	auto grid = p->PageSizer(_("Grid"));
 	p->OptionAdd(grid, _("Focus grid on click"), "Subtitle/Grid/Focus Allow");
-	p->OptionAdd(grid, _("Highlight visible subtitles"), "Subtitle/Grid/Highlight Subtitles in Frame");
+	p->OptionAdd(grid, _("Highlight visible subtitles"), "Subtitle/Grid/Track Video Position in Grid View");
 	p->OptionAdd(grid, _("Hide overrides symbol"), "Subtitle/Grid/Hide Overrides Char");
 	p->OptionAdd(grid, _("Newline representation in grid view"), "Subtitle/Grid/Newline Representation");
 	p->OptionFont(grid, "Subtitle/Grid/");

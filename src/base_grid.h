@@ -61,8 +61,8 @@ class BaseGrid final : public wxWindow {
 
 	std::unique_ptr<WidthHelper> width_helper;
 
-	/// Rows which are visible on the current video frame
-	std::vector<int> visible_rows;
+	/// Row which are visible on the current video frame
+	int tracking_row = -1;
 
 	agi::Context *context; ///< Associated project context
 

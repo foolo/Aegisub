@@ -84,7 +84,7 @@ BaseGrid::BaseGrid(wxWindow* parent, agi::Context *context)
 	}
 
 	UpdateStyle();
-	OnHighlightVisibleChange(*OPT_GET("Subtitle/Grid/Highlight Subtitles in Frame"));
+	OnHighlightVisibleChange(*OPT_GET("Subtitle/Grid/Track Video Position in Grid View"));
 
 	connections = agi::signal::make_vector({
 		context->ass->AddCommitListener(&BaseGrid::OnSubtitlesCommit, this),
@@ -107,7 +107,7 @@ BaseGrid::BaseGrid(wxWindow* parent, agi::Context *context)
 		OPT_SUB("Colour/Subtitle Grid/Selection", &BaseGrid::UpdateStyle, this),
 		OPT_SUB("Colour/Subtitle Grid/Standard", &BaseGrid::UpdateStyle, this),
 
-		OPT_SUB("Subtitle/Grid/Highlight Subtitles in Frame", &BaseGrid::OnHighlightVisibleChange, this),
+		OPT_SUB("Subtitle/Grid/Track Video Position in Grid View", &BaseGrid::OnHighlightVisibleChange, this),
 		OPT_SUB("Subtitle/Grid/Hide Overrides", [&](agi::OptionValue const&) { Refresh(false); }),
 	});
 
@@ -247,19 +247,14 @@ void BaseGrid::SelectRow(int row, bool addToSelected, bool select) {
 void BaseGrid::OnSeek() {
 	int lines = GetClientSize().GetHeight() / lineHeight + 1;
 	lines = mid(0, lines, GetRows() - yPos);
-
-	auto it = begin(visible_rows);
 	for (int i : boost::irange(yPos, yPos + lines)) {
-		if (IsDisplayed(index_line_map[i])) {
-			if (it == end(visible_rows) || *it != i) {
-				Refresh(false);
-				return;
-			}
-			++it;
+		if ((i != tracking_row) && IsDisplayed(index_line_map[i])) {
+			tracking_row = i;
+			MakeRowVisible(i);
+			Refresh(false);
+			return;
 		}
 	}
-	if (it != end(visible_rows))
-		Refresh(false);
 }
 
 void BaseGrid::OnPaint(wxPaintEvent &) {
@@ -343,11 +338,11 @@ void BaseGrid::OnPaint(wxPaintEvent &) {
 
 	const auto active_line = context->selectionController->GetActiveLine();
 	auto const& selection = context->selectionController->GetSelectedSet();
-	visible_rows.clear();
 
 	for (int i : agi::util::range(nDraw)) {
+		int rowNumber = i + yPos;
 		wxBrush color = row_colors.Default;
-		AssDialogue *curDiag = index_line_map[i + yPos];
+		AssDialogue *curDiag = index_line_map[rowNumber];
 
 		bool inSel = !!selection.count(curDiag);
 		if (inSel && curDiag->Comment)
@@ -357,10 +352,9 @@ void BaseGrid::OnPaint(wxPaintEvent &) {
 		else if (curDiag->Comment)
 			color = row_colors.Comment;
 
-		if (OPT_GET("Subtitle/Grid/Highlight Subtitles in Frame")->GetBool() && IsDisplayed(curDiag)) {
+		if (OPT_GET("Subtitle/Grid/Track Video Position in Grid View")->GetBool() && (rowNumber == tracking_row)) {
 			if (color == row_colors.Default)
 				color = row_colors.Visible;
-			visible_rows.push_back(i + yPos);
 		}
 		dc.SetBrush(color);
 

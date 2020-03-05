@@ -385,7 +385,7 @@
 			"Hide Overrides" : 1,
 			"Hide Overrides Char" : "☀",
 			"Newline Representation" : "  |  ",
-			"Highlight Subtitles in Frame" : true
+			"Track Video Position in Grid View" : true
 		},
 		"Highlight" : {
 			"Syntax" : true
