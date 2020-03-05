@@ -49,7 +49,6 @@ class TimeRange;
 
 // Helper classes used in implementation of the audio display
 namespace {
-	class AudioDisplayScrollbar;
 	class AudioDisplayTimeline;
 }
 class AudioDisplayInteractionObject;
@@ -77,9 +76,6 @@ class AudioDisplay: public wxWindow {
 	AudioController *controller = nullptr;
 
 	agi::AudioProvider *provider = nullptr;
-
-	/// Scrollbar helper object
-	std::unique_ptr<AudioDisplayScrollbar> scrollbar;
 
 	/// Timeline helper object
 	std::unique_ptr<AudioDisplayTimeline> timeline;
@@ -188,8 +184,6 @@ class AudioDisplay: public wxWindow {
 	void OnMouseEvent(wxMouseEvent &event);
 	/// wxWidgets control size changed event
 	void OnSize(wxSizeEvent &event);
-	/// wxWidgets input focus changed event
-	void OnFocus(wxFocusEvent &event);
 	/// wxWidgets keypress event
 	void OnKeyDown(wxKeyEvent& event);
 	void OnScrollTimer(wxTimerEvent &event);

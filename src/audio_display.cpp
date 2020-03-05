@@ -129,146 +129,6 @@ public:
 	wxColour Selection() const { return focused ? sel_focused_colour : sel_colour; }
 };
 
-class AudioDisplayScrollbar final : public AudioDisplayInteractionObject {
-	static const int height = 15;
-	static const int min_width = 10;
-
-	wxRect bounds;
-	wxRect thumb;
-
-	bool dragging = false;   ///< user is dragging with the primary mouse button
-
-	int data_length = 1; ///< total amount of data in control
-	int page_length = 1; ///< amount of data in one page
-	int position    = 0; ///< first item displayed
-
-	int sel_start  = -1; ///< first data item in selection
-	int sel_length = 0;  ///< number of data items in selection
-
-	UIColours colours; ///< Colour provider
-
-	/// Containing display to send scroll events to
-	AudioDisplay *display;
-
-	// Recalculate thumb bounds from position and length data
-	void RecalculateThumb()
-	{
-		thumb.width = std::max<int>(min_width, (int64_t)bounds.width * page_length / data_length);
-		thumb.height = height;
-		thumb.x = int((int64_t)bounds.width * position / data_length);
-		thumb.y = bounds.y;
-	}
-
-public:
-	AudioDisplayScrollbar(AudioDisplay *display)
-	: display(display)
-	{
-	}
-
-	/// The audio display has changed size
-	void SetDisplaySize(const wxSize &display_size)
-	{
-		bounds.x = 0;
-		bounds.y = display_size.y - height;
-		bounds.width = display_size.x;
-		bounds.height = height;
-		page_length = display_size.x;
-
-		RecalculateThumb();
-	}
-
-	void SetColourScheme(std::string const& name)
-	{
-		colours.SetColourScheme(name);
-	}
-
-	const wxRect & GetBounds() const { return bounds; }
-	int GetPosition() const { return position; }
-
-	int SetPosition(int new_position)
-	{
-		// These two conditionals can't be swapped, otherwise the position can become
-		// negative if the entire data is shorter than one page.
-		if (new_position + page_length >= data_length)
-			new_position = data_length - page_length - 1;
-		if (new_position < 0)
-			new_position = 0;
-
-		position = new_position;
-		RecalculateThumb();
-
-		return position;
-	}
-
-	void SetSelection(int new_start, int new_length)
-	{
-		sel_start = (int64_t)new_start * bounds.width / data_length;
-		sel_length = (int64_t)new_length * bounds.width / data_length;
-	}
-
-	void ChangeLengths(int new_data_length, int new_page_length)
-	{
-		data_length = new_data_length;
-		page_length = new_page_length;
-
-		RecalculateThumb();
-	}
-
-	bool OnMouseEvent(wxMouseEvent &event) override
-	{
-		if (event.LeftIsDown())
-		{
-			const int thumb_left = event.GetPosition().x - thumb.width/2;
-			const int data_length_less_page = data_length - page_length;
-			const int shaft_length_less_thumb = bounds.width - thumb.width;
-
-			display->ScrollPixelToLeft((int64_t)data_length_less_page * thumb_left / shaft_length_less_thumb);
-
-			dragging = true;
-		}
-		else if (event.LeftUp())
-		{
-			dragging = false;
-		}
-
-		return dragging;
-	}
-
-	void Paint(wxDC &dc, bool has_focus, int load_progress)
-	{
-		colours.SetFocused(has_focus);
-
-		dc.SetPen(wxPen(colours.Light()));
-		dc.SetBrush(wxBrush(colours.Dark()));
-		dc.DrawRectangle(bounds);
-
-		if (sel_length > 0 && sel_start >= 0)
-		{
-			dc.SetPen(wxPen(colours.Selection()));
-			dc.SetBrush(wxBrush(colours.Selection()));
-			dc.DrawRectangle(wxRect(sel_start, bounds.y, sel_length, bounds.height));
-		}
-
-		dc.SetPen(wxPen(colours.Light()));
-		dc.SetBrush(*wxTRANSPARENT_BRUSH);
-		dc.DrawRectangle(bounds);
-
-		if (load_progress > 0 && load_progress < data_length)
-		{
-			wxRect marker(
-				(int64_t)bounds.width * load_progress / data_length - 25, bounds.y + 1,
-				25, bounds.height - 2);
-			dc.GradientFillLinear(marker, colours.Dark(), colours.Light());
-		}
-
-		dc.SetPen(wxPen(colours.Light()));
-		dc.SetBrush(wxBrush(colours.Light()));
-		dc.DrawRectangle(thumb);
-	}
-};
-
-const int AudioDisplayScrollbar::min_width;
-
 class AudioDisplayTimeline final : public AudioDisplayInteractionObject {
 	int duration = 0;          ///< Total duration in ms
 	double ms_per_pixel = 1.0; ///< Milliseconds per pixel
@@ -575,7 +435,6 @@ AudioDisplay::AudioDisplay(wxWindow *parent, AudioController *controller, agi::C
 , context(context)
 , audio_renderer(agi::make_unique<AudioRenderer>())
 , controller(controller)
-, scrollbar(agi::make_unique<AudioDisplayScrollbar>(this))
 , timeline(agi::make_unique<AudioDisplayTimeline>(this))
 , style_ranges({{0, 0}})
 {
@@ -597,8 +456,6 @@ AudioDisplay::AudioDisplay(wxWindow *parent, AudioController *controller, agi::C
 	Bind(wxEVT_LEAVE_WINDOW, &AudioDisplay::OnMouseLeave, this);
 	Bind(wxEVT_PAINT, &AudioDisplay::OnPaint, this);
 	Bind(wxEVT_SIZE, &AudioDisplay::OnSize, this);
-	Bind(wxEVT_KILL_FOCUS, &AudioDisplay::OnFocus, this);
-	Bind(wxEVT_SET_FOCUS, &AudioDisplay::OnFocus, this);
 	Bind(wxEVT_CHAR_HOOK, &AudioDisplay::OnKeyDown, this);
 	Bind(wxEVT_KEY_DOWN, &AudioDisplay::OnKeyDown, this);
 	scroll_timer.Bind(wxEVT_TIMER, &AudioDisplay::OnScrollTimer, this);
@@ -624,7 +481,6 @@ void AudioDisplay::ScrollPixelToLeft(int pixel_position)
 		pixel_position = 0;
 
 	scroll_left = pixel_position;
-	scrollbar->SetPosition(scroll_left);
 	timeline->SetPosition(scroll_left);
 	Refresh();
 }
@@ -689,7 +545,6 @@ void AudioDisplay::SetZoomLevel(int new_zoom_level)
 	pixel_audio_width = std::max(1, int(GetDuration() / ms_per_pixel));
 
 	audio_renderer->SetMillisecondsPerPixel(ms_per_pixel);
-	scrollbar->ChangeLengths(pixel_audio_width, client_width);
 	timeline->ChangeZoom(ms_per_pixel);
 
 	ScrollPixelToLeft(AbsoluteXFromTime(cursor_time) - cursor_pos);
@@ -769,7 +624,6 @@ void AudioDisplay::ReloadRenderingSettings()
 	}
 
 	audio_renderer->SetRenderer(audio_renderer_provider.get());
-	scrollbar->SetColourScheme(colour_scheme_name);
 	timeline->SetColourScheme(colour_scheme_name);
 
 	Refresh();
@@ -798,8 +652,6 @@ void AudioDisplay::OnLoadTimer(wxTimerEvent&)
 
 		if (left < scroll_left + pixel_audio_width && right >= scroll_left)
 			Refresh();
-		else
-			RefreshRect(scrollbar->GetBounds());
 		last_sample_decoded = new_decoded_count;
 	}
 
@@ -816,14 +668,12 @@ void AudioDisplay::OnPaint(wxPaintEvent&)
 	wxAutoBufferedPaintDC dc(this);
 
 	wxRect audio_bounds(0, audio_top, GetClientSize().GetWidth(), audio_height);
-	bool redraw_scrollbar = false;
 	bool redraw_timeline = false;
 
 	for (wxRegionIterator region(GetUpdateRegion()); region; ++region)
 	{
 		wxRect updrect = region.GetRect();
 
-		redraw_scrollbar |= scrollbar->GetBounds().Intersects(updrect);
 		redraw_timeline |= timeline->GetBounds().Intersects(updrect);
 
 		if (audio_bounds.Intersects(updrect))
@@ -841,8 +691,6 @@ void AudioDisplay::OnPaint(wxPaintEvent&)
 	if (track_cursor_pos >= 0)
 		PaintTrackCursor(dc);
 
-	if (redraw_scrollbar)
-		scrollbar->Paint(dc, HasFocus(), audio_load_position);
 	if (redraw_timeline)
 		timeline->Paint(dc);
 }
@@ -1135,13 +983,7 @@ bool AudioDisplay::ForwardMouseEvent(wxMouseEvent &event) {
 
 	const wxPoint mousepos = event.GetPosition();
 	AudioDisplayInteractionObject *new_obj = nullptr;
-	// Check for scrollbar action
-	if (scrollbar->GetBounds().Contains(mousepos))
-	{
-		new_obj = scrollbar.get();
-	}
-	// Check for timeline action
-	else if (timeline->GetBounds().Contains(mousepos))
+	if (timeline->GetBounds().Contains(mousepos))
 	{
 		SetCursor(wxCursor(wxCURSOR_SIZEWE));
 		new_obj = timeline.get();
@@ -1168,29 +1010,15 @@ void AudioDisplay::OnSize(wxSizeEvent &)
 	// We changed size, update the sub-controls' internal data and redraw
 	wxSize size = GetClientSize();
 
-	timeline->SetDisplaySize(wxSize(size.x, scrollbar->GetBounds().y));
-	scrollbar->SetDisplaySize(size);
-
-	if (controller->GetTimingController())
-	{
-		TimeRange sel(controller->GetTimingController()->GetPrimaryPlaybackRange());
-		scrollbar->SetSelection(AbsoluteXFromTime(sel.begin()), AbsoluteXFromTime(sel.length()));
-	}
+	timeline->SetDisplaySize(wxSize(size.x, 0));
 
 	audio_height = size.GetHeight();
-	audio_height -= scrollbar->GetBounds().GetHeight();
 	audio_height -= timeline->GetHeight();
 	audio_renderer->SetHeight(audio_height);
 
 	audio_top = timeline->GetHeight();
 
 	Refresh();
-}
-
-void AudioDisplay::OnFocus(wxFocusEvent &)
-{
-	// The scrollbar indicates focus so repaint that
-	RefreshRect(scrollbar->GetBounds(), false);
 }
 
 int AudioDisplay::GetDuration() const
@@ -1289,7 +1117,6 @@ void AudioDisplay::OnPlaybackPosition(int ms)
 void AudioDisplay::OnSelectionChanged()
 {
 	TimeRange sel(controller->GetPrimaryPlaybackRange());
-	scrollbar->SetSelection(AbsoluteXFromTime(sel.begin()), AbsoluteXFromTime(sel.length()));
 
 	if (audio_marker)
 	{
@@ -1310,8 +1137,6 @@ void AudioDisplay::OnSelectionChanged()
 	{
 		ScrollTimeRangeInView(sel);
 	}
-
-	RefreshRect(scrollbar->GetBounds(), false);
 }
 
 void AudioDisplay::OnScrollTimer(wxTimerEvent &event)
