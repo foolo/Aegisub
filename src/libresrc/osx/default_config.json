@@ -62,6 +62,7 @@
 		"Line Boundaries Thickness" : 2,
 		"Link" : true,
 		"Lock Scroll on Cursor" : false,
+		"Smooth Scrolling" : false,
 		"Medusa Timing Hotkeys" : false,
 		"Next Line on Commit" : true,
 		"Player" : "",
@@ -383,7 +384,8 @@
 			"Font Size" : 12,
 			"Hide Overrides" : 1,
 			"Hide Overrides Char" : "☀",
-			"Highlight Subtitles in Frame" : true
+			"Newline Representation" : "  |  ",
+			"Track Video Position in Grid View" : true
 		},
 		"Highlight" : {
 			"Syntax" : true
