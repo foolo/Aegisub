@@ -99,6 +99,8 @@ class VideoController final : public wxEvtHandler {
 
 	std::vector<agi::signal::Connection> connections;
 
+	bool bypass_line_changed_event = false;
+
 	void OnPlayTimer(wxTimerEvent &event);
 
 	void OnVideoError(VideoProviderErrorEvent const& err);

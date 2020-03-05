@@ -40,6 +40,7 @@
 #include "time_range.h"
 #include "async_video_provider.h"
 #include "utils.h"
+#include "base_grid.h"
 
 #include <libaegisub/ass/time.h>
 
@@ -83,6 +84,9 @@ void VideoController::OnSubtitlesCommit(int type, const AssDialogue *changed) {
 }
 
 void VideoController::OnActiveLineChanged(AssDialogue *line) {
+	if (bypass_line_changed_event) {
+		return;
+	}
 	if (line && provider && OPT_GET("Video/Subtitle Sync")->GetBool()) {
 		Stop();
 		JumpToTime(line->Start);
@@ -171,6 +175,10 @@ void VideoController::Stop() {
 	if (IsPlaying()) {
 		playback.Stop();
 		context->audioController->Stop();
+		AssDialogue *dlg = context->subsGrid->GetTrackingDialogue();
+		bypass_line_changed_event = true;
+		context->selectionController->SetSelectionAndActive({dlg}, dlg);
+		bypass_line_changed_event = false;
 	}
 }
 

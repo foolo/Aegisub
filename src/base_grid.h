@@ -128,6 +128,7 @@ public:
 
 	void SetByFrame(bool state);
 	void ScrollTo(int y);
+	AssDialogue *GetTrackingDialogue() const;
 
 	DECLARE_EVENT_TABLE()
 };

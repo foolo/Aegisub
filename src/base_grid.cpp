@@ -612,6 +612,11 @@ AssDialogue *BaseGrid::GetDialogue(int n) const {
 	return index_line_map[n];
 }
 
+AssDialogue *BaseGrid::GetTrackingDialogue() const {
+	if (tracking_row <= 0 || static_cast<size_t>(tracking_row) >= index_line_map.size()) return nullptr;
+	return index_line_map[tracking_row];
+}
+
 bool BaseGrid::IsDisplayed(const AssDialogue *line) const {
 	if (!context->project->VideoProvider()) return false;
 	int frame = context->videoController->GetFrameN();
