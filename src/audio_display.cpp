@@ -982,22 +982,18 @@ bool AudioDisplay::ForwardMouseEvent(wxMouseEvent &event) {
 	}
 
 	const wxPoint mousepos = event.GetPosition();
-	AudioDisplayInteractionObject *new_obj = nullptr;
 	if (timeline->GetBounds().Contains(mousepos))
 	{
-		SetCursor(wxCursor(wxCURSOR_SIZEWE));
-		new_obj = timeline.get();
+		const int mouse_x = event.GetPosition().x;
+		context->videoController->JumpToTime(TimeFromRelativeX(mouse_x), agi::vfr::EXACT);
+		if (!controller->IsPlaying())
+			RemoveTrackCursor();
+		return true;
 	}
 	else
 	{
 		return false;
 	}
-
-	if (!controller->IsPlaying())
-		RemoveTrackCursor();
-	if (new_obj->OnMouseEvent(event))
-		SetDraggedObject(new_obj);
-	return true;
 }
 
 void AudioDisplay::OnKeyDown(wxKeyEvent& event)
