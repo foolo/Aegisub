@@ -136,9 +136,6 @@ class AudioDisplayTimeline final : public AudioDisplayInteractionObject {
 
 	wxRect bounds;
 
-	wxPoint drag_lastpos;
-	bool dragging = false;
-
 	enum Scale {
 		Sc_Millisecond,
 		Sc_Centisecond,
@@ -237,24 +234,7 @@ public:
 
 	bool OnMouseEvent(wxMouseEvent &event) override
 	{
-		if (event.LeftDown())
-		{
-			drag_lastpos = event.GetPosition();
-			dragging = true;
-		}
-		else if (event.LeftIsDown())
-		{
-			display->ScrollPixelToLeft(pixel_left - event.GetPosition().x + drag_lastpos.x);
-
-			drag_lastpos = event.GetPosition();
-			dragging = true;
-		}
-		else if (event.LeftUp())
-		{
-			dragging = false;
-		}
-
-		return dragging;
+		return false;
 	}
 
 	void Paint(wxDC &dc)
@@ -782,7 +762,7 @@ void AudioDisplay::PaintLabels(wxDC &dc, TimeRange updtime)
 }
 
 void AudioDisplay::PaintTrackCursor(wxDC &dc) {
-	wxDCPenChanger penchanger(dc, wxPen(*wxYELLOW));
+	wxDCPenChanger penchanger(dc, wxPen(*wxLIGHT_GREY));
 	dc.DrawLine(track_cursor_pos-scroll_left, 0, track_cursor_pos-scroll_left, GetClientSize().GetHeight());
 
 	if (track_cursor_label.empty()) return;
