@@ -154,8 +154,6 @@ void Audio(wxTreebook *book, Preferences *parent) {
 	p->OptionAdd(display, _("Keyframes in karaoke mode"), "Audio/Display/Draw/Keyframes in Karaoke Mode");
 	p->OptionAdd(display, _("Cursor time"), "Audio/Display/Draw/Cursor Time");
 	p->OptionAdd(display, _("Video position"), "Audio/Display/Draw/Video Position");
-	p->OptionAdd(display, _("Seconds boundaries"), "Audio/Display/Draw/Seconds");
-	p->CellSkip(display);
 	p->OptionChoice(display, _("Waveform Style"), AudioWaveformRenderer::GetWaveformStyles(), "Audio/Display/Waveform Style");
 
 	auto label = p->PageSizer(_("Audio labels"));
@@ -251,7 +249,6 @@ void Interface_Colours(wxTreebook *book, Preferences *parent) {
 	p->OptionAdd(audio, _("Line boundary end"), "Colour/Audio Display/Line boundary End");
 	p->OptionAdd(audio, _("Line boundary inactive line"), "Colour/Audio Display/Line Boundary Inactive Line");
 	p->OptionAdd(audio, _("Syllable boundaries"), "Colour/Audio Display/Syllable Boundaries");
-	p->OptionAdd(audio, _("Seconds boundaries"), "Colour/Audio Display/Seconds Line");
 
 	auto syntax = p->PageSizer(_("Syntax Highlighting"));
 	p->OptionAdd(syntax, _("Background"), "Colour/Subtitle/Background");

@@ -156,35 +156,3 @@ public:
 
 	void GetMarkers(const TimeRange &range, AudioMarkerVector &out) const override;
 };
-
-/// Marker provider for lines every second
-class SecondsMarkerProvider final : public AudioMarkerProvider {
-	struct Marker final : public AudioMarker {
-		Pen *style;
-		int position = 0;
-
-		Marker(Pen *style) : style(style) { }
-		int GetPosition() const override { return position; }
-		FeetStyle GetFeet() const override { return Feet_None; }
-		wxPen GetStyle() const override;
-		operator int() const { return position; }
-	};
-
-	/// Pen used by all seconds markers, here for performance
-	std::unique_ptr<Pen> pen;
-
-	/// Markers returned from last call to GetMarkers
-	mutable std::vector<Marker> markers;
-
-	/// Cached reference to the option to enable/disable seconds markers
-	const agi::OptionValue *enabled;
-
-	/// Enabled option change connection
-	agi::signal::Connection enabled_opt_changed;
-
-	void EnabledOptChanged();
-
-public:
-	SecondsMarkerProvider();
-	void GetMarkers(TimeRange const& range, AudioMarkerVector &out) const override;
-};

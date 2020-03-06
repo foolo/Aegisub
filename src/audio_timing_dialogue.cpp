@@ -313,9 +313,6 @@ class AudioTimingControllerDialogue final : public AudioTimingController {
 	/// Marker provider for video playback position
 	VideoPositionMarkerProvider video_position_provider;
 
-	/// Marker provider for seconds lines
-	SecondsMarkerProvider seconds_provider;
-
 	/// The set of lines which have been modified and need to have their
 	/// changes applied on commit
 	std::set<TimeableLine*> modified_lines;
@@ -427,7 +424,6 @@ AudioTimingControllerDialogue::AudioTimingControllerDialogue(agi::Context *c)
 {
 	keyframes_provider.AddMarkerMovedListener([=]{ AnnounceMarkerMoved(); });
 	video_position_provider.AddMarkerMovedListener([=]{ AnnounceMarkerMoved(); });
-	seconds_provider.AddMarkerMovedListener([=]{ AnnounceMarkerMoved(); });
 
 	Revert();
 }
@@ -436,8 +432,6 @@ void AudioTimingControllerDialogue::GetMarkers(const TimeRange &range, AudioMark
 {
 	// The order matters here; later markers are painted on top of earlier
 	// markers, so the markers that we want to end up on top need to appear last
-
-	seconds_provider.GetMarkers(range, out_markers);
 
 	// Copy inactive line markers in the range
 	copy(
