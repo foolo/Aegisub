@@ -893,6 +893,11 @@ void AudioDisplay::OnMouseEvent(wxMouseEvent& event)
 	if (ForwardMouseEvent(event))
 		return;
 
+	if (event.MiddleIsDown()) {
+		context->videoController->JumpToTime(TimeFromRelativeX(mouse_x), agi::vfr::EXACT);
+		return;
+	}
+
 	if (!controller->IsPlaying())
 		RemoveTrackCursor();
 

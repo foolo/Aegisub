@@ -45,8 +45,6 @@
 #include <boost/range/algorithm.hpp>
 #include <wx/pen.h>
 
-#include <iostream>
-
 namespace {
 class TimeableLine;
 
@@ -612,8 +610,6 @@ std::vector<AudioMarker*> AudioTimingControllerDialogue::OnLeftClick(int ms, boo
 
 	if (ctrl_down)
 	{
-		std::cout << "ctrl down" << std::endl;
-
 		// The use of GetPosition here is important, as otherwise it'll start
 		// after lines ending at the same time as the active line begins
 		auto it = boost::lower_bound(markers, clicked->GetPosition(), marker_ptr_cmp());
