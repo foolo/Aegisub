@@ -688,11 +688,11 @@ void AudioDisplay::OnPaint(wxPaintEvent&)
 		}
 	}
 
-	if (track_cursor_pos >= 0)
-		PaintTrackCursor(dc);
-
 	if (redraw_timeline)
 		timeline->Paint(dc);
+
+	if (track_cursor_pos >= 0)
+		PaintTrackCursor(dc);
 }
 
 void AudioDisplay::PaintAudio(wxDC &dc, const TimeRange updtime, const wxRect updrect)
@@ -782,8 +782,8 @@ void AudioDisplay::PaintLabels(wxDC &dc, TimeRange updtime)
 }
 
 void AudioDisplay::PaintTrackCursor(wxDC &dc) {
-	wxDCPenChanger penchanger(dc, wxPen(*wxWHITE));
-	dc.DrawLine(track_cursor_pos-scroll_left, audio_top, track_cursor_pos-scroll_left, audio_top+audio_height);
+	wxDCPenChanger penchanger(dc, wxPen(*wxYELLOW));
+	dc.DrawLine(track_cursor_pos-scroll_left, 0, track_cursor_pos-scroll_left, GetClientSize().GetHeight());
 
 	if (track_cursor_label.empty()) return;
 
@@ -845,8 +845,9 @@ void AudioDisplay::SetTrackCursor(int new_pos, bool show_time)
 	int old_pos = track_cursor_pos;
 	track_cursor_pos = new_pos;
 
-	RefreshRect(wxRect(old_pos - scroll_left - 1, audio_top, 2, audio_height - 1), false);
-	RefreshRect(wxRect(new_pos - scroll_left - 1, audio_top, 2, audio_height - 1), false);
+	int client_height = GetClientSize().GetHeight();
+	RefreshRect(wxRect(old_pos - scroll_left - 1, 0, 2, client_height), false);
+	RefreshRect(wxRect(new_pos - scroll_left - 1, 0, 2, client_height), false);
 
 	// Make sure the old label gets cleared away
 	RefreshRect(track_cursor_label_rect, false);
@@ -912,16 +913,9 @@ void AudioDisplay::OnMouseEvent(wxMouseEvent& event)
 	if (ForwardMouseEvent(event))
 		return;
 
-	if (event.MiddleIsDown())
-	{
-		context->videoController->JumpToTime(TimeFromRelativeX(mouse_x), agi::vfr::EXACT);
-		return;
-	}
+	if (!controller->IsPlaying())
+		RemoveTrackCursor();
 
-	if (event.Moving() && !controller->IsPlaying())
-	{
-		SetTrackCursor(scroll_left + mouse_x, OPT_GET("Audio/Display/Draw/Cursor Time")->GetBool());
-	}
 
 	AudioTimingController *timing = controller->GetTimingController();
 	if (!timing) return;
@@ -985,9 +979,13 @@ bool AudioDisplay::ForwardMouseEvent(wxMouseEvent &event) {
 	if (timeline->GetBounds().Contains(mousepos))
 	{
 		const int mouse_x = event.GetPosition().x;
-		context->videoController->JumpToTime(TimeFromRelativeX(mouse_x), agi::vfr::EXACT);
-		if (!controller->IsPlaying())
-			RemoveTrackCursor();
+		if (event.LeftIsDown()) {
+			context->videoController->JumpToTime(TimeFromRelativeX(mouse_x), agi::vfr::EXACT);
+		}
+		if (event.Moving() && !controller->IsPlaying())
+		{
+			SetTrackCursor(scroll_left + mouse_x, OPT_GET("Audio/Display/Draw/Cursor Time")->GetBool());
+		}
 		return true;
 	}
 	else
