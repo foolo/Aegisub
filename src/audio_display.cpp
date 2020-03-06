@@ -770,9 +770,6 @@ void AudioDisplay::PaintTrackCursor(wxDC &dc) {
 
 	wxDCFontChanger fc(dc);
 	wxFont font = dc.GetFont();
-	wxString face_name = FontFace("Audio/Track Cursor");
-	if (!face_name.empty())
-		font.SetFaceName(face_name);
 	font.SetWeight(wxFONTWEIGHT_BOLD);
 	fc.Set(font);
 
