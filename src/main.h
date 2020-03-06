@@ -63,6 +63,7 @@ public:
 	AegisubLocale locale;
 
 	agi::Context& NewProjectContext();
+	void LoadRecentSubtitle(agi::Context& context);
 	void CloseAll();
 
 	// Apple events

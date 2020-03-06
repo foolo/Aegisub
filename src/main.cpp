@@ -293,7 +293,8 @@ bool AegisubApp::OnInit() {
 
 		// Open main frame
 		StartupLog("Create main window");
-		NewProjectContext();
+		agi::Context& context = NewProjectContext();
+		LoadRecentSubtitle(context);
 
 		// Version checker
 		StartupLog("Possibly perform automatic updates check");
@@ -384,6 +385,14 @@ agi::Context& AegisubApp::NewProjectContext() {
 	});
 	frames.push_back(frame);
 	return *frame->context;
+}
+
+void AegisubApp::LoadRecentSubtitle(agi::Context& context) {
+	auto map = config::mru->Get("Subtitle");
+	if (map->empty()) {
+		return;
+	}
+	context.project->LoadSubtitles(map->front());
 }
 
 void AegisubApp::CloseAll() {
