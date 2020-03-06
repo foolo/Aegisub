@@ -61,6 +61,9 @@ class AudioMarkerInteractionObject;
 /// timing controller. The audio display also renders audio according to the audio controller
 /// and the timing controller, using an audio renderer instance.
 class AudioDisplay: public wxWindow {
+
+	enum DragState {DRAGGING_IDLE, DRAGGING_AUDIO_MARKER, DRAGGING_TIMELINE};
+
 	agi::signal::Connection audio_open_connection;
 
 	std::vector<agi::signal::Connection> connections;
@@ -82,13 +85,6 @@ class AudioDisplay: public wxWindow {
 
 	/// The interaction object for the last-dragged audio marker
 	std::unique_ptr<AudioMarkerInteractionObject> audio_marker;
-
-
-	/// Current object on display being dragged, if any
-	AudioDisplayInteractionObject *dragged_object = nullptr;
-	/// Change the dragged object and update mouse capture
-	void SetDraggedObject(AudioDisplayInteractionObject *new_obj);
-
 
 	/// Timer for scrolling when markers are dragged out of the displayed area
 	wxTimer scroll_timer;
@@ -132,12 +128,18 @@ class AudioDisplay: public wxWindow {
 	wxString track_cursor_label;
 	/// Bounding rectangle last drawn track cursor label
 	wxRect track_cursor_label_rect;
+
+
+	DragState state;
+
 	/// @brief Move the tracking cursor
 	/// @param new_pos   New absolute pixel position of the tracking cursor
 	/// @param show_time Display timestamp by the tracking cursor?
 	void SetTrackCursor(int new_pos, bool show_time);
 	/// @brief Remove the tracking cursor from the display
 	void RemoveTrackCursor();
+
+	void JumpToTime(int mouse_x);
 
 	/// Previous style ranges for optimizing redraw when ranges change
 	std::vector<std::pair<int, int>> style_ranges;
@@ -173,10 +175,6 @@ class AudioDisplay: public wxWindow {
 	/// Paint the track cursor
 	/// @param dc DC to paint to
 	void PaintTrackCursor(wxDC &dc);
-
-	/// Forward the mouse event to the appropriate child control, if any
-	/// @return Was the mouse event forwarded somewhere?
-	bool ForwardMouseEvent(wxMouseEvent &event);
 
 	/// wxWidgets paint event
 	void OnPaint(wxPaintEvent &event);
