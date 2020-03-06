@@ -46,12 +46,112 @@ class AudioController;
 class AudioRenderer;
 class AudioRendererBitmapProvider;
 class TimeRange;
+class AudioDisplay;
 
 // Helper classes used in implementation of the audio display
-namespace {
-	class AudioDisplayTimeline;
-}
-class AudioDisplayInteractionObject;
+
+/// @class AudioDisplayInteractionObject
+/// @brief Interface for objects on the audio display that can respond to mouse events
+class AudioDisplayInteractionObject {
+public:
+	/// @brief The user is interacting with the object using the mouse
+	/// @param event Mouse event data
+	/// @return True to take mouse capture, false to release mouse capture
+	///
+	/// Assuming no object has the mouse capture, the audio display uses other methods
+	/// in the object implementing this interface to determine whether a mouse event
+	/// should go to the object. If the mouse event goes to the object, this method
+	/// is called.
+	///
+	/// If this method returns true, the audio display takes the mouse capture and
+	/// stores a pointer to the AudioDisplayInteractionObject interface for the object
+	/// and redirects the next mouse event to that object.
+	///
+	/// If the object that has the mouse capture returns false from this method, the
+	/// capture is released and regular processing is done for the next event.
+	///
+	/// If the object does not have mouse capture and returns false from this method,
+	/// no capture is taken or released and regular processing is done for the next
+	/// mouse event.
+	virtual bool OnMouseEvent(wxMouseEvent &event) = 0;
+
+	/// @brief Destructor
+	///
+	/// Empty virtual destructor for the cases that need it.
+	virtual ~AudioDisplayInteractionObject() = default;
+};
+
+/// @brief Colourscheme-based UI colour provider
+///
+/// This class provides UI colours corresponding to the supplied audio colour
+/// scheme.
+///
+/// SetColourScheme must be called to set the active colour scheme before
+/// colours can be retrieved
+class UIColours {
+	wxColour light_colour;         ///< Light unfocused colour from the colour scheme
+	wxColour dark_colour;          ///< Dark unfocused colour from the colour scheme
+	wxColour sel_colour;           ///< Selection unfocused colour from the colour scheme
+	wxColour light_focused_colour; ///< Light focused colour from the colour scheme
+	wxColour dark_focused_colour;  ///< Dark focused colour from the colour scheme
+	wxColour sel_focused_colour;   ///< Selection focused colour from the colour scheme
+
+	bool focused = false; ///< Use the focused colours?
+public:
+	/// Set the colour scheme to load colours from
+	/// @param name Name of the colour scheme
+	void SetColourScheme(std::string const& name);
+
+	/// Set whether to use the focused or unfocused colours
+	/// @param focused If true, focused colours will be returned
+	void SetFocused(bool focused) { this->focused = focused; }
+
+	/// Get the current Light colour
+	wxColour Light() const { return focused ? light_focused_colour : light_colour; }
+	/// Get the current Dark colour
+	wxColour Dark() const { return focused ? dark_focused_colour : dark_colour; }
+	/// Get the current Selection colour
+	wxColour Selection() const { return focused ? sel_focused_colour : sel_colour; }
+};
+
+class AudioDisplayTimeline final : public AudioDisplayInteractionObject {
+	int duration = 0;          ///< Total duration in ms
+	double ms_per_pixel = 1.0; ///< Milliseconds per pixel
+	int pixel_left = 0;        ///< Leftmost visible pixel (i.e. scroll position)
+	wxRect bounds;
+
+	enum Scale {
+		Sc_Millisecond,
+		Sc_Centisecond,
+		Sc_Decisecond,
+		Sc_Second,
+		Sc_Decasecond,
+		Sc_Minute,
+		Sc_Decaminute,
+		Sc_Hour,
+		Sc_Decahour, // If anyone needs this they should reconsider their project
+		Sc_MAX = Sc_Decahour
+	};
+	Scale scale_minor;
+	int scale_major_modulo; ///< If minor_scale_mark_index % scale_major_modulo == 0 the mark is a major mark
+	double scale_minor_divisor; ///< Absolute scale-mark index multiplied by this number gives sample index for scale mark
+	AudioDisplay *display; ///< Containing audio display
+	UIColours colours; ///< Colour provider
+
+public:
+	AudioDisplayTimeline(AudioDisplay *display);
+	void SetColourScheme(std::string const& name);
+	void SetDisplaySize(const wxSize &display_size);
+	int GetHeight() const { return bounds.height; }
+	const wxRect & GetBounds() const { return bounds; }
+	void ChangeAudio(int new_duration);
+	void ChangeZoom(double new_ms_per_pixel);
+	void SetPosition(int new_pixel_left);
+	bool OnMouseEvent(wxMouseEvent &event) override;
+	void Paint(wxDC &dc);
+};
+
+
 class AudioMarkerInteractionObject;
 
 /// @class AudioDisplay

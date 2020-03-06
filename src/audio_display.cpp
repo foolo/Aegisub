@@ -53,270 +53,178 @@
 #include <wx/dcbuffer.h>
 #include <wx/mousestate.h>
 
-/// @class AudioDisplayInteractionObject
-/// @brief Interface for objects on the audio display that can respond to mouse events
-class AudioDisplayInteractionObject {
-public:
-	/// @brief The user is interacting with the object using the mouse
-	/// @param event Mouse event data
-	/// @return True to take mouse capture, false to release mouse capture
-	///
-	/// Assuming no object has the mouse capture, the audio display uses other methods
-	/// in the object implementing this interface to determine whether a mouse event
-	/// should go to the object. If the mouse event goes to the object, this method
-	/// is called.
-	///
-	/// If this method returns true, the audio display takes the mouse capture and
-	/// stores a pointer to the AudioDisplayInteractionObject interface for the object
-	/// and redirects the next mouse event to that object.
-	///
-	/// If the object that has the mouse capture returns false from this method, the
-	/// capture is released and regular processing is done for the next event.
-	///
-	/// If the object does not have mouse capture and returns false from this method,
-	/// no capture is taken or released and regular processing is done for the next
-	/// mouse event.
-	virtual bool OnMouseEvent(wxMouseEvent &event) = 0;
+void UIColours::SetColourScheme(std::string const& name)
+{
+	std::string opt_prefix = "Colour/Schemes/" + name + "/UI/";
+	light_colour = to_wx(OPT_GET(opt_prefix + "Light")->GetColor());
+	dark_colour = to_wx(OPT_GET(opt_prefix + "Dark")->GetColor());
+	sel_colour = to_wx(OPT_GET(opt_prefix + "Selection")->GetColor());
 
-	/// @brief Destructor
-	///
-	/// Empty virtual destructor for the cases that need it.
-	virtual ~AudioDisplayInteractionObject() = default;
-};
+	opt_prefix = "Colour/Schemes/" + name + "/UI Focused/";
+	light_focused_colour = to_wx(OPT_GET(opt_prefix + "Light")->GetColor());
+	dark_focused_colour = to_wx(OPT_GET(opt_prefix + "Dark")->GetColor());
+	sel_focused_colour = to_wx(OPT_GET(opt_prefix + "Selection")->GetColor());
+}
+
+
+AudioDisplayTimeline::AudioDisplayTimeline(AudioDisplay *display)
+: display(display)
+{
+	int width, height;
+	display->GetTextExtent("0123456789:.", &width, &height);
+	bounds.height = height + 4;
+}
+
+void AudioDisplayTimeline::SetColourScheme(std::string const& name)
+{
+	colours.SetColourScheme(name);
+}
+
+void AudioDisplayTimeline::SetDisplaySize(const wxSize &display_size)
+{
+	// The size is without anything that goes below the timeline (like scrollbar)
+	bounds.width = display_size.x;
+	bounds.x = 0;
+	bounds.y = 0;
+}
+
+void AudioDisplayTimeline::ChangeAudio(int new_duration)
+{
+	duration = new_duration;
+}
+
+void AudioDisplayTimeline::ChangeZoom(double new_ms_per_pixel)
+{
+	ms_per_pixel = new_ms_per_pixel;
+
+	double px_sec = 1000.0 / ms_per_pixel;
+
+	if (px_sec > 3000) {
+		scale_minor = Sc_Millisecond;
+		scale_minor_divisor = 1.0;
+		scale_major_modulo = 10;
+	} else if (px_sec > 300) {
+		scale_minor = Sc_Centisecond;
+		scale_minor_divisor = 10.0;
+		scale_major_modulo = 10;
+	} else if (px_sec > 30) {
+		scale_minor = Sc_Decisecond;
+		scale_minor_divisor = 100.0;
+		scale_major_modulo = 10;
+	} else if (px_sec > 3) {
+		scale_minor = Sc_Second;
+		scale_minor_divisor = 1000.0;
+		scale_major_modulo = 10;
+	} else if (px_sec > 1.0/3.0) {
+		scale_minor = Sc_Decasecond;
+		scale_minor_divisor = 10000.0;
+		scale_major_modulo = 6;
+	} else if (px_sec > 1.0/9.0) {
+		scale_minor = Sc_Minute;
+		scale_minor_divisor = 60000.0;
+		scale_major_modulo = 10;
+	} else if (px_sec > 1.0/90.0) {
+		scale_minor = Sc_Decaminute;
+		scale_minor_divisor = 600000.0;
+		scale_major_modulo = 6;
+	} else {
+		scale_minor = Sc_Hour;
+		scale_minor_divisor = 3600000.0;
+		scale_major_modulo = 10;
+	}
+}
+
+void AudioDisplayTimeline::SetPosition(int new_pixel_left)
+{
+	pixel_left = std::max(new_pixel_left, 0);
+}
+
+bool AudioDisplayTimeline::OnMouseEvent(wxMouseEvent &event)
+{
+	return false;
+}
+
+void AudioDisplayTimeline::Paint(wxDC &dc)
+{
+	int bottom = bounds.y + bounds.height;
+
+	// Background
+	dc.SetPen(wxPen(colours.Dark()));
+	dc.SetBrush(wxBrush(colours.Dark()));
+	dc.DrawRectangle(bounds);
+
+	// Top line
+	dc.SetPen(wxPen(colours.Light()));
+	dc.DrawLine(bounds.x, bottom-1, bounds.x+bounds.width, bottom-1);
+
+	// Prepare for writing text
+	dc.SetTextBackground(colours.Dark());
+	dc.SetTextForeground(colours.Light());
+
+	// Figure out the first scale mark to show
+	int ms_left = int(pixel_left * ms_per_pixel);
+	int next_scale_mark = int(ms_left / scale_minor_divisor);
+	if (next_scale_mark * scale_minor_divisor < ms_left)
+		next_scale_mark += 1;
+	assert(next_scale_mark * scale_minor_divisor >= ms_left);
+
+	// Draw scale marks
+	int next_scale_mark_pos;
+	int last_text_right = -1;
+	int last_hour = -1, last_minute = -1;
+	if (duration < 3600) last_hour = 0; // Trick to only show hours if audio is longer than 1 hour
+	do {
+		next_scale_mark_pos = int(next_scale_mark * scale_minor_divisor / ms_per_pixel) - pixel_left;
+		bool mark_is_major = next_scale_mark % scale_major_modulo == 0;
+
+		if (mark_is_major)
+			dc.DrawLine(next_scale_mark_pos, bottom-6, next_scale_mark_pos, bottom-1);
+		else
+			dc.DrawLine(next_scale_mark_pos, bottom-4, next_scale_mark_pos, bottom-1);
+
+		// Print time labels on major scale marks
+		if (mark_is_major && next_scale_mark_pos > last_text_right)
+		{
+			double mark_time = next_scale_mark * scale_minor_divisor / 1000.0;
+			int mark_hour = (int)(mark_time / 3600);
+			int mark_minute = (int)(mark_time / 60) % 60;
+			double mark_second = mark_time - mark_hour*3600.0 - mark_minute*60.0;
+
+			wxString time_string;
+			bool changed_hour = mark_hour != last_hour;
+			bool changed_minute = mark_minute != last_minute;
+
+			if (changed_hour)
+			{
+				time_string = fmt_wx("%d:%02d:", mark_hour, mark_minute);
+				last_hour = mark_hour;
+				last_minute = mark_minute;
+			}
+			else if (changed_minute)
+			{
+				time_string = fmt_wx("%d:", mark_minute);
+				last_minute = mark_minute;
+			}
+			if (scale_minor >= Sc_Decisecond)
+				time_string += fmt_wx("%02d", mark_second);
+			else if (scale_minor == Sc_Centisecond)
+				time_string += fmt_wx("%02.1f", mark_second);
+			else
+				time_string += fmt_wx("%02.2f", mark_second);
+
+			int tw, th;
+			dc.GetTextExtent(time_string, &tw, &th);
+			last_text_right = next_scale_mark_pos + tw;
+
+			dc.DrawText(time_string, next_scale_mark_pos, 0);
+		}
+
+		next_scale_mark += 1;
+
+	} while (next_scale_mark_pos < bounds.width);
+}
 
 namespace {
-/// @brief Colourscheme-based UI colour provider
-///
-/// This class provides UI colours corresponding to the supplied audio colour
-/// scheme.
-///
-/// SetColourScheme must be called to set the active colour scheme before
-/// colours can be retrieved
-class UIColours {
-	wxColour light_colour;         ///< Light unfocused colour from the colour scheme
-	wxColour dark_colour;          ///< Dark unfocused colour from the colour scheme
-	wxColour sel_colour;           ///< Selection unfocused colour from the colour scheme
-	wxColour light_focused_colour; ///< Light focused colour from the colour scheme
-	wxColour dark_focused_colour;  ///< Dark focused colour from the colour scheme
-	wxColour sel_focused_colour;   ///< Selection focused colour from the colour scheme
-
-	bool focused = false; ///< Use the focused colours?
-public:
-	/// Set the colour scheme to load colours from
-	/// @param name Name of the colour scheme
-	void SetColourScheme(std::string const& name)
-	{
-		std::string opt_prefix = "Colour/Schemes/" + name + "/UI/";
-		light_colour = to_wx(OPT_GET(opt_prefix + "Light")->GetColor());
-		dark_colour = to_wx(OPT_GET(opt_prefix + "Dark")->GetColor());
-		sel_colour = to_wx(OPT_GET(opt_prefix + "Selection")->GetColor());
-
-		opt_prefix = "Colour/Schemes/" + name + "/UI Focused/";
-		light_focused_colour = to_wx(OPT_GET(opt_prefix + "Light")->GetColor());
-		dark_focused_colour = to_wx(OPT_GET(opt_prefix + "Dark")->GetColor());
-		sel_focused_colour = to_wx(OPT_GET(opt_prefix + "Selection")->GetColor());
-	}
-
-	/// Set whether to use the focused or unfocused colours
-	/// @param focused If true, focused colours will be returned
-	void SetFocused(bool focused) { this->focused = focused; }
-
-	/// Get the current Light colour
-	wxColour Light() const { return focused ? light_focused_colour : light_colour; }
-	/// Get the current Dark colour
-	wxColour Dark() const { return focused ? dark_focused_colour : dark_colour; }
-	/// Get the current Selection colour
-	wxColour Selection() const { return focused ? sel_focused_colour : sel_colour; }
-};
-
-class AudioDisplayTimeline final : public AudioDisplayInteractionObject {
-	int duration = 0;          ///< Total duration in ms
-	double ms_per_pixel = 1.0; ///< Milliseconds per pixel
-	int pixel_left = 0;        ///< Leftmost visible pixel (i.e. scroll position)
-
-	wxRect bounds;
-
-	enum Scale {
-		Sc_Millisecond,
-		Sc_Centisecond,
-		Sc_Decisecond,
-		Sc_Second,
-		Sc_Decasecond,
-		Sc_Minute,
-		Sc_Decaminute,
-		Sc_Hour,
-		Sc_Decahour, // If anyone needs this they should reconsider their project
-		Sc_MAX = Sc_Decahour
-	};
-	Scale scale_minor;
-	int scale_major_modulo; ///< If minor_scale_mark_index % scale_major_modulo == 0 the mark is a major mark
-	double scale_minor_divisor; ///< Absolute scale-mark index multiplied by this number gives sample index for scale mark
-
-	AudioDisplay *display; ///< Containing audio display
-
-	UIColours colours; ///< Colour provider
-
-public:
-	AudioDisplayTimeline(AudioDisplay *display)
-	: display(display)
-	{
-		int width, height;
-		display->GetTextExtent("0123456789:.", &width, &height);
-		bounds.height = height + 4;
-	}
-
-	void SetColourScheme(std::string const& name)
-	{
-		colours.SetColourScheme(name);
-	}
-
-	void SetDisplaySize(const wxSize &display_size)
-	{
-		// The size is without anything that goes below the timeline (like scrollbar)
-		bounds.width = display_size.x;
-		bounds.x = 0;
-		bounds.y = 0;
-	}
-
-	int GetHeight() const { return bounds.height; }
-	const wxRect & GetBounds() const { return bounds; }
-
-	void ChangeAudio(int new_duration)
-	{
-		duration = new_duration;
-	}
-
-	void ChangeZoom(double new_ms_per_pixel)
-	{
-		ms_per_pixel = new_ms_per_pixel;
-
-		double px_sec = 1000.0 / ms_per_pixel;
-
-		if (px_sec > 3000) {
-			scale_minor = Sc_Millisecond;
-			scale_minor_divisor = 1.0;
-			scale_major_modulo = 10;
-		} else if (px_sec > 300) {
-			scale_minor = Sc_Centisecond;
-			scale_minor_divisor = 10.0;
-			scale_major_modulo = 10;
-		} else if (px_sec > 30) {
-			scale_minor = Sc_Decisecond;
-			scale_minor_divisor = 100.0;
-			scale_major_modulo = 10;
-		} else if (px_sec > 3) {
-			scale_minor = Sc_Second;
-			scale_minor_divisor = 1000.0;
-			scale_major_modulo = 10;
-		} else if (px_sec > 1.0/3.0) {
-			scale_minor = Sc_Decasecond;
-			scale_minor_divisor = 10000.0;
-			scale_major_modulo = 6;
-		} else if (px_sec > 1.0/9.0) {
-			scale_minor = Sc_Minute;
-			scale_minor_divisor = 60000.0;
-			scale_major_modulo = 10;
-		} else if (px_sec > 1.0/90.0) {
-			scale_minor = Sc_Decaminute;
-			scale_minor_divisor = 600000.0;
-			scale_major_modulo = 6;
-		} else {
-			scale_minor = Sc_Hour;
-			scale_minor_divisor = 3600000.0;
-			scale_major_modulo = 10;
-		}
-	}
-
-	void SetPosition(int new_pixel_left)
-	{
-		pixel_left = std::max(new_pixel_left, 0);
-	}
-
-	bool OnMouseEvent(wxMouseEvent &event) override
-	{
-		return false;
-	}
-
-	void Paint(wxDC &dc)
-	{
-		int bottom = bounds.y + bounds.height;
-
-		// Background
-		dc.SetPen(wxPen(colours.Dark()));
-		dc.SetBrush(wxBrush(colours.Dark()));
-		dc.DrawRectangle(bounds);
-
-		// Top line
-		dc.SetPen(wxPen(colours.Light()));
-		dc.DrawLine(bounds.x, bottom-1, bounds.x+bounds.width, bottom-1);
-
-		// Prepare for writing text
-		dc.SetTextBackground(colours.Dark());
-		dc.SetTextForeground(colours.Light());
-
-		// Figure out the first scale mark to show
-		int ms_left = int(pixel_left * ms_per_pixel);
-		int next_scale_mark = int(ms_left / scale_minor_divisor);
-		if (next_scale_mark * scale_minor_divisor < ms_left)
-			next_scale_mark += 1;
-		assert(next_scale_mark * scale_minor_divisor >= ms_left);
-
-		// Draw scale marks
-		int next_scale_mark_pos;
-		int last_text_right = -1;
-		int last_hour = -1, last_minute = -1;
-		if (duration < 3600) last_hour = 0; // Trick to only show hours if audio is longer than 1 hour
-		do {
-			next_scale_mark_pos = int(next_scale_mark * scale_minor_divisor / ms_per_pixel) - pixel_left;
-			bool mark_is_major = next_scale_mark % scale_major_modulo == 0;
-
-			if (mark_is_major)
-				dc.DrawLine(next_scale_mark_pos, bottom-6, next_scale_mark_pos, bottom-1);
-			else
-				dc.DrawLine(next_scale_mark_pos, bottom-4, next_scale_mark_pos, bottom-1);
-
-			// Print time labels on major scale marks
-			if (mark_is_major && next_scale_mark_pos > last_text_right)
-			{
-				double mark_time = next_scale_mark * scale_minor_divisor / 1000.0;
-				int mark_hour = (int)(mark_time / 3600);
-				int mark_minute = (int)(mark_time / 60) % 60;
-				double mark_second = mark_time - mark_hour*3600.0 - mark_minute*60.0;
-
-				wxString time_string;
-				bool changed_hour = mark_hour != last_hour;
-				bool changed_minute = mark_minute != last_minute;
-
-				if (changed_hour)
-				{
-					time_string = fmt_wx("%d:%02d:", mark_hour, mark_minute);
-					last_hour = mark_hour;
-					last_minute = mark_minute;
-				}
-				else if (changed_minute)
-				{
-					time_string = fmt_wx("%d:", mark_minute);
-					last_minute = mark_minute;
-				}
-				if (scale_minor >= Sc_Decisecond)
-					time_string += fmt_wx("%02d", mark_second);
-				else if (scale_minor == Sc_Centisecond)
-					time_string += fmt_wx("%02.1f", mark_second);
-				else
-					time_string += fmt_wx("%02.2f", mark_second);
-
-				int tw, th;
-				dc.GetTextExtent(time_string, &tw, &th);
-				last_text_right = next_scale_mark_pos + tw;
-
-				dc.DrawText(time_string, next_scale_mark_pos, 0);
-			}
-
-			next_scale_mark += 1;
-
-		} while (next_scale_mark_pos < bounds.width);
-	}
-};
 
 class AudioStyleRangeMerger final : public AudioRenderingStyleRanges {
 	typedef std::map<int, AudioRenderingStyle> style_map;
@@ -367,7 +275,7 @@ public:
 	iterator end() { return points.end(); }
 };
 
-}
+} // namespace
 
 class AudioMarkerInteractionObject final : public AudioDisplayInteractionObject {
 	// Object-pair being interacted with
@@ -761,6 +669,7 @@ void AudioDisplay::PaintLabels(wxDC &dc, TimeRange updtime)
 		}
 	}
 }
+
 
 void AudioDisplay::PaintTrackCursor(wxDC &dc) {
 	wxDCPenChanger penchanger(dc, wxPen(*wxWHITE));
