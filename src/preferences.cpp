@@ -76,6 +76,7 @@ void General(wxTreebook *book, Preferences *parent) {
 	auto recent = p->PageSizer(_("Recently Used Lists"));
 	p->OptionAdd(recent, _("Files"), "Limits/MRU", 0, 16);
 	p->OptionAdd(recent, _("Find/Replace"), "Limits/Find Replace");
+	p->OptionAdd(recent, _("Load recently used subtitle on startup"), "App/Load Recent Subtitle On Startup");
 
 	p->SetSizerAndFit(p->sizer);
 }

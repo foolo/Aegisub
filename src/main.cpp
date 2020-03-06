@@ -294,7 +294,9 @@ bool AegisubApp::OnInit() {
 		// Open main frame
 		StartupLog("Create main window");
 		agi::Context& context = NewProjectContext();
-		LoadRecentSubtitle(context);
+		if (OPT_GET("App/Load Recent Subtitle On Startup")->GetBool()) {
+			LoadRecentSubtitle(context);
+		}
 
 		// Version checker
 		StartupLog("Possibly perform automatic updates check");
