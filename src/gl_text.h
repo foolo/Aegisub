@@ -34,10 +34,50 @@
 
 #include <wx/font.h>
 
-namespace {
-struct OpenGLTextGlyph;
-class OpenGLTextTexture;
-}
+
+/// @class OpenGLTextGlyph
+/// @brief Struct storing the information needed to draw a glyph
+struct OpenGLTextGlyph {
+	wxString str; ///< String containing the glyph(s) this is for
+	int tex = 0;  ///< OpenGL texture to draw for this glyph
+	float x1 = 0; ///< Left x coordinate of this glyph in the containing texture
+	float x2 = 0; ///< Right x coordinate of this glyph in the containing texture
+	float y1 = 0; ///< Left y coordinate of this glyph in the containing texture
+	float y2 = 0; ///< Right y coordinate of this glyph in the containing texture
+	int w = 0;    ///< Width of the glyph in pixels
+	int h = 0;    ///< Height of the glyph in pixels
+	wxFont font;  ///< Font used for this glyph
+
+	OpenGLTextGlyph(int value, wxFont const& font);
+	void Draw(float x, float y) const;
+};
+
+
+/// @class OpenGLTextTexture
+/// @brief OpenGL texture which stores one or more glyphs as sprites
+class OpenGLTextTexture final : boost::noncopyable {
+	int x = 0;      ///< Next x coordinate at which a glyph can be inserted
+	int y = 0;      ///< Next y coordinate at which a glyph can be inserted
+	int nextY = 0;  ///< Y coordinate of the next line; tracked due to that lines
+	                ///< are only as tall as needed to fit the glyphs in them
+	int width;      ///< Width of the texture
+	int height;     ///< Height of the texture
+	GLuint tex = 0; ///< The texture
+
+	/// Insert the glyph into this texture at the current coordinates
+	void Insert(OpenGLTextGlyph &glyph);
+
+public:
+	OpenGLTextTexture(OpenGLTextGlyph &glyph);
+	OpenGLTextTexture(OpenGLTextTexture&& rhs) BOOST_NOEXCEPT;
+	~OpenGLTextTexture();
+
+	/// @brief Try to insert a glyph into this texture
+	/// @param[in][out] glyph Texture to insert
+	/// @return Was the texture successfully added?
+	bool TryToInsert(OpenGLTextGlyph &glyph);
+};
+
 
 namespace agi { struct Color; }
 
