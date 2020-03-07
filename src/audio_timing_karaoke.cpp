@@ -390,7 +390,7 @@ int AudioTimingControllerKaraoke::MoveMarker(KaraokeMarker *marker, int new_posi
 void AudioTimingControllerKaraoke::AnnounceChanges(int syl) {
 	if (syl < 0) return;
 
-	if (syl == cur_syl || syl == cur_syl + 1) {
+	if ((size_t)syl == cur_syl || (size_t)syl == cur_syl + 1) {
 		AnnounceUpdatedPrimaryRange();
 		AnnounceUpdatedStyleRanges();
 	}

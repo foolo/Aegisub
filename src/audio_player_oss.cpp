@@ -263,11 +263,14 @@ int64_t OSSPlayer::GetCurrentPosition()
     // Fallback for old OSS versions
     int delay = 0;
     if (ioctl(dspdev, SNDCTL_DSP_GETODELAY, &delay) >= 0) {
+        if (delay < 0) {
+            delay = 0;
+        }
         delay /= bpf;
 
         LOG_D("player/audio/oss") << "cur_frame: " << cur_frame << " delay " << delay;
         // delay can jitter a bit at the end, detect that
-        if (cur_frame == end_frame && delay < rate / 20) {
+        if (cur_frame == end_frame && (unsigned)delay < rate / 20) {
             return cur_frame;
         }
         return MAX(0, (long) cur_frame - delay);
