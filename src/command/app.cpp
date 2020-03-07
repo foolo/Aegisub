@@ -254,17 +254,6 @@ struct app_toggle_toolbar final : public Command {
 	}
 };
 
-struct app_updates final : public Command {
-	CMD_NAME("app/updates")
-	STR_MENU("&Check for Updates...")
-	STR_DISP("Check for Updates")
-	STR_HELP("Check to see if there is a new version of Aegisub available")
-
-	void operator()(agi::Context *c) override {
-		PerformVersionCheck(true);
-	}
-};
-
 #ifdef __WXMAC__
 struct app_minimize final : public Command {
 	CMD_NAME("app/minimize")
@@ -320,9 +309,6 @@ namespace cmd {
 		reg(agi::make_unique<app_minimize>());
 		reg(agi::make_unique<app_maximize>());
 		reg(agi::make_unique<app_bring_to_front>());
-#endif
-#ifdef WITH_UPDATE_CHECKER
-		reg(agi::make_unique<app_updates>());
 #endif
 	}
 }

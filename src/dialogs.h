@@ -39,12 +39,6 @@ bool GetColorFromUser(wxWindow *parent, agi::Color original, bool alpha, std::fu
 /// @return Path to file or empty string if canceled
 std::string PickAutosaveFile(wxWindow *parent);
 
-/// @brief Check whether a newer version is available and report to the user if there is
-/// @param interactive If true, always check and report all results, both success and failure.
-///                    If false, only check if auto-checking is enabled, and only report if a
-///                    new version actually exists.
-void PerformVersionCheck(bool interactive);
-
 /// Ask the user to pick settings for a script resampling
 /// @return Does the user want to proceed with the resampling?
 bool PromptForResampleSettings(agi::Context *c, ResampleSettings &settings);

@@ -515,33 +515,6 @@ AC_PCH_FLAG([-fpch-preprocess])
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.18.1])
 
-################
-# Update checker
-################
-AC_MSG_CHECKING([whether to enable the update checker])
-AC_ARG_ENABLE(update-checker,
-              AS_HELP_STRING([--disable-update-checker], [disable the update checker [no]]))
-AC_MSG_RESULT(${enable_update_checker:=yes})
-AS_IF([test "x$enable_update_checker" != "xno"],
-      [AC_DEFINE([WITH_UPDATE_CHECKER], [],
-                 [Whether to enable the update checker])])
-
-AC_MSG_CHECKING([for update checker server])
-AC_ARG_WITH(update-server,
-            AS_HELP_STRING([--with-update-server=HOSTNAME],
-                           [Server to use for the update checker
-                            [updates.aegisub.org]]))
-AC_MSG_RESULT(${with_update_server:=updates.aegisub.org})
-AC_DEFINE_UNQUOTED([UPDATE_CHECKER_SERVER], ["$with_update_server"],
-                   [Server for the update checker])
-
-AC_MSG_CHECKING([for update checker base URL])
-AC_ARG_WITH(update-url,
-            AS_HELP_STRING([--with-update-url=HOSTNAME],
-                           [Base path to use for the update checker [/trunk]]))
-AC_MSG_RESULT(${with_update_url:=/trunk})
-AC_DEFINE_UNQUOTED([UPDATE_CHECKER_BASE_URL], ["$with_update_url"],
-                   [Base path for the update checker])
 
 ####################################################################
 # Default settings for Providers/Players
