@@ -41,7 +41,6 @@ class AudioController;
 class AudioDisplay;
 class wxBitmapToggleButton;
 class wxButton;
-class wxCommandEvent;
 class wxPanel;
 class wxScrollEvent;
 class wxSizer;
@@ -74,12 +73,12 @@ class AudioBox final : public wxSashWindow {
 
 	void SetHorizontalZoom(int new_zoom);
 	void OnAudioOpen();
-	void OnHorizontalZoom(wxScrollEvent &event);
+	void OnHorizontalZoom(wxEvent &event);
 	void OnMouseWheel(wxMouseEvent &evt);
 	void OnSashDrag(wxSashEvent &event);
 	void OnVerticalLink(agi::OptionValue const& opt);
-	void OnVerticalZoom(wxScrollEvent &event);
-	void OnVolume(wxScrollEvent &event);
+	void OnVerticalZoom(wxEvent &event);
+	void OnVolume(wxEvent &event);
 
 public:
 	AudioBox(wxWindow *parent, agi::Context *context);
@@ -94,6 +93,4 @@ public:
 
 	/// Make the currently active line visible in the audio display
 	void ScrollToActiveLine();
-
-	DECLARE_EVENT_TABLE()
 };

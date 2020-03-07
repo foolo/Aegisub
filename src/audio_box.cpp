@@ -118,13 +118,11 @@ AudioBox::AudioBox(wxWindow *parent, agi::Context *context)
 
 	audioDisplay->SetZoomLevel(-HorizontalZoom->GetValue());
 	audioDisplay->SetAmplitudeScale(pow(mid(1, VerticalZoom->GetValue(), 100) / 50.0, 3));
-}
 
-BEGIN_EVENT_TABLE(AudioBox,wxSashWindow)
-	EVT_COMMAND_SCROLL(Audio_Horizontal_Zoom, AudioBox::OnHorizontalZoom)
-	EVT_COMMAND_SCROLL(Audio_Vertical_Zoom, AudioBox::OnVerticalZoom)
-	EVT_COMMAND_SCROLL(Audio_Volume, AudioBox::OnVolume)
-END_EVENT_TABLE()
+	Bind(wxEVT_SLIDER, &AudioBox::OnHorizontalZoom, this, Audio_Horizontal_Zoom);
+	Bind(wxEVT_SLIDER, &AudioBox::OnVerticalZoom, this, Audio_Vertical_Zoom);
+	Bind(wxEVT_SLIDER, &AudioBox::OnVolume, this, Audio_Volume);
+}
 
 void AudioBox::OnMouseWheel(wxMouseEvent &evt) {
 	if (!ForwardMouseWheelEvent(audioDisplay, evt))
@@ -166,10 +164,10 @@ void AudioBox::OnSashDrag(wxSashEvent &event) {
 	OPT_SET("Audio/Display Height")->SetInt(new_height);
 }
 
-void AudioBox::OnHorizontalZoom(wxScrollEvent &event) {
+void AudioBox::OnHorizontalZoom(wxEvent &event) {
 	// Negate the value since we want zoom out to be on bottom and zoom in on top,
 	// but the control doesn't want negative on bottom and positive on top.
-	SetHorizontalZoom(-event.GetPosition());
+	SetHorizontalZoom(-HorizontalZoom->GetValue());
 }
 
 void AudioBox::SetHorizontalZoom(int new_zoom) {
@@ -178,8 +176,8 @@ void AudioBox::SetHorizontalZoom(int new_zoom) {
 	OPT_SET("Audio/Zoom/Horizontal")->SetInt(new_zoom);
 }
 
-void AudioBox::OnVerticalZoom(wxScrollEvent &event) {
-	int pos = mid(1, event.GetPosition(), 100);
+void AudioBox::OnVerticalZoom(wxEvent &event) {
+	int pos = mid(1, VerticalZoom->GetValue(), 100);
 	OPT_SET("Audio/Zoom/Vertical")->SetInt(pos);
 	double value = pow(pos / 50.0, 3);
 	audioDisplay->SetAmplitudeScale(value);
@@ -189,8 +187,8 @@ void AudioBox::OnVerticalZoom(wxScrollEvent &event) {
 	}
 }
 
-void AudioBox::OnVolume(wxScrollEvent &event) {
-	int pos = mid(1, event.GetPosition(), 100);
+void AudioBox::OnVolume(wxEvent &event) {
+	int pos = mid(1, VolumeBar->GetValue(), 100);
 	OPT_SET("Audio/Volume")->SetInt(pos);
 	controller->SetVolume(pow(pos / 50.0, 3));
 }
