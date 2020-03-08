@@ -9,7 +9,6 @@
 			"Save on Every Change" : false
 		},
 		"Call Tips" : false,
-		"First Start" : true,
 		"Hotkey Migrations" : [{"string": "placeholder since empty arrays aren't supported"}],
 		"Language" : "",
 		"Maximized" : false,

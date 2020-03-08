@@ -212,18 +212,6 @@ bool AegisubApp::OnInit() {
 		wxMessageBox("Configuration file is invalid. Error reported:\n" + to_wx(err.GetMessage()), "Error");
 	}
 
-#ifdef _WIN32
-	StartupLog("Load installer configuration");
-	if (OPT_GET("App/First Start")->GetBool()) {
-		try {
-			auto installer_config = agi::io::Open(config::path->Decode("?data/installer_config.json"));
-			config::opt->ConfigNext(*installer_config.get());
-		} catch (agi::fs::FileSystemError const&) {
-			// Not an error obviously as the user may not have used the installer
-		}
-	}
-#endif
-
 	// Init commands.
 	cmd::init_builtin_commands();
 
@@ -296,10 +284,6 @@ bool AegisubApp::OnInit() {
 		agi::Context& context = NewProjectContext();
 		if (OPT_GET("App/Load Recent Subtitle On Startup")->GetBool()) {
 			LoadRecentSubtitle(context);
-		}
-
-		if (OPT_GET("App/First Start")->GetBool()) {
-			OPT_SET("App/First Start")->SetBool(false);
 		}
 
 		// Get parameter subs
