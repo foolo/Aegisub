@@ -37,7 +37,6 @@
 
 static const char *pages[][2] = {
 	{"Attachment Manager", "Attachment_Manager"},
-	{"Automation Manager", "Automation/Manager"},
 	{"Colour Picker", "Colour_Picker"},
 	{"Dummy Video", "Video#dummy-video"},
 	{"Export", "Exporting"},

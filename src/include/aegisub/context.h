@@ -33,7 +33,6 @@ class TextSelectionController;
 class VideoController;
 class VideoDisplay;
 class wxWindow;
-namespace Automation4 { class ScriptManager; }
 
 namespace agi {
 class Path;
@@ -45,7 +44,6 @@ struct Context {
 	std::unique_ptr<TextSelectionController> textSelectionController;
 	std::unique_ptr<SubsController> subsController;
 	std::unique_ptr<Project> project;
-	std::unique_ptr<Automation4::ScriptManager> local_scripts;
 	std::unique_ptr<SelectionController> selectionController;
 	std::unique_ptr<VideoController> videoController;
 	std::unique_ptr<AudioController> audioController;

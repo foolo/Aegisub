@@ -62,7 +62,6 @@ namespace cmd {
 	// them in a header, they're strictly internal-use.
 	void init_app();
 	void init_audio();
-	void init_automation();
 	void init_command();
 	void init_edit();
 	void init_grid();
@@ -80,7 +79,6 @@ namespace cmd {
 		LOG_D("command/init") << "Populating command map";
 		init_app();
 		init_audio();
-		init_automation();
 		init_edit();
 		init_grid();
 		init_help();

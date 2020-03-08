@@ -324,27 +324,6 @@ void Backup(wxTreebook *book, Preferences *parent) {
 	p->SetSizerAndFit(p->sizer);
 }
 
-/// Automation preferences page
-void Automation(wxTreebook *book, Preferences *parent) {
-	auto p = new OptionPage(book, parent, _("Automation"));
-
-	auto general = p->PageSizer(_("General"));
-
-	p->OptionAdd(general, _("Base path"), "Path/Automation/Base");
-	p->OptionAdd(general, _("Include path"), "Path/Automation/Include");
-	p->OptionAdd(general, _("Auto-load path"), "Path/Automation/Autoload");
-
-	const wxString tl_arr[6] = { _("0: Fatal"), _("1: Error"), _("2: Warning"), _("3: Hint"), _("4: Debug"), _("5: Trace") };
-	wxArrayString tl_choice(6, tl_arr);
-	p->OptionChoice(general, _("Trace level"), tl_choice, "Automation/Trace Level");
-
-	const wxString ar_arr[4] = { _("No scripts"), _("Subtitle-local scripts"), _("Global autoload scripts"), _("All scripts") };
-	wxArrayString ar_choice(4, ar_arr);
-	p->OptionChoice(general, _("Autoreload on Export"), ar_choice, "Automation/Autoreload Mode");
-
-	p->SetSizerAndFit(p->sizer);
-}
-
 /// Advanced preferences page
 void Advanced(wxTreebook *book, Preferences *parent) {
 	auto p = new OptionPage(book, parent, _("Advanced"));
@@ -708,7 +687,6 @@ Preferences::Preferences(wxWindow *parent): wxDialog(parent, -1, _("Preferences"
 	Interface_Colours(book, this);
 	new Interface_Hotkeys(book, this);
 	Backup(book, this);
-	Automation(book, this);
 	Advanced(book, this);
 	Advanced_Audio(book, this);
 	Advanced_Video(book, this);

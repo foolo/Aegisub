@@ -7,9 +7,6 @@ aegisub_OBJ := \
 	$(d)ass/uuencode.o \
 	$(patsubst %.cpp,%.o,$(sort $(wildcard $(d)audio/*.cpp))) \
 	$(patsubst %.cpp,%.o,$(sort $(wildcard $(d)common/cajun/*.cpp))) \
-	$(patsubst %.cpp,%.o,$(sort $(wildcard $(d)lua/modules/*.cpp))) \
-	$(patsubst %.c,%.o,$(sort $(wildcard $(d)lua/modules/*.c))) \
-	$(patsubst %.cpp,%.o,$(sort $(wildcard $(d)lua/*.cpp))) \
 	$(patsubst %.cpp,%.o,$(sort $(wildcard $(d)unix/*.cpp))) \
 	$(d)common/calltip_provider.o \
 	$(d)common/character_count.o \
@@ -44,7 +41,7 @@ aegisub_OBJ += $(d)common/dispatch.o
 endif
 
 aegisub_PCH := $(d)lagi_pre.h
-aegisub_CPPFLAGS := -I$(d)include -I$(TOP) $(CPPFLAGS_BOOST) $(CFLAGS_LUA) $(CFLAGS_PTHREAD)
+aegisub_CPPFLAGS := -I$(d)include -I$(TOP) $(CPPFLAGS_BOOST) $(CFLAGS_PTHREAD)
 
 $(d)common/charset.o_FLAGS := $(CFLAGS_UCHARDET)
 $(d)common/charset_conv.o_FLAGS := $(CFLAGS_ICONV)

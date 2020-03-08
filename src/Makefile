@@ -42,11 +42,6 @@ src_OBJ := \
 	$(d)audio_renderer_waveform.o \
 	$(d)audio_timing_dialogue.o \
 	$(d)audio_timing_karaoke.o \
-	$(d)auto4_base.o \
-	$(d)auto4_lua.o \
-	$(d)auto4_lua_assfile.o \
-	$(d)auto4_lua_dialog.o \
-	$(d)auto4_lua_progresssink.o \
 	$(d)avisynth_wrap.o \
 	$(d)base_grid.o \
 	$(d)charset_detect.o \
@@ -111,9 +106,7 @@ src_OBJ := \
 	$(d)video_provider_yuv4mpeg.o \
 	$(d)video_slider.o \
 	$(d)visual_feature.o \
-	$(LIBS_LUA) \
 	$(TOP)lib/libaegisub.a \
-	$(TOP)lib/libluabins.a \
 	$(TOP)lib/libresrc.a \
 
 ifeq (yes, $(BUILD_DARWIN))
@@ -191,17 +184,12 @@ endif
 $(d)MatroskaParser.o_FLAGS              := -Wno-sometimes-uninitialized
 $(d)audio_player.o_FLAGS                := $(CFLAGS_ALSA) $(CFLAGS_PORTAUDIO) $(CFLAGS_LIBPULSE) $(CFLAGS_OPENAL)
 $(d)audio_provider_factory.o_FLAGS      := $(CFLAGS_FFMS2)
-$(d)auto4_base.o_FLAGS                  := $(CFLAGS_FREETYPE)
 $(d)charset_detect.o_FLAGS              := -D_X86_
 $(d)font_file_lister_fontconfig.o_FLAGS := $(CFLAGS_FONTCONFIG)
 $(d)subtitles_provider.o_FLAGS          := $(CFLAGS_LIBASS)
 $(d)subtitles_provider_libass.o_FLAGS   := $(CFLAGS_LIBASS) -Wno-c++11-narrowing
 $(d)text_file_reader.o_FLAGS            := -D_X86_
 $(d)video_provider_manager.o_FLAGS      := $(CFLAGS_FFMS2)
-$(d)auto4_lua.o_FLAGS                   := $(CFLAGS_LUA)
-$(d)auto4_lua_assfile.o_FLAGS           := $(CFLAGS_LUA)
-$(d)auto4_lua_dialog.o_FLAGS            := $(CFLAGS_LUA)
-$(d)auto4_lua_progresssink.o_FLAGS      := $(CFLAGS_LUA)
 $(d)aegisublocale.o_FLAGS               := -DP_LOCALE=\"$(P_LOCALE)\"
 
 $(src_OBJ): $(d)libresrc/bitmap.h $(d)libresrc/default_config.h

@@ -37,8 +37,6 @@
 #include "command/command.h"
 #include "include/aegisub/hotkey.h"
 
-#include "auto4_base.h"
-#include "auto4_lua_factory.h"
 #include "compat.h"
 #include "crash_writer.h"
 #include "dialogs.h"
@@ -77,7 +75,6 @@ namespace config {
 	agi::Options *opt = nullptr;
 	agi::MRUManager *mru = nullptr;
 	agi::Path *path = nullptr;
-	Automation4::AutoloadScriptManager *global_scripts;
 }
 
 wxIMPLEMENT_APP(AegisubApp);
@@ -264,12 +261,7 @@ bool AegisubApp::OnInit() {
 		exception_message = _("Oops, Aegisub has crashed!\n\nAn attempt has been made to save a copy of your file to:\n\n%s\n\nAegisub will now close.");
 
 		// Load plugins
-		Automation4::ScriptFactory::Register(agi::make_unique<Automation4::LuaScriptFactory>());
 		libass::CacheFonts();
-
-		// Load Automation scripts
-		StartupLog("Load global Automation scripts");
-		config::global_scripts = new Automation4::AutoloadScriptManager(OPT_GET("Path/Automation/Autoload")->GetString());
 
 		// Load export filters
 		StartupLog("Register export filters");
@@ -328,8 +320,6 @@ int AegisubApp::OnExit() {
 	delete config::mru;
 	hotkey::clear();
 	cmd::clear();
-
-	delete config::global_scripts;
 
 	AssExportFilterChain::Clear();
 

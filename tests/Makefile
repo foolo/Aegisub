@@ -5,7 +5,7 @@ GTEST_FILE := ${GTEST_ROOT}/src/gtest-all
 
 run_PCH := $(d)support/tests_pre.h
 run_CPPFLAGS := -I$(TOP)libaegisub/include -I$(TOP) -I$(d)support \
-	-I$(GTEST_ROOT) -I$(GTEST_ROOT)/include $(CPPFLAGS_BOOST) $(CFLAGS_LUA)
+	-I$(GTEST_ROOT) -I$(GTEST_ROOT)/include $(CPPFLAGS_BOOST)
 run_CXXFLAGS := -Wno-unused-value -Wno-sign-compare
 run_LIBS := $(LIBS_BOOST) $(LIBS_ICU) $(LIBS_UCHARDET) $(LIBS_PTHREAD)
 run_OBJ := \

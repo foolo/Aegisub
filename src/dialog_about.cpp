@@ -92,9 +92,6 @@ void ShowAboutDialog(wxWindow *parent) {
 		"    Boost - Copyright (c) Beman Dawes, David Abrahams et al;\n"
 		"    UniversalCharDet - Copyright (c) Netscape Communications Corp.;\n"
 		"    ICU - Copyright (c) International Business Machines Corp.;\n"
-		"    Lua - Copyright (c) Lua.org, PUC-Rio;\n"
-		"    LuaJIT - Copyright (c) Mike Pall;\n"
-		"    luabins - Copyright (c) Alexander Gladysh;\n"
 #ifdef WITH_HUNSPELL
 		"    Hunspell - Copyright (c) Kevin Hendricks;\n"
 #endif

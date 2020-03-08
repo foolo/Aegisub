@@ -89,12 +89,6 @@
 	},
 
 
-	"Automation" : {
-		"Autoreload Mode" : 1,
-		"Trace Level" : 3
-	},
-
-
 	"Colour" : {
 		"Audio Display" : {
 			"Keyframe" : "rgb(255,0,255)",
@@ -283,16 +277,10 @@
 			"Backup" : "?user/autoback",
 			"Save" : "?user/autosave"
 		},
-		"Automation" : {
-			"Autoload" : "?user/automation/autoload/|?data/automation/autoload/",
-			"Base" : "?data/automation/",
-			"Include" : "?user/automation/include/|?data/automation/include/"
-		},
 		"Dictionary" : "?user/dictionaries",
 		"Fonts Collector Destination" : "?script",
 		"Last" : {
 			"Audio" : "",
-			"Automation" : "",
 			"Keyframes" : "",
 			"Subtitles" : "",
 			"Timecodes" : "",

@@ -5,15 +5,12 @@ TOP := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/
 include $(TOP)Makefile.inc
 
 subdirs := \
-	automation \
 	libaegisub \
 	packages/desktop \
 	po \
 	src \
 	tests \
 	tools \
-	vendor/luabins \
-	vendor/luajit
 
 subdirs := $(addprefix $(TOP),$(addsuffix /Makefile,$(subdirs)))
 
@@ -32,7 +29,6 @@ DISTCLEANFILES += \
 	$(TOP)config.log \
 	$(TOP)acconf.h.in \
 	$(TOP)config.status \
-	$(TOP)autom4te.cache \
 	$(TOP)aclocal.m4 \
 
 define MKDIR_INSTALL

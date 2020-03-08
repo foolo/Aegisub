@@ -21,7 +21,6 @@
 #include "include/aegisub/context.h"
 #include "include/aegisub/hotkey.h"
 
-#include "auto4_base.h"
 #include "command/command.h"
 #include "compat.h"
 #include "format.h"
@@ -400,101 +399,6 @@ wxMenu *build_menu(std::string const& name, agi::Context *c, CommandManager *cm,
 		process_menu_item(menu, c, item, cm);
 	return menu;
 }
-
-class AutomationMenu final : public wxMenu {
-	agi::Context *c;
-	CommandManager *cm;
-	agi::signal::Connection global_slot;
-	agi::signal::Connection local_slot;
-	std::vector<wxMenuItem *> all_items;
-
-	struct WorkItem {
-		std::string displayname;
-		cmd::Command *command;
-		std::vector<WorkItem> subitems;
-
-		WorkItem(std::string const &displayname, cmd::Command *command = nullptr)
-		: displayname(displayname), command(command) { }
-
-		WorkItem *FindOrMakeSubitem(std::string const &name) {
-			auto sub = std::find_if(subitems.begin(), subitems.end(), [&](WorkItem const &item) { return item.displayname == name; });
-			if (sub != subitems.end()) return &*sub;
-
-			subitems.emplace_back(name);
-			return &subitems.back();
-		}
-
-		void Sort() {
-			if (command) return;
-			for (auto &sub : subitems)
-				sub.Sort();
-			auto comp = boost::locale::comparator<std::string::value_type>();
-			std::sort(subitems.begin(), subitems.end(), [&](WorkItem const &a, WorkItem const &b){
-				return comp(a.displayname, b.displayname);
-			});
-		}
-
-		void GenerateMenu(wxMenu *parent, AutomationMenu *am) {
-			for (auto item : subitems) {
-				if (item.command) {
-					am->cm->AddCommand(item.command, parent, item.displayname);
-					am->all_items.push_back(parent->GetMenuItems().back());
-				}
-				else {
-					auto submenu = new wxMenu;
-					parent->AppendSubMenu(submenu, to_wx(item.displayname));
-					item.GenerateMenu(submenu, am);
-				}
-			}
-		}
-	};
-
-	void Regenerate() {
-		for (auto item : all_items)
-			cm->Remove(item);
-
-		wxMenuItemList &items = GetMenuItems();
-		// Remove everything but automation manager and the separator
-		for (size_t i = items.size() - 1; i >= 2; --i)
-			Delete(items[i]);
-
-		auto macros = config::global_scripts->GetMacros();
-		boost::push_back(macros, c->local_scripts->GetMacros());
-		if (macros.empty()) {
-			Append(-1, _("No Automation macros loaded"))->Enable(false);
-			return;
-		}
-
-		WorkItem top("");
-		for (auto macro : macros) {
-			const auto name = from_wx(macro->StrMenu(c));
-			WorkItem *parent = &top;
-			for (auto section : agi::Split(name, wxS('/'))) {
-				std::string sectionname(section.begin(), section.end());
-
-				if (section.end() == name.end()) {
-					parent->subitems.emplace_back(sectionname, macro);
-				}
-				else {
-					parent = parent->FindOrMakeSubitem(sectionname);
-				}
-			}
-		}
-		top.Sort();
-		top.GenerateMenu(this, this);
-	}
-public:
-	AutomationMenu(agi::Context *c, CommandManager *cm)
-	: c(c)
-	, cm(cm)
-	, global_slot(config::global_scripts->AddScriptChangeListener(&AutomationMenu::Regenerate, this))
-	, local_slot(c->local_scripts->AddScriptChangeListener(&AutomationMenu::Regenerate, this))
-	{
-		cm->AddCommand(cmd::get("am/meta"), this);
-		AppendSeparator();
-		Regenerate();
-	}
-};
 }
 
 namespace menu {
@@ -524,8 +428,6 @@ namespace menu {
 			}
 			else {
 				read_entry(item, "special", &submenu);
-				if (submenu == "automation")
-					menu->Append(new AutomationMenu(c, &menu->cm), _(to_wx(disp)));
 			}
 		}
 
