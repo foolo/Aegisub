@@ -5,11 +5,13 @@ project('Aegisub', ['c', 'cpp'],
         default_options: ['cpp_std=c++11', 'b_lto=true'],
         version: '3.2.2')
 
-if host_machine.system() == 'windows'
-    version_sh = find_program('tools/version.ps1')
-else
-    version_sh = find_program('tools/version.sh')
-endif
+cxx = meson.get_compiler('cpp')
+cc = meson.get_compiler('c')
+
+is_gccwin = (cxx.get_id() == 'gcc') and (host_machine.system() == 'windows')
+is_linux = (host_machine.system() == 'linux')
+
+version_sh = find_program('tools/version.sh')
 version_inc = include_directories('.')
 version_h = custom_target('git_version.h',
                           command: [version_sh, meson.source_root()],
@@ -55,8 +57,7 @@ elif host_machine.system() != 'windows'
     deps += dependency('fontconfig')
 endif
 
-cxx = meson.get_compiler('cpp')
-cc = meson.get_compiler('c')
+
 deps += cc.find_library('m', required: false)
 deps += cc.find_library('dl', required: false)
 iconv_dep = cc.find_library('iconv', required: false)
@@ -74,37 +75,24 @@ deps += dependency('boost', version: '>=1.50.0',
                              'system', 'thread'])
 deps += dependency('zlib', fallback: ['zlib', 'zlib_dep'])
 
-wx_dep = dependency('wxWidgets', version: '>=3.0.0',
-                    required: cxx.get_id() != 'msvc',
-                    modules: ['std', 'stc', 'gl'])
-if not wx_dep.found() # this will only be hit with msvc
-    if get_option('wx_path') != ''
-        deps_inc += include_directories(get_option('wx_path') / 'include' / 'msvc', get_option('wx_path') / 'include')
-        add_project_arguments('-DUNICODE', '-D_UNICODE', language: 'cpp')
-        add_project_arguments('-DwxMSVC_VERSION_AUTO', '-DWXUSINGDLL', language: 'cpp')
-    else
-        error('wxWidgets not found and no wx_path defined.')
-    endif
+# wxWidgets
+if (is_linux)
+    deps += dependency('wxWidgets', version: '>=3.0.0', modules: ['std', 'stc', 'gl'])
+elif (is_gccwin)
+	deps_inc += include_directories(get_option('local_path') /'wxWidgets-3.1.3/include')
+	deps_inc += include_directories(get_option('local_path') / 'wxWidgets-3.1.3/lib/vc14x_x64_dll/mswud')
+	add_project_arguments('-DUNICODE', '-D_UNICODE', language: 'cpp')
+	add_project_arguments('-DwxMSVC_VERSION=14x', '-DWXUSINGDLL', language: 'cpp')
 endif
-deps += wx_dep
 
-icu_uc_dep = dependency('icu-uc', version: '>=4.8.1.1', required: cxx.get_id() != 'msvc')
-icu_i18n_dep = dependency('icu-i18n', version: '>=4.8.1.1', required: cxx.get_id() != 'msvc')
-if not (icu_uc_dep.found() and icu_i18n_dep.found())
-    if get_option('icu_path') != ''
-        deps_inc += include_directories(get_option('icu_path') / 'include')
-    else
-        error('ICU not found and no icu_path defined.')
-    endif
+# icu
+if (is_linux)
+	deps += dependency('icu-uc', version: '>=4.8.1.1')
+	deps += dependency('icu-i18n', version: '>=4.8.1.1', required: cxx.get_id() != 'msvc')
+elif (is_gccwin)
+	deps += cxx.find_library('icuuc', dirs: get_option('local_path') / 'mingw-w64-x86_64-icu-65.1-1-any.pkg/mingw64/lib')
+	deps += cxx.find_library('icuin', dirs: get_option('local_path') / 'mingw-w64-x86_64-icu-65.1-1-any.pkg/mingw64/lib')
 endif
-if not icu_uc_dep.found()
-    icu_uc_dep = cxx.find_library('icuuc', dirs: get_option('icu_path') / 'lib64')
-endif
-deps += icu_uc_dep
-if not icu_i18n_dep.found()
-    icu_i18n_dep = cxx.find_library('icuin', dirs: get_option('icu_path') / 'lib64')
-endif
-deps += icu_i18n_dep
 
 dep_avail = []
 foreach dep: [
