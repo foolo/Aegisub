@@ -52,6 +52,7 @@ aegisub_src = files(
     'crash_writer.cpp',
     'dialog_about.cpp',
     'dialog_attachments.cpp',
+    'dialog_autosave.cpp',
     'dialog_colorpicker.cpp',
     'dialog_detached_video.cpp',
     'dialog_dummy_video.cpp',
