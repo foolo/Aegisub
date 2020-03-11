@@ -40,14 +40,6 @@ libaegisub_src = [
     'common/cajun/elements.cpp',
     'common/cajun/reader.cpp',
     'common/cajun/writer.cpp',
-
-    'lua/modules.cpp',
-    'lua/script_reader.cpp',
-    'lua/utils.cpp',
-    'lua/modules/lfs.cpp',
-    'lua/modules/re.cpp',
-    'lua/modules/unicode.cpp',
-    'lua/modules/lpeg.c',
 ]
 
 if host_machine.system() == 'darwin'
