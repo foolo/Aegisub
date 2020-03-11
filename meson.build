@@ -11,6 +11,13 @@ cc = meson.get_compiler('c')
 is_gccwin = (cxx.get_id() == 'gcc') and (host_machine.system() == 'windows')
 is_linux = (host_machine.system() == 'linux')
 
+if (is_gccwin)
+	local_path = get_option('local_path')
+	if local_path == ''
+		error('No local_path specified')
+	endif
+endif
+
 version_sh = find_program('tools/version.sh')
 version_inc = include_directories('.')
 version_h = custom_target('git_version.h',
@@ -79,8 +86,8 @@ deps += dependency('zlib', fallback: ['zlib', 'zlib_dep'])
 if (is_linux)
     deps += dependency('wxWidgets', version: '>=3.0.0', modules: ['std', 'stc', 'gl'])
 elif (is_gccwin)
-	deps_inc += include_directories(get_option('local_path') /'wxWidgets-3.1.3/include')
-	deps_inc += include_directories(get_option('local_path') / 'wxWidgets-3.1.3/lib/vc14x_x64_dll/mswud')
+	deps_inc += include_directories(local_path / 'wxWidgets-3.1.3/include')
+	deps_inc += include_directories(local_path / 'wxWidgets-3.1.3/lib/vc14x_x64_dll/mswud')
 	add_project_arguments('-DUNICODE', '-D_UNICODE', language: 'cpp')
 	add_project_arguments('-DwxMSVC_VERSION=14x', '-DWXUSINGDLL', language: 'cpp')
 endif
@@ -90,8 +97,8 @@ if (is_linux)
 	deps += dependency('icu-uc', version: '>=4.8.1.1')
 	deps += dependency('icu-i18n', version: '>=4.8.1.1', required: cxx.get_id() != 'msvc')
 elif (is_gccwin)
-	deps += cxx.find_library('icuuc', dirs: get_option('local_path') / 'mingw-w64-x86_64-icu-65.1-1-any.pkg/mingw64/lib')
-	deps += cxx.find_library('icuin', dirs: get_option('local_path') / 'mingw-w64-x86_64-icu-65.1-1-any.pkg/mingw64/lib')
+	deps += cxx.find_library('icuuc', dirs: local_path / 'mingw-w64-x86_64-icu-65.1-1-any.pkg/mingw64/lib')
+	deps += cxx.find_library('icuin', dirs: local_path / 'mingw-w64-x86_64-icu-65.1-1-any.pkg/mingw64/lib')
 endif
 
 dep_avail = []
