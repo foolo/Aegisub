@@ -199,6 +199,7 @@ deps += dep_gl
 # TODO: csri
 
 acconf = configure_file(output: 'acconf.h', configuration: conf)
+add_project_arguments('-DHAVE_CONFIG_H', language: 'cpp')
 
 subdir('libaegisub')
 subdir('packages')

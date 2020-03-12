@@ -32,6 +32,10 @@
 /// @ingroup audio_output
 ///
 
+#ifdef HAVE_CONFIG_H
+#include "acconf.h"
+#endif
+
 #include "include/aegisub/audio_player.h"
 
 #include "audio_controller.h"
