@@ -55,7 +55,7 @@
 #include <algorithm>
 #include <boost/algorithm/string/trim.hpp>
 #include <functional>
-#include <future>
+#include <mingw.future.h>
 #include <memory>
 #include <vector>
 #include <wx/bmpbuttn.h>
