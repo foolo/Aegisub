@@ -82,6 +82,7 @@ deps += iconv_dep
 if (is_linux)
 	deps += dependency('libass', version: '>=0.9.7', fallback: ['libass', 'libass_dep'])
 elif (is_gccwin)
+	deps_inc += include_directories(local_path / 'mingw-w64-x86_64-libass-0.14.0-1-any.pkg/mingw64/include')
 	deps += cc.find_library('libass', required: false, dirs: local_path / 'mingw-w64-x86_64-libass-0.14.0-1-any.pkg/mingw64/lib')
 endif
 
