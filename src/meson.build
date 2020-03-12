@@ -163,6 +163,8 @@ if host_machine.system() == 'darwin'
         'osx/retina_helper.mm',
         'osx/scintilla_ime.mm',
     ]
+elif host_machine.system() == 'windows'
+	aegisub_src += 'font_file_lister_gdi.cpp'
 else
     aegisub_src += 'font_file_lister_fontconfig.cpp'
 endif

@@ -23,10 +23,10 @@
 #include <libaegisub/io.h>
 #include <libaegisub/log.h>
 
-#include <ShlObj.h>
+#include <shlobj.h>
 #include <boost/scope_exit.hpp>
 #include <unicode/utf16.h>
-#include <Usp10.h>
+#include <usp10.h>
 
 namespace {
 uint32_t murmur3(const char *data, uint32_t len) {
