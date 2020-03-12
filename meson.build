@@ -64,6 +64,10 @@ elif host_machine.system() != 'windows'
     deps += dependency('fontconfig')
 endif
 
+if (is_gccwin)
+	deps_inc += include_directories(local_path / 'mingw-std-threads-master')
+endif
+
 
 deps += cc.find_library('m', required: false)
 deps += cc.find_library('dl', required: false)
@@ -75,8 +79,12 @@ if not iconv_dep.found() and host_machine.system() == 'windows'
 endif
 deps += iconv_dep
 
-deps += dependency('libass', version: '>=0.9.7',
-                   fallback: ['libass', 'libass_dep'])
+if (is_linux)
+	deps += dependency('libass', version: '>=0.9.7', fallback: ['libass', 'libass_dep'])
+elif (is_gccwin)
+	deps += cc.find_library('libass', required: false, dirs: local_path / 'mingw-w64-x86_64-libass-0.14.0-1-any.pkg/mingw64/lib')
+endif
+
 deps += dependency('boost', version: '>=1.50.0',
                    modules: ['chrono', 'filesystem', 'locale', 'regex',
                              'system', 'thread'])
@@ -97,6 +105,7 @@ if (is_linux)
 	deps += dependency('icu-uc', version: '>=4.8.1.1')
 	deps += dependency('icu-i18n', version: '>=4.8.1.1', required: cxx.get_id() != 'msvc')
 elif (is_gccwin)
+	deps_inc += include_directories(local_path / 'mingw-w64-x86_64-icu-65.1-1-any.pkg/mingw64/include')
 	deps += cxx.find_library('icuuc', dirs: local_path / 'mingw-w64-x86_64-icu-65.1-1-any.pkg/mingw64/lib')
 	deps += cxx.find_library('icuin', dirs: local_path / 'mingw-w64-x86_64-icu-65.1-1-any.pkg/mingw64/lib')
 endif

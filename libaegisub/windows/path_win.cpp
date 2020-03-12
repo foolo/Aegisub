@@ -25,8 +25,8 @@
 
 #include <boost/filesystem.hpp>
 
-#include <Shlobj.h>
-#include <Shellapi.h>
+#include <shlobj.h>
+#include <shellapi.h>
 
 namespace {
 agi::fs::path WinGetFolderPath(int folder) {

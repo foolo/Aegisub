@@ -25,7 +25,7 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/interprocess/detail/os_thread_functions.hpp>
 #include <ctime>
-#include <thread>
+#include <mingw.thread.h>
 
 namespace {
 using namespace agi;

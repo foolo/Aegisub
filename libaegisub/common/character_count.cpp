@@ -22,7 +22,7 @@
 #include <unicode/uchar.h>
 #include <unicode/utf8.h>
 
-#include <mutex>
+#include <mingw.mutex.h>
 #include <unicode/brkiter.h>
 
 namespace {

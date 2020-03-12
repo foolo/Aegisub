@@ -21,9 +21,9 @@
 #include <atomic>
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/strand.hpp>
-#include <condition_variable>
-#include <mutex>
-#include <thread>
+#include <mingw.condition_variable.h>
+#include <mingw.mutex.h>
+#include <mingw.thread.h>
 
 namespace {
 	boost::asio::io_service *service;
