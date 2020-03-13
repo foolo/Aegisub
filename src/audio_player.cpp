@@ -32,10 +32,6 @@
 /// @ingroup audio_output
 ///
 
-#ifdef HAVE_CONFIG_H
-#include "acconf.h"
-#endif
-
 #include "include/aegisub/audio_player.h"
 
 #include "audio_controller.h"
@@ -64,7 +60,6 @@ namespace {
 		{"ALSA", CreateAlsaPlayer, false},
 #endif
 #ifdef WITH_DIRECTSOUND
-		{"DirectSound-old", CreateDirectSoundPlayer, false},
 		{"DirectSound", CreateDirectSound2Player, false},
 #endif
 #ifdef WITH_OPENAL

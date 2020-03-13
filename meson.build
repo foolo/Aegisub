@@ -8,6 +8,7 @@ project('Aegisub', ['c', 'cpp'],
 cxx = meson.get_compiler('cpp')
 cc = meson.get_compiler('c')
 
+is_msvcwin = (cxx.get_id() == 'msvc') and (host_machine.system() == 'windows')
 is_gccwin = (cxx.get_id() == 'gcc') and (host_machine.system() == 'windows')
 is_linux = (host_machine.system() == 'linux')
 
@@ -144,7 +145,8 @@ foreach dep: [
     endif
 endforeach
 
-if host_machine.system() == 'windows' and not get_option('directsound').disabled()
+# DirectSound
+if is_msvcwin and not get_option('directsound').disabled()
     dsound_dep = cc.find_library('dsound', required: get_option('directsound'))
     winmm_dep = cc.find_library('winmm', required: get_option('directsound'))
     ole32_dep = cc.find_library('ole32', required: get_option('directsound'))
@@ -155,8 +157,17 @@ if host_machine.system() == 'windows' and not get_option('directsound').disabled
     if dsound_dep.found() and winmm_dep.found() and ole32_dep.found() and have_dsound_h
         deps += [dsound_dep, winmm_dep, ole32_dep]
         conf.set('WITH_DIRECTSOUND', '1')
+		add_project_arguments('-DWITH_DIRECTSOUND', language: 'cpp')
         dep_avail += 'DirectSound'
     endif
+endif
+
+# PortAudio
+if (is_gccwin)
+	deps_inc += include_directories(local_path / 'mingw-w64-x86_64-portaudio-190600_20161030-3-any.pkg/mingw64/include')
+	deps += cxx.find_library('libportaudio', dirs: local_path / 'mingw-w64-x86_64-portaudio-190600_20161030-3-any.pkg/mingw64/lib')
+	dep_avail += 'PortAudio'
+	add_project_arguments('-DWITH_PORTAUDIO', language: 'cpp')
 endif
 
 if host_machine.system() == 'darwin'
@@ -205,7 +216,6 @@ deps += dep_gl
 # TODO: csri
 
 acconf = configure_file(output: 'acconf.h', configuration: conf)
-add_project_arguments('-DHAVE_CONFIG_H', language: 'cpp')
 
 subdir('libaegisub')
 subdir('packages')
