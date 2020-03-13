@@ -73,13 +73,12 @@ endif
 
 deps += cc.find_library('m', required: false)
 deps += cc.find_library('dl', required: false)
-iconv_dep = cc.find_library('iconv', required: false)
-if not iconv_dep.found() and host_machine.system() == 'windows'
-    iconv_sp = subproject('iconv') # this really needs to be replaced with a proper port
-    deps_inc += iconv_sp.get_variable('iconv_incs')
-    iconv_dep = iconv_sp.get_variable('libiconv_dep')
+
+# iconv
+if (is_gccwin)
+	deps += cc.find_library('iconv', dirs: local_path / 'mingw-w64-x86_64-libiconv-1.16-1-any.pkg/mingw64/lib')
+	deps_inc += include_directories(local_path / 'mingw-w64-x86_64-libiconv-1.16-1-any.pkg/mingw64/include')
 endif
-deps += iconv_dep
 
 if (is_linux)
 	deps += dependency('libass', version: '>=0.9.7', fallback: ['libass', 'libass_dep'])
