@@ -2,7 +2,7 @@ project('Aegisub', ['c', 'cpp'],
         license: 'BSD-3-Clause',
         meson_version: '>=0.50.0',
         # c_std=c11 should be here but it breaks Linux builds for some reason, needs investigation
-        default_options: ['cpp_std=c++11', 'b_lto=true'],
+        default_options: ['cpp_std=c++11', 'b_lto=false'],
         version: '3.2.2')
 
 cxx = meson.get_compiler('cpp')
@@ -95,10 +95,16 @@ deps += dependency('zlib', fallback: ['zlib', 'zlib_dep'])
 if (is_linux)
     deps += dependency('wxWidgets', version: '>=3.0.0', modules: ['std', 'stc', 'gl'])
 elif (is_gccwin)
-	deps_inc += include_directories(local_path / 'wxWidgets-3.1.3/include')
-	deps_inc += include_directories(local_path / 'wxWidgets-3.1.3/lib/vc14x_x64_dll/mswud')
+	deps_inc += include_directories(local_path / 'mingw-w64-x86_64-wxWidgets-3.0.4-3-any.pkg/mingw64/include/wx-3.0')
+	deps_inc += include_directories(local_path / 'mingw-w64-x86_64-wxWidgets-3.0.4-3-any.pkg/mingw64/lib/wx/include/msw-unicode-static-3.0')
 	add_project_arguments('-DUNICODE', '-D_UNICODE', language: 'cpp')
 	add_project_arguments('-DwxMSVC_VERSION=14x', '-DWXUSINGDLL', language: 'cpp')
+	deps += cxx.find_library('libwx_baseu-3.0', dirs: local_path / 'mingw-w64-x86_64-wxWidgets-3.0.4-3-any.pkg/mingw64/lib')
+	deps += cxx.find_library('libwx_mswu_core-3.0', dirs: local_path / 'mingw-w64-x86_64-wxWidgets-3.0.4-3-any.pkg/mingw64/lib')
+	deps += cxx.find_library('libwx_mswu_adv-3.0', dirs: local_path / 'mingw-w64-x86_64-wxWidgets-3.0.4-3-any.pkg/mingw64/lib')
+	deps += cxx.find_library('libwx_mswu_stc-3.0', dirs: local_path / 'mingw-w64-x86_64-wxWidgets-3.0.4-3-any.pkg/mingw64/lib')
+	deps += cxx.find_library('libwx_baseu_xml-3.0', dirs: local_path / 'mingw-w64-x86_64-wxWidgets-3.0.4-3-any.pkg/mingw64/lib')
+	deps += cxx.find_library('libwx_mswu_gl-3.0', dirs: local_path / 'mingw-w64-x86_64-wxWidgets-3.0.4-3-any.pkg/mingw64/lib')
 endif
 
 # icu
