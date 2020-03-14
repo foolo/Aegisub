@@ -34,3 +34,7 @@ subprojects/zlib*
 
 build-*/
 builddir/
+
+.cproject
+.project
+.settings/
