@@ -16,7 +16,11 @@
 
 #include "libaegisub/charset_conv_win.h"
 
+#ifdef __MINGW32__
+#include <boost/thread.hpp>
+#else
 #include <thread>
+#endif
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -49,6 +53,17 @@ struct THREADNAME_INFO {
 	DWORD dwFlags;    ///< reserved for future use, most be zero
 };
 
+
+#ifdef __MINGW32__
+
+void SetThreadName(const char *) { }
+
+void sleep_for(int ms) {
+	boost::this_thread::sleep_for(boost::chrono::milliseconds(ms));
+}
+
+#else
+
 void SetThreadName(LPCSTR szThreadName) {
 	THREADNAME_INFO info;
 	info.dwType = 0x1000;
@@ -65,5 +80,7 @@ void sleep_for(int ms) {
 	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
-	} // namespace io
+#endif
+
+	} // namespace util
 } // namespace agi

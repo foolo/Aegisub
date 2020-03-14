@@ -59,7 +59,7 @@ ArchitecturesAllowed=x64
 #include "fragment_translations.iss"
 #include "fragment_spelling.iss"
 #include "fragment_assdraw.iss"
-
+#include "fragment_runtimes.iss"
 
 [Code]
 #include "fragment_shell_code.iss"

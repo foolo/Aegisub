@@ -60,7 +60,6 @@ namespace {
 		{"ALSA", CreateAlsaPlayer, false},
 #endif
 #ifdef WITH_DIRECTSOUND
-		{"DirectSound-old", CreateDirectSoundPlayer, false},
 		{"DirectSound", CreateDirectSound2Player, false},
 #endif
 #ifdef WITH_OPENAL
