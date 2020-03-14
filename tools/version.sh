@@ -1,3 +1,4 @@
+#!/bin/bash
 srcdir="$1"
 
 # If no git repo try to read from the existing git_version.h, for building from tarballs

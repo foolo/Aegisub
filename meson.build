@@ -12,13 +12,6 @@ is_msvcwin = (cxx.get_id() == 'msvc') and (host_machine.system() == 'windows')
 is_gccwin = (cxx.get_id() == 'gcc') and (host_machine.system() == 'windows')
 is_linux = (host_machine.system() == 'linux')
 
-if (is_gccwin)
-	local_path = get_option('local_path')
-	if local_path == ''
-		error('No local_path specified')
-	endif
-endif
-
 version_sh = find_program('tools/version.sh')
 version_inc = include_directories('.')
 version_h = custom_target('git_version.h',
@@ -44,6 +37,7 @@ add_project_arguments('-DP_DATA="@0@"'.format(dataroot), language: 'cpp')
 
 if host_machine.system() == 'windows'
     add_project_arguments('-DNOMINMAX', '-D_WIN32_WINNT=0x0602', language: 'cpp')
+	add_project_arguments('-DUNICODE', language: 'cpp')
 endif
 
 conf = configuration_data()
@@ -73,17 +67,10 @@ endif
 deps += cc.find_library('m', required: false)
 deps += cc.find_library('dl', required: false)
 
-# iconv
-if (is_gccwin)
-	deps += cc.find_library('iconv', dirs: local_path / 'mingw-w64-x86_64-libiconv-1.16-1-any.pkg/mingw64/lib')
-	deps_inc += include_directories(local_path / 'mingw-w64-x86_64-libiconv-1.16-1-any.pkg/mingw64/include')
-endif
+deps += dependency('libass', version: '>=0.9.7', fallback: ['libass', 'libass_dep'])
 
-if (is_linux)
-	deps += dependency('libass', version: '>=0.9.7', fallback: ['libass', 'libass_dep'])
-elif (is_gccwin)
-	deps_inc += include_directories(local_path / 'mingw-w64-x86_64-libass-0.14.0-1-any.pkg/mingw64/include')
-	deps += cc.find_library('libass', required: false, dirs: local_path / 'mingw-w64-x86_64-libass-0.14.0-1-any.pkg/mingw64/lib')
+if (is_gccwin)
+	deps += cc.find_library('iconv')
 endif
 
 deps += dependency('boost', version: '>=1.50.0',
@@ -92,30 +79,11 @@ deps += dependency('boost', version: '>=1.50.0',
 deps += dependency('zlib', fallback: ['zlib', 'zlib_dep'])
 
 # wxWidgets
-if (is_linux)
-    deps += dependency('wxWidgets', version: '>=3.0.0', modules: ['std', 'stc', 'gl'])
-elif (is_gccwin)
-	deps_inc += include_directories(local_path / 'mingw-w64-x86_64-wxWidgets-3.0.4-3-any.pkg/mingw64/include/wx-3.0')
-	deps_inc += include_directories(local_path / 'mingw-w64-x86_64-wxWidgets-3.0.4-3-any.pkg/mingw64/lib/wx/include/msw-unicode-static-3.0')
-	add_project_arguments('-DUNICODE', '-D_UNICODE', language: 'cpp')
-	add_project_arguments('-DwxMSVC_VERSION=14x', '-DWXUSINGDLL', language: 'cpp')
-	deps += cxx.find_library('libwx_baseu-3.0', dirs: local_path / 'mingw-w64-x86_64-wxWidgets-3.0.4-3-any.pkg/mingw64/lib')
-	deps += cxx.find_library('libwx_mswu_core-3.0', dirs: local_path / 'mingw-w64-x86_64-wxWidgets-3.0.4-3-any.pkg/mingw64/lib')
-	deps += cxx.find_library('libwx_mswu_adv-3.0', dirs: local_path / 'mingw-w64-x86_64-wxWidgets-3.0.4-3-any.pkg/mingw64/lib')
-	deps += cxx.find_library('libwx_mswu_stc-3.0', dirs: local_path / 'mingw-w64-x86_64-wxWidgets-3.0.4-3-any.pkg/mingw64/lib')
-	deps += cxx.find_library('libwx_baseu_xml-3.0', dirs: local_path / 'mingw-w64-x86_64-wxWidgets-3.0.4-3-any.pkg/mingw64/lib')
-	deps += cxx.find_library('libwx_mswu_gl-3.0', dirs: local_path / 'mingw-w64-x86_64-wxWidgets-3.0.4-3-any.pkg/mingw64/lib')
-endif
+deps += dependency('wxWidgets', version: '>=3.0.0', modules: ['std', 'stc', 'gl'])
 
 # icu
-if (is_linux)
-	deps += dependency('icu-uc', version: '>=4.8.1.1')
-	deps += dependency('icu-i18n', version: '>=4.8.1.1', required: cxx.get_id() != 'msvc')
-elif (is_gccwin)
-	deps_inc += include_directories(local_path / 'mingw-w64-x86_64-icu-65.1-1-any.pkg/mingw64/include')
-	deps += cxx.find_library('icuuc', dirs: local_path / 'mingw-w64-x86_64-icu-65.1-1-any.pkg/mingw64/lib')
-	deps += cxx.find_library('icuin', dirs: local_path / 'mingw-w64-x86_64-icu-65.1-1-any.pkg/mingw64/lib')
-endif
+deps += dependency('icu-uc', version: '>=4.8.1.1')
+deps += dependency('icu-i18n', version: '>=4.8.1.1', required: cxx.get_id() != 'msvc')
 
 dep_avail = []
 foreach dep: [
@@ -163,8 +131,7 @@ endif
 
 # PortAudio
 if (is_gccwin)
-	deps_inc += include_directories(local_path / 'mingw-w64-x86_64-portaudio-190600_20161030-3-any.pkg/mingw64/include')
-	deps += cxx.find_library('libportaudio', dirs: local_path / 'mingw-w64-x86_64-portaudio-190600_20161030-3-any.pkg/mingw64/lib')
+	deps += dependency('portaudio-2.0')
 	dep_avail += 'PortAudio'
 	add_project_arguments('-DWITH_PORTAUDIO', language: 'cpp')
 endif

@@ -33,3 +33,4 @@ subprojects/packagecache
 subprojects/zlib*
 
 build-*/
+builddir/
