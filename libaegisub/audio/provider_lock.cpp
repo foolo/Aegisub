@@ -18,7 +18,7 @@
 
 #include <libaegisub/make_unique.h>
 
-#include <mingw.mutex.h>
+#include <mutex>
 
 namespace {
 class LockAudioProvider final : public agi::AudioProviderWrapper {

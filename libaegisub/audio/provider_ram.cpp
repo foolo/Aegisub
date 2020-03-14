@@ -20,7 +20,7 @@
 
 #include <array>
 #include <boost/container/stable_vector.hpp>
-#include <mingw.thread.h>
+#include <thread>
 
 namespace {
 using namespace agi;

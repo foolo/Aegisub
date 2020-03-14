@@ -66,7 +66,6 @@ elif host_machine.system() != 'windows'
 endif
 
 if (is_gccwin)
-	deps_inc += include_directories(local_path / 'mingw-std-threads-master')
 	deps += cxx.find_library('libws2_32')
 endif
 
