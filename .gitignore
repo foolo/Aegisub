@@ -95,3 +95,7 @@ vendor/fribidi
 
 .nuget
 .vs
+
+.cproject
+.project
+.settings/
