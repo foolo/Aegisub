@@ -176,9 +176,11 @@ void VideoController::Stop() {
 		playback.Stop();
 		context->audioController->Stop();
 		AssDialogue *dlg = context->subsGrid->GetTrackingDialogue();
-		bypass_line_changed_event = true;
-		context->selectionController->SetSelectionAndActive({dlg}, dlg);
-		bypass_line_changed_event = false;
+		if (dlg) {
+			bypass_line_changed_event = true;
+			context->selectionController->SetSelectionAndActive({dlg}, dlg);
+			bypass_line_changed_event = false;
+		}
 	}
 }
 
