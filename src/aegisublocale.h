@@ -27,16 +27,7 @@
 //
 // Aegisub Project http://www.aegisub.org/
 
-#include <string>
-
-class wxTranslations;
-
 class AegisubLocale {
-	std::string active_language;
-	wxTranslations *GetTranslations();
-
 public:
-	void Init(std::string const& language);
-	bool HasLanguage(std::string const& language);
-	std::string PickLanguage();
+	void Init();
 };

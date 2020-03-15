@@ -174,5 +174,4 @@ acconf = configure_file(output: 'acconf.h', configuration: conf)
 
 subdir('libaegisub')
 subdir('packages')
-subdir('po')
 subdir('src')

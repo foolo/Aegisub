@@ -239,13 +239,8 @@ bool AegisubApp::OnInit() {
 
 		StartupLog("Initialize final locale");
 
-		// Set locale
-		auto lang = OPT_GET("App/Language")->GetString();
-		if (lang.empty() || (lang != "en_US" && !locale.HasLanguage(lang))) {
-			lang = locale.PickLanguage();
-			OPT_SET("App/Language")->SetString(lang);
-		}
-		locale.Init(lang);
+		// Init locale
+		locale.Init();
 
 #ifdef __APPLE__
 		// When run from an app bundle, LC_CTYPE defaults to "C", which breaks on

@@ -186,7 +186,6 @@
         { "command" : "audio/open/noise" }
     ],
     "main/view" : [
-        { "command" : "app/language" },
         { "command" : "app/options", "special" : "options" },
         {},
         { "command" : "app/display/subs" },

@@ -150,31 +150,6 @@ struct app_exit final : public Command {
 	}
 };
 
-struct app_language final : public Command {
-	CMD_NAME("app/language")
-	CMD_ICON(languages_menu)
-	STR_MENU("&Language...")
-	STR_DISP("Language")
-	STR_HELP("Select Aegisub interface language")
-
-	void operator()(agi::Context *c) override {
-		// Get language
-		auto new_language = wxGetApp().locale.PickLanguage();
-		if (new_language.empty()) return;
-
-		OPT_SET("App/Language")->SetString(new_language);
-
-		// Ask to restart program
-		int result = wxMessageBox("Aegisub needs to be restarted so that the new language can be applied. Restart now?", "Restart Aegisub?", wxYES_NO | wxICON_QUESTION |  wxCENTER);
-		if (result == wxYES) {
-			// Restart Aegisub
-			if (c->frame->Close()) {
-				RestartAegisub();
-			}
-		}
-	}
-};
-
 struct app_log final : public Command {
 	CMD_NAME("app/log")
 	CMD_ICON(about_menu)
@@ -299,7 +274,6 @@ namespace cmd {
 		reg(agi::make_unique<app_display_subs>());
 		reg(agi::make_unique<app_display_video_subs>());
 		reg(agi::make_unique<app_exit>());
-		reg(agi::make_unique<app_language>());
 		reg(agi::make_unique<app_log>());
 		reg(agi::make_unique<app_new_window>());
 		reg(agi::make_unique<app_options>());
