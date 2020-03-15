@@ -167,25 +167,6 @@ bool AegisubApp::OnInit() {
 	agi::log::log->Subscribe(agi::make_unique<agi::log::EmitSTDOUT>());
 #endif
 
-	// Set config file
-	StartupLog("Load local configuration");
-#ifdef __WXMSW__
-	// Try loading configuration from the install dir if one exists there
-	try {
-		auto conf_local(config::path->Decode("?data/config.json"));
-		std::unique_ptr<std::istream> localConfig(agi::io::Open(conf_local));
-		config::opt = new agi::Options(conf_local, GET_DEFAULT_CONFIG(default_config));
-
-		// Local config, make ?user mean ?data so all user settings are placed in install dir
-		config::path->SetToken("?user", config::path->Decode("?data"));
-		config::path->SetToken("?local", config::path->Decode("?data"));
-		crash_writer::Initialize(config::path->Decode("?user"));
-	} catch (agi::fs::FileSystemError const&) {
-		// File doesn't exist or we can't read it
-		// Might be worth displaying an error in the second case
-	}
-#endif
-
 	StartupLog("Create log writer");
 	auto path_log = config::path->Decode("?user/log/");
 	agi::fs::CreateDirectory(path_log);
