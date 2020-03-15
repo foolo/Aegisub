@@ -237,9 +237,6 @@ bool AegisubApp::OnInit() {
 		wxHandleFatalExceptions(true);
 #endif
 
-		StartupLog("Store options back");
-		OPT_SET("Version/Last Version")->SetInt(GetSVNRevision());
-
 		StartupLog("Initialize final locale");
 
 		// Set locale

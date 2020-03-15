@@ -48,7 +48,7 @@ void ShowAboutDialog(wxWindow *parent) {
 		translatorCredit.clear();
 
 	// Generate about string
-	wxString aboutString = wxString("Aegisub ") + GetAegisubShortVersionString() + ".\n"
+	wxString aboutString = wxString("Aegisub ") + GetAegisubLongVersionString() + ".\n"
 		"Copyright (c) 2005-2019 Rodrigo Braz Monteiro, Niels Martin Hansen, Thomas Goyne et al.\n\n"
 		"Programmers:\n"
 		"    Alysson Souza e Silva\n"
@@ -119,9 +119,6 @@ void ShowAboutDialog(wxWindow *parent) {
 		"    FFTW - Copyright (c) Matteo Frigo, Massachusetts Institute of Technology;\n"
 #endif
 		+ _("\nSee the help file for full credits.\n")
-#ifdef BUILD_CREDIT
-		+ fmt_tl("Built by %s on %s.", GetAegisubBuildCredit(), GetAegisubBuildTime())
-#endif
 		;
 
 	// Replace copyright symbol

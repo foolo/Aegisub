@@ -12,14 +12,6 @@ is_msvcwin = (cxx.get_id() == 'msvc') and (host_machine.system() == 'windows')
 is_gccwin = (cxx.get_id() == 'gcc') and (host_machine.system() == 'windows')
 is_linux = (host_machine.system() == 'linux')
 
-version_sh = find_program('tools/version.sh')
-version_inc = include_directories('.')
-version_h = custom_target('git_version.h',
-                          command: [version_sh, meson.source_root()],
-                          build_by_default: true,
-                          build_always_stale: true, # has internal check whether target file will be refreshed
-                          output: ['git_version.h', 'git_version.xml'])
-
 if host_machine.system() == 'darwin' and get_option('build_osx_bundle')
     prefix = meson.current_build_dir() / 'Aegisub.app' / 'Contents'
     bindir = prefix / 'MacOS'
@@ -42,9 +34,6 @@ endif
 
 conf = configuration_data()
 conf.set_quoted('P_DATA', dataroot)
-if get_option('credit') != ''
-    conf.set_quoted('BUILD_CREDIT', get_option('credit'))
-endif
 conf.set('WITH_UPDATE_CHECKER', get_option('enable_update_checker'))
 
 deps = []
