@@ -1,14 +1,6 @@
 conf_pkg = configuration_data()
 
-if host_machine.system() == 'windows'
-elif host_machine.system() == 'darwin'
-    # temporary hack until version.sh generates this properly
-    run_command('cp', meson.source_root() / 'tools' / 'osx-bundle.sed', meson.build_root())
-    fontconfig_conf = run_command('pkg-config', '--variable=confdir', 'fontconfig').stdout().strip()
-    run_target('osx-bundle',
-               command: ['../tools/osx-bundle.sh', meson.source_root(), meson.build_root(), 'wx-config', fontconfig_conf, '',
-                         get_option('build_osx_bundle') ? 'TRUE' : 'FALSE'])
-else
+if host_machine.system() == 'linux'
     conf_pkg.set('AEGISUB_COMMAND', 'aegisub')
 
     desktop_template = configure_file(input: 'desktop/aegisub.desktop.template.in',
