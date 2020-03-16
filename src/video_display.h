@@ -107,7 +107,6 @@ class VideoDisplay final : public wxGLCanvas {
 	std::shared_ptr<VideoFrame> pending_frame;
 
 	int scale_factor;
-	agi::signal::Connection scale_factor_connection;
 
 	/// @brief Draw an overscan mask
 	/// @param horizontal_percent The percent of the video reserved horizontally

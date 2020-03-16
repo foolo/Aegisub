@@ -156,13 +156,7 @@ aegisub_src = files(
     'visual_tool_vector_clip.cpp',
 )
 
-if host_machine.system() == 'darwin'
-    aegisub_src += [
-        'font_file_lister_coretext.mm',
-        'osx/osx_utils.mm',
-        'osx/scintilla_ime.mm',
-    ]
-elif host_machine.system() == 'windows'
+if host_machine.system() == 'windows'
 	aegisub_src += 'font_file_lister_gdi.cpp'
 else
     aegisub_src += 'font_file_lister_fontconfig.cpp'

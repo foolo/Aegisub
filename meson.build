@@ -12,17 +12,10 @@ is_msvcwin = (cxx.get_id() == 'msvc') and (host_machine.system() == 'windows')
 is_gccwin = (cxx.get_id() == 'gcc') and (host_machine.system() == 'windows')
 is_linux = (host_machine.system() == 'linux')
 
-if host_machine.system() == 'darwin' and get_option('build_osx_bundle')
-    prefix = meson.current_build_dir() / 'Aegisub.app' / 'Contents'
-    bindir = prefix / 'MacOS'
-    datadir = prefix / 'SharedSupport'
-    localedir = prefix / 'Resources'
-else
-    prefix = get_option('prefix')
-    bindir = prefix / get_option('bindir')
-    datadir = prefix / get_option('datadir')
-    localedir = prefix / get_option('localedir')
-endif
+prefix = get_option('prefix')
+bindir = prefix / get_option('bindir')
+datadir = prefix / get_option('datadir')
+localedir = prefix / get_option('localedir')
 docdir = prefix / 'doc'
 dataroot = datadir / 'aegisub'
 add_project_arguments('-DP_DATA="@0@"'.format(dataroot), language: 'cpp')
@@ -39,12 +32,7 @@ conf.set('WITH_UPDATE_CHECKER', get_option('enable_update_checker'))
 deps = []
 deps_inc = []
 
-if host_machine.system() == 'darwin'
-    add_languages('objc', 'objcpp')
-    add_project_arguments('-DGL_SILENCE_DEPRECATION', language: 'cpp')
-    # meson does not currently support objcpp_std
-    add_project_arguments('-std=c++11', language: 'objcpp')
-elif host_machine.system() != 'windows'
+if host_machine.system() != 'windows'
     deps += dependency('fontconfig')
 endif
 
@@ -125,10 +113,6 @@ if (is_gccwin)
 	add_project_arguments('-DWITH_PORTAUDIO', language: 'cpp')
 endif
 
-if host_machine.system() == 'darwin'
-    frameworks_dep = dependency('appleframeworks', modules : ['CoreText', 'CoreFoundation'])
-    deps += frameworks_dep
-endif
 
 # TODO: OSS
 
@@ -157,9 +141,6 @@ if not dep_gl.found()
     if not cc.has_header('GL/gl.h')
         dep_gl = dependency('', required: false)
     endif
-endif
-if host_machine.system() == 'darwin'
-    conf.set('HAVE_OPENGL_GL_H', 1)
 endif
 
 if not dep_gl.found()
