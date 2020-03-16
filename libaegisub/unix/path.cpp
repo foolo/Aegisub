@@ -37,48 +37,16 @@ std::string home_dir() {
 
 	throw agi::EnvironmentError("Could not get home directory. Make sure HOME is set.");
 }
-
-#ifdef APPIMAGE_BUILD
-std::string exe_dir() {
-	char *exe, *dir;
-	std::string data = "";
-
-#ifdef __FreeBSD__
-	exe = realpath("/proc/self/file", NULL);
-#else
-	exe = realpath("/proc/self/exe", NULL);
-#endif
-
-	if (!exe) return "";
-
-	if ((dir = dirname(exe)) && strlen(dir) > 0) {
-		data = dir;
-	}
-
-	free(exe);
-
-	return data;
-}
-#endif  /* APPIMAGE_BUILD */
-}
+} // namespace
 
 namespace agi {
 void Path::FillPlatformSpecificPaths() {
 	agi::fs::path home = home_dir();
 	SetToken("?user", home/".aegisub");
 	SetToken("?local", home/".aegisub");
-
-#ifdef APPIMAGE_BUILD
-	agi::fs::path data = exe_dir();
-	if (data == "") data = home/".aegisub";
-	SetToken("?data", data);
-	SetToken("?dictionary", Decode("?data/dictionaries"));
-#else
 	SetToken("?data", P_DATA);
 	SetToken("?dictionary", "/usr/share/hunspell");
-#endif
-
 	SetToken("?temp", boost::filesystem::temp_directory_path());
 }
 
-}
+} // namespace agi
