@@ -29,7 +29,6 @@ aegisub_src = files(
     'audio_renderer_waveform.cpp',
     'audio_timing_dialogue.cpp',
     'audio_timing_karaoke.cpp',
-    'avisynth_wrap.cpp',
     'base_grid.cpp',
     'charset_detect.cpp',
     'colorspace.cpp',

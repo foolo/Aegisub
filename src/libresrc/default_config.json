@@ -317,10 +317,6 @@
 				"Decode Error Handling" : "ignore"
 			}
 		},
-		"Avisynth" : {
-			"Allow Ancient" : false,
-			"Memory Max" : 64
-		},
 		"FFmpegSource" : {
 			"Cache" : {
 				"Files" : 20,

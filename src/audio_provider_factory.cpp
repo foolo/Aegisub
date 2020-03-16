@@ -29,7 +29,6 @@
 
 using namespace agi;
 
-std::unique_ptr<AudioProvider> CreateAvisynthAudioProvider(fs::path const& filename, BackgroundRunner *);
 std::unique_ptr<AudioProvider> CreateFFmpegSourceAudioProvider(fs::path const& filename, BackgroundRunner *);
 
 namespace {
@@ -43,9 +42,6 @@ const factory providers[] = {
 	{"Dummy", CreateDummyAudioProvider, true},
 	{"PCM", CreatePCMAudioProvider, true},
 	{"FFmpegSource", CreateFFmpegSourceAudioProvider, false},
-#ifdef WITH_AVISYNTH
-	{"Avisynth", CreateAvisynthAudioProvider, false},
-#endif
 };
 }
 

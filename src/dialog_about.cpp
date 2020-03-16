@@ -100,9 +100,6 @@ void ShowAboutDialog(wxWindow *parent) {
 #endif
 		"    FFmpeg - Copyright (c) Fabrice Bellard;\n"
 		"    FFMS2 - Copyright (c) Fredrik Mellbin;\n"
-#ifdef WITH_AVISYNTH
-		"    Avisynth 2.5 - Copyright (c) Ben Rudiak-Gould et al;\n"
-#endif
 		"    libass - Copyright (c) Evgeniy Stepanov, Grigori Goronzy;\n"
 		"    Matroska Parser - Copyright (c) Mike Matsnev;\n"
 		"    Freetype - Copyright (c) David Turner, Robert Wilhelm, Werner Lemberg;\n"

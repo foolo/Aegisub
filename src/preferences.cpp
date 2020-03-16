@@ -363,14 +363,6 @@ void Advanced_Audio(wxTreebook *book, Preferences *parent) {
 
 	p->OptionAdd(spectrum, _("Cache memory max (MB)"), "Audio/Renderer/Spectrum/Memory Max", 2, 1024);
 
-#ifdef WITH_AVISYNTH
-	auto avisynth = p->PageSizer("Avisynth");
-	const wxString adm_arr[3] = { "ConvertToMono", "GetLeftChannel", "GetRightChannel" };
-	wxArrayString adm_choice(3, adm_arr);
-	p->OptionChoice(avisynth, _("Avisynth down-mixer"), adm_choice, "Audio/Downmixer");
-	p->OptionAdd(avisynth, _("Force sample rate"), "Provider/Audio/AVS/Sample Rate");
-#endif
-
 	auto ffms = p->PageSizer("FFmpegSource");
 
 	const wxString error_modes[] = { _("Ignore"), _("Clear"), _("Stop"), _("Abort") };
@@ -409,13 +401,6 @@ void Advanced_Video(wxTreebook *book, Preferences *parent) {
 
 	wxArrayString sp_choice = to_wx(SubtitlesProviderFactory::GetClasses());
 	p->OptionChoice(expert, _("Subtitles provider"), sp_choice, "Subtitle/Provider");
-
-#ifdef WITH_AVISYNTH
-	auto avisynth = p->PageSizer("Avisynth");
-	p->OptionAdd(avisynth, _("Allow pre-2.56a Avisynth"), "Provider/Avisynth/Allow Ancient");
-	p->CellSkip(avisynth);
-	p->OptionAdd(avisynth, _("Avisynth memory limit"), "Provider/Avisynth/Memory Max");
-#endif
 
 	auto ffms = p->PageSizer("FFmpegSource");
 
