@@ -42,9 +42,7 @@ struct factory {
 const factory providers[] = {
 	{"Dummy", CreateDummyAudioProvider, true},
 	{"PCM", CreatePCMAudioProvider, true},
-#ifdef WITH_FFMS2
 	{"FFmpegSource", CreateFFmpegSourceAudioProvider, false},
-#endif
 #ifdef WITH_AVISYNTH
 	{"Avisynth", CreateAvisynthAudioProvider, false},
 #endif

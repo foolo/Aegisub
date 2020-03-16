@@ -42,9 +42,7 @@ namespace {
 	const factory providers[] = {
 		{"Dummy", CreateDummyVideoProvider, true},
 		{"YUV4MPEG", CreateYUV4MPEGVideoProvider, true},
-#ifdef WITH_FFMS2
 		{"FFmpegSource", CreateFFmpegSourceVideoProvider, false},
-#endif
 #ifdef WITH_AVISYNTH
 		{"Avisynth", CreateAvisynthVideoProvider, false},
 #endif

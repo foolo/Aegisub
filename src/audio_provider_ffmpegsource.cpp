@@ -32,7 +32,6 @@
 /// @ingroup audio_input ffms
 ///
 
-#ifdef WITH_FFMS2
 #include <libaegisub/audio/provider.h>
 
 #include "ffmpegsource_common.h"
@@ -189,5 +188,3 @@ void FFmpegSourceAudioProvider::LoadAudio(agi::fs::path const& filename) {
 std::unique_ptr<agi::AudioProvider> CreateFFmpegSourceAudioProvider(agi::fs::path const& file, agi::BackgroundRunner *br) {
 	return agi::make_unique<FFmpegSourceAudioProvider>(file, br);
 }
-
-#endif /* WITH_FFMS2 */

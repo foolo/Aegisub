@@ -32,7 +32,6 @@
 /// @ingroup video_input audio_input ffms
 ///
 
-#ifdef WITH_FFMS2
 #include "ffmpegsource_common.h"
 
 #include "compat.h"
@@ -230,5 +229,3 @@ void FFmpegSourceProvider::CleanCache() {
 		OPT_GET("Provider/FFmpegSource/Cache/Size")->GetInt(),
 		OPT_GET("Provider/FFmpegSource/Cache/Files")->GetInt());
 }
-
-#endif // WITH_FFMS2

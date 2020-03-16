@@ -5,8 +5,6 @@ option('portaudio', type: 'feature', description: 'PortAudio audio output')
 option('directsound', type: 'feature', description: 'DirectSound audio output')
 option('default_audio_output', type: 'combo', choices: ['auto', 'ALSA', 'OpenAL', 'PulseAudio', 'PortAudio', 'DirectSound'], description: 'Default audio output')
 
-option('ffms2', type: 'feature', description: 'FFMS2 video source')
-
 option('fftw3', type: 'feature', description: 'FFTW3 support')
 option('hunspell', type: 'feature', description: 'Hunspell spell checker')
 option('uchardet', type: 'feature', description: 'uchardet character encoding detection')

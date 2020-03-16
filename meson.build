@@ -69,8 +69,6 @@ foreach dep: [
     ['alsa', '', 'ALSA'],
     ['portaudio-2.0', '', 'PortAudio'],
     ['openal', '>=0.0.8', 'OpenAL'],
-    # video
-    ['ffms2', '', 'FFMS2'], # needs a proper port
     # other
     ['fftw3', '', 'FFTW3'],
     ['hunspell', '', 'Hunspell'], # needs a proper port
@@ -88,6 +86,8 @@ foreach dep: [
         error('@0@ enabled but not found'.format(dep[2]))
     endif
 endforeach
+
+deps += dependency('ffms2')
 
 # DirectSound
 if is_msvcwin and not get_option('directsound').disabled()

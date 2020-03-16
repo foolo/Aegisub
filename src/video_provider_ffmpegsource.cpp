@@ -32,7 +32,6 @@
 /// @ingroup video_input ffms
 ///
 
-#ifdef WITH_FFMS2
 #include "ffmpegsource_common.h"
 #include "include/aegisub/video_provider.h"
 
@@ -380,5 +379,3 @@ void FFmpegSourceVideoProvider::GetFrame(int n, VideoFrame &out) {
 std::unique_ptr<VideoProvider> CreateFFmpegSourceVideoProvider(agi::fs::path const& path, std::string const& colormatrix, agi::BackgroundRunner *br) {
 	return agi::make_unique<FFmpegSourceVideoProvider>(path, colormatrix, br);
 }
-
-#endif /* WITH_FFMS2 */

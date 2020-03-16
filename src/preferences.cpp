@@ -37,9 +37,7 @@
 #include "audio_player_portaudio.h"
 #endif
 
-#ifdef WITH_FFMS2
 #include <ffms.h>
-#endif
 
 #include <libaegisub/hotkey.h>
 
@@ -373,7 +371,6 @@ void Advanced_Audio(wxTreebook *book, Preferences *parent) {
 	p->OptionAdd(avisynth, _("Force sample rate"), "Provider/Audio/AVS/Sample Rate");
 #endif
 
-#ifdef WITH_FFMS2
 	auto ffms = p->PageSizer("FFmpegSource");
 
 	const wxString error_modes[] = { _("Ignore"), _("Clear"), _("Stop"), _("Abort") };
@@ -381,7 +378,6 @@ void Advanced_Audio(wxTreebook *book, Preferences *parent) {
 	p->OptionChoice(ffms, _("Audio indexing error handling mode"), error_modes_choice, "Provider/Audio/FFmpegSource/Decode Error Handling");
 
 	p->OptionAdd(ffms, _("Always index all audio tracks"), "Provider/FFmpegSource/Index All Tracks");
-#endif
 
 #ifdef WITH_PORTAUDIO
 	auto portaudio = p->PageSizer("Portaudio");
@@ -421,7 +417,6 @@ void Advanced_Video(wxTreebook *book, Preferences *parent) {
 	p->OptionAdd(avisynth, _("Avisynth memory limit"), "Provider/Avisynth/Memory Max");
 #endif
 
-#ifdef WITH_FFMS2
 	auto ffms = p->PageSizer("FFmpegSource");
 
 	const wxString log_levels[] = { "Quiet", "Panic", "Fatal", "Error", "Warning", "Info", "Verbose", "Debug" };
@@ -430,7 +425,6 @@ void Advanced_Video(wxTreebook *book, Preferences *parent) {
 
 	p->OptionAdd(ffms, _("Decoding threads"), "Provider/Video/FFmpegSource/Decoding Threads", -1);
 	p->OptionAdd(ffms, _("Enable unsafe seeking"), "Provider/Video/FFmpegSource/Unsafe Seeking");
-#endif
 
 	p->SetSizerAndFit(p->sizer);
 }

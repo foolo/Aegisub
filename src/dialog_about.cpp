@@ -98,10 +98,8 @@ void ShowAboutDialog(wxWindow *parent) {
 #ifdef WITH_PORTAUDIO
 		"    PortAudio - Copyright (c) Ross Bencina, Phil Burk;\n"
 #endif
-#ifdef WITH_FFMS2
 		"    FFmpeg - Copyright (c) Fabrice Bellard;\n"
 		"    FFMS2 - Copyright (c) Fredrik Mellbin;\n"
-#endif
 #ifdef WITH_AVISYNTH
 		"    Avisynth 2.5 - Copyright (c) Ben Rudiak-Gould et al;\n"
 #endif

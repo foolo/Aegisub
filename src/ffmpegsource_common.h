@@ -32,7 +32,6 @@
 /// @ingroup video_input audio_input ffms
 ///
 
-#ifdef WITH_FFMS2
 #include <map>
 
 #include <ffms.h>
@@ -70,5 +69,3 @@ public:
 	void SetLogLevel();
 	FFMS_IndexErrorHandling GetErrorHandlingMode();
 };
-
-#endif /* WITH_FFMS2 */

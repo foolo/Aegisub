@@ -23,6 +23,7 @@ aegisub_src = files(
     'audio_marker.cpp',
     'audio_player.cpp',
     'audio_provider_factory.cpp',
+    'audio_provider_ffmpegsource.cpp',
     'audio_renderer.cpp',
     'audio_renderer_spectrum.cpp',
     'audio_renderer_waveform.cpp',
@@ -81,6 +82,7 @@ aegisub_src = files(
     'dialog_video_properties.cpp',
     'export_fixstyle.cpp',
     'export_framerate.cpp',
+    'ffmpegsource_common.cpp',
     'fft.cpp',
     'font_file_lister.cpp',
     'frame_main.cpp',
@@ -142,6 +144,7 @@ aegisub_src = files(
     'video_out_gl.cpp',
     'video_provider_cache.cpp',
     'video_provider_dummy.cpp',
+    'video_provider_ffmpegsource.cpp',
     'video_provider_manager.cpp',
     'video_provider_yuv4mpeg.cpp',
     'video_slider.cpp',
@@ -169,11 +172,6 @@ opt_src = [
     ['OpenAL', 'audio_player_openal.cpp'],
     ['OSS', 'audio_player_oss.cpp'],
     ['DirectSound', 'audio_player_dsound2.cpp'],
-
-    ['FFMS2', ['audio_provider_ffmpegsource.cpp',
-               'video_provider_ffmpegsource.cpp',
-               'ffmpegsource_common.cpp']],
-
     ['Hunspell', 'spellchecker_hunspell.cpp'],
 ]
 
