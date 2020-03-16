@@ -16,9 +16,6 @@
 
 #include <wx/settings.h>
 
-// Defined in osx_utils.mm
-void SetPlaceholderText(wxWindow *window, wxString const& placeholder);
-
 /// @class Placeholder
 /// @brief A wrapper around a control to add placeholder text
 ///
@@ -37,7 +34,6 @@ class Placeholder final : public BaseCtrl {
 		BaseCtrl::Create(parent, -1, placeholder, wxDefaultPosition, size, style);
 	}
 
-#ifndef __WXOSX__
 	/// Focus gained event handler
 	void OnSetFocus(wxFocusEvent& evt) {
 		evt.Skip();
@@ -100,16 +96,6 @@ public:
 			return "";
 		return BaseCtrl::GetValue();
 	}
-#else
-public:
-	Placeholder(wxWindow *parent, wxString const& placeholder, wxSize const& size, long style, wxString const& tooltip)
-	: placeholder(placeholder)
-	{
-		Create(parent, size, style);
-		BaseCtrl::SetToolTip(tooltip);
-		SetPlaceholderText(this, placeholder);
-	}
-#endif
 };
 
 template<> inline void Placeholder<wxComboBox>::Create(wxWindow *parent, wxSize const& size, long style) {

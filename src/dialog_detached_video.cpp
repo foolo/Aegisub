@@ -97,8 +97,6 @@ DialogDetachedVideo::DialogDetachedVideo(agi::Context *context)
 	Bind(wxEVT_CLOSE_WINDOW, &DialogDetachedVideo::OnClose, this);
 	Bind(wxEVT_ICONIZE, &DialogDetachedVideo::OnMinimize, this);
 	Bind(wxEVT_CHAR_HOOK, &DialogDetachedVideo::OnKeyDown, this);
-
-	AddFullScreenButton(this);
 }
 
 DialogDetachedVideo::~DialogDetachedVideo() { }

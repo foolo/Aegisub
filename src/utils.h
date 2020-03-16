@@ -57,11 +57,6 @@ int SmallestPowerOf2(int x);
 /// running process.
 void RestartAegisub();
 
-/// Add the OS X 10.7+ full-screen button to a window
-void AddFullScreenButton(wxWindow *window);
-
-void SetFloatOnParent(wxWindow *window);
-
 /// Forward a mouse wheel event to the window under the mouse if needed
 /// @param source The initial target of the wheel event
 /// @param evt The event
@@ -98,21 +93,3 @@ agi::fs::path OpenFileSelector(wxString const& message, std::string const& optio
 agi::fs::path SaveFileSelector(wxString const& message, std::string const& option_name, std::string const& default_filename, std::string const& default_extension, std::string const& wildcard, wxWindow *parent);
 
 wxString LocalizedLanguageName(wxString const& lang);
-
-namespace osx {
-	/// Make the given menu the OS X Window menu
-	void make_windows_menu(wxMenu *wxmenu);
-	/// Activate a top-level document window other than the given one
-	bool activate_top_window_other_than(wxFrame *wx);
-	// Bring all windows to the front, maintaining relative z-order
-	void bring_to_front();
-
-namespace ime {
-	/// Inject the IME helper into the given wxSTC
-	void inject(wxStyledTextCtrl *ctrl);
-	/// Invalidate any pending text from the IME
-	void invalidate(wxStyledTextCtrl *ctrl);
-	/// Give the IME a chance to process a key event and return whether it did
-	bool process_key_event(wxStyledTextCtrl *ctrl, wxKeyEvent &);
-}
-}

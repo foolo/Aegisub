@@ -229,41 +229,6 @@ struct app_toggle_toolbar final : public Command {
 	}
 };
 
-#ifdef __WXMAC__
-struct app_minimize final : public Command {
-	CMD_NAME("app/minimize")
-	STR_MENU("Minimize")
-	STR_DISP("Minimize")
-	STR_HELP("Minimize the active window")
-
-	void operator()(agi::Context *c) override {
-		c->frame->Iconize();
-	}
-};
-
-struct app_maximize final : public Command {
-	CMD_NAME("app/maximize")
-	STR_MENU("Zoom")
-	STR_DISP("Zoom")
-	STR_HELP("Maximize the active window")
-
-	void operator()(agi::Context *c) override {
-		c->frame->Maximize(!c->frame->IsMaximized());
-	}
-};
-
-struct app_bring_to_front final : public Command {
-	CMD_NAME("app/bring_to_front")
-	STR_MENU("Bring All to Front")
-	STR_DISP("Bring All to Front")
-	STR_HELP("Bring forward all open documents to the front")
-
-	void operator()(agi::Context *) override {
-		osx::bring_to_front();
-	}
-};
-#endif
-
 }
 
 namespace cmd {
@@ -279,10 +244,5 @@ namespace cmd {
 		reg(agi::make_unique<app_options>());
 		reg(agi::make_unique<app_toggle_global_hotkeys>());
 		reg(agi::make_unique<app_toggle_toolbar>());
-#ifdef __WXMAC__
-		reg(agi::make_unique<app_minimize>());
-		reg(agi::make_unique<app_maximize>());
-		reg(agi::make_unique<app_bring_to_front>());
-#endif
 	}
 }

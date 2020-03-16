@@ -44,7 +44,6 @@
 #include "include/aegisub/menu.h"
 #include "options.h"
 #include "project.h"
-#include "retina_helper.h"
 #include "spline_curve.h"
 #include "utils.h"
 #include "video_out_gl.h"
@@ -86,13 +85,7 @@ VideoDisplay::VideoDisplay(wxToolBar *toolbar, bool freeSize, wxComboBox *zoomBo
 , toolBar(toolbar)
 , zoomBox(zoomBox)
 , freeSize(freeSize)
-, retina_helper(agi::make_unique<RetinaHelper>(this))
-, scale_factor(retina_helper->GetScaleFactor())
-, scale_factor_connection(retina_helper->AddScaleFactorListener([=](int new_scale_factor) {
-	double new_zoom = zoomValue * new_scale_factor / scale_factor;
-	scale_factor = new_scale_factor;
-	SetZoom(new_zoom);
-}))
+, scale_factor(1)
 {
 	zoomBox->SetValue(fmt_wx("%g%%", zoomValue * 100.));
 	zoomBox->Bind(wxEVT_COMBOBOX, &VideoDisplay::SetZoomFromBox, this);

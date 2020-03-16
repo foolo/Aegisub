@@ -19,7 +19,6 @@ git_version.h
 git_version.xml
 packages/win_installer/vendor
 tests/*.json
-tools/osx-bundle.sed
 
 .DS_Store
 

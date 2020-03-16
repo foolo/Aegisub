@@ -15,7 +15,6 @@
 // Aegisub Project http://www.aegisub.org/
 
 #include "libaegisub/util.h"
-#include "libaegisub/util_osx.h"
 
 #include <boost/locale/boundary.hpp>
 #include <boost/locale/conversion.hpp>
@@ -195,10 +194,4 @@ void tagless_find_helper::map_range(size_t &s, size_t &e) {
 }
 } // namespace util
 
-#ifndef __APPLE__
-namespace osx {
-AppNapDisabler::AppNapDisabler(std::string reason) { }
-AppNapDisabler::~AppNapDisabler() { }
-}
-#endif
 } // namespace agi

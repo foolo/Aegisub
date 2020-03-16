@@ -218,19 +218,11 @@ struct subtitle_insert_before_videotime final : public validate_nonempty_selecti
 };
 
 bool is_okay_to_close_subtitles(agi::Context *c) {
-#ifdef __APPLE__
-	return true;
-#else
 	return c->subsController->TryToClose() != wxCANCEL;
-#endif
 }
 
 void load_subtitles(agi::Context *c, agi::fs::path const& path, std::string const& encoding="") {
-#ifdef __APPLE__
-	wxGetApp().NewProjectContext().project->LoadSubtitles(path, encoding);
-#else
 	c->project->LoadSubtitles(path, encoding);
-#endif
 }
 
 struct subtitle_new final : public Command {
@@ -241,12 +233,8 @@ struct subtitle_new final : public Command {
 	STR_HELP("New subtitles")
 
 	void operator()(agi::Context *c) override {
-#ifdef __APPLE__
-		wxGetApp().NewProjectContext();
-#else
 		if (is_okay_to_close_subtitles(c))
 			c->project->CloseSubtitles();
-#endif
 	}
 };
 

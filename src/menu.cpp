@@ -45,10 +45,6 @@
 #include <wx/menu.h>
 #include <wx/menuitem.h>
 
-#ifdef __WXMAC__
-#include <wx/app.h>
-#endif
-
 namespace {
 /// Window ID of first menu item
 static const int MENU_ID_BASE = 10000;
@@ -194,11 +190,9 @@ public:
 		menu_text += to_wx("\t" + hotkey::get_hotkey_str_first("Default", co->name()));
 
 		wxMenuItem *item = new wxMenuItem(parent, MENU_ID_BASE + items.size(), menu_text, co->StrHelp(), kind);
-#ifndef __WXMAC__
 		/// @todo Maybe make this a configuration option instead?
 		if (kind == wxITEM_NORMAL)
 			item->SetBitmap(co->Icon(16));
-#endif
 		parent->Append(item);
 		items.push_back(co->name());
 
@@ -245,24 +239,6 @@ public:
 		size_t id = static_cast<size_t>(evt.GetId() - MENU_ID_BASE);
 		if (id < items.size() && context)
 			cmd::call(items[id], context);
-
-#ifdef __WXMAC__
-		else {
-			switch (evt.GetId()) {
-				case wxID_ABOUT:
-					cmd::call("app/about", context);
-					break;
-				case wxID_PREFERENCES:
-					cmd::call("app/options", context);
-					break;
-				case wxID_EXIT:
-					cmd::call("app/exit", context);
-					break;
-				default:
-					break;
-			}
-		}
-#endif
 	}
 
 	/// Update the hotkeys for all menu items
@@ -342,18 +318,9 @@ void process_menu_item(wxMenu *parent, agi::Context *c, json::Object const& ele,
 	std::string submenu, recent, command, text, special;
 	read_entry(ele, "special", &special);
 
-#ifdef __WXMAC__
-	if (special == "window")
-		osx::make_windows_menu(parent);
-#endif
-
 	if (read_entry(ele, "submenu", &submenu) && read_entry(ele, "text", &text)) {
 		wxString tl_text = _(to_wx(text));
 		parent->AppendSubMenu(build_menu(submenu, c, cm), tl_text);
-#ifdef __WXMAC__
-		if (special == "help")
-			wxApp::s_macHelpMenuTitleName = tl_text;
-#endif
 		return;
 	}
 
@@ -369,18 +336,7 @@ void process_menu_item(wxMenu *parent, agi::Context *c, json::Object const& ele,
 
 	try {
 		int id = cm->AddCommand(cmd::get(command), parent, text);
-#ifdef __WXMAC__
-		if (!special.empty()) {
-			if (special == "about")
-				wxApp::s_macAboutMenuItemId = id;
-			else if (special == "exit")
-				wxApp::s_macExitMenuItemId = id;
-			else if (special == "options")
-				wxApp::s_macPreferencesMenuItemId = id;
-		}
-#else
 		(void)id;
-#endif
 	}
 	catch (agi::Exception const& e) {
 #ifdef _DEBUG
@@ -403,21 +359,6 @@ wxMenu *build_menu(std::string const& name, agi::Context *c, CommandManager *cm,
 
 namespace menu {
 	void GetMenuBar(std::string const& name, wxFrame *window, agi::Context *c) {
-#ifdef __WXMAC__
-		auto bind_events = [&](CommandMenuBar *menu) {
-			window->Bind(wxEVT_ACTIVATE, [=](wxActivateEvent&) { menu->cm.SetContext(c); });
-			window->Bind(wxEVT_DESTROY, [=](wxWindowDestroyEvent&) {
-				if (!osx::activate_top_window_other_than(window))
-					menu->cm.SetContext(nullptr);
-			});
-		};
-
-		if (wxMenuBar *menu = wxMenuBar::MacGetCommonMenuBar()) {
-			bind_events(static_cast<CommandMenuBar *>(menu));
-			return;
-		}
-#endif
-
 		auto menu = agi::make_unique<CommandMenuBar>(c);
 		for (auto const& item : get_menu(name)) {
 			std::string submenu, disp;
@@ -430,22 +371,9 @@ namespace menu {
 				read_entry(item, "special", &submenu);
 			}
 		}
-
-#ifdef __WXMAC__
-		menu->Bind(wxEVT_MENU_OPEN, &CommandManager::OnMenuOpen, &menu->cm);
-		menu->Bind(wxEVT_MENU, &CommandManager::OnMenuClick, &menu->cm);
-#else
 		window->Bind(wxEVT_MENU_OPEN, &CommandManager::OnMenuOpen, &menu->cm);
 		window->Bind(wxEVT_MENU, &CommandManager::OnMenuClick, &menu->cm);
-#endif
-
-#ifdef __WXMAC__
-		bind_events(menu.get());
-		wxMenuBar::MacSetCommonMenuBar(menu.get());
-#else
 		window->SetMenuBar(menu.get());
-#endif
-
 		menu.release();
 	}
 

@@ -385,12 +385,6 @@ void DialogFontsCollector::UpdateControls() {
 			}
 		}
 	}
-
-#ifdef __APPLE__
-	// wxStaticText auto-wraps everywhere but OS X
-	dest_label->Wrap(dest_label->GetParent()->GetSize().GetWidth() - 20);
-	Layout();
-#endif
 }
 
 void DialogFontsCollector::OnAddText(ValueEvent<color_str_pair> &event) {

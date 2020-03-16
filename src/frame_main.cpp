@@ -153,7 +153,6 @@ FrameMain::FrameMain()
 	context->project->CloseSubtitles();
 
 	StartupLog("Display main window");
-	AddFullScreenButton(this);
 	Show();
 	SetDisplayMode(1, 1);
 
@@ -250,16 +249,7 @@ void FrameMain::UpdateTitle() {
 	wxString newTitle;
 	if (context->subsController->IsModified()) newTitle << "* ";
 	newTitle << context->subsController->Filename().filename().wstring();
-
-#ifndef __WXMAC__
 	newTitle << " - Aegisub " << GetAegisubLongVersionString();
-#endif
-
-#if defined(__WXMAC__)
-	// On Mac, set the mark in the close button
-	OSXSetModified(context->subsController->IsModified());
-#endif
-
 	if (GetTitle() != newTitle) SetTitle(newTitle);
 }
 

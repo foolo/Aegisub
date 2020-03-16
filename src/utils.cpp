@@ -32,7 +32,6 @@
 #include "compat.h"
 #include "format.h"
 #include "options.h"
-#include "retina_helper.h"
 
 #include <libaegisub/dispatch.h>
 #include <libaegisub/fs.h>
@@ -49,11 +48,6 @@
 #include <wx/filedlg.h>
 #include <wx/stdpaths.h>
 #include <wx/window.h>
-
-#ifdef __APPLE__
-#include <libaegisub/util_osx.h>
-#include <CoreText/CTFont.h>
-#endif
 
 /// @brief There shall be no kiB, MiB stuff here Pretty reading of size
 wxString PrettySize(int bytes) {
@@ -95,7 +89,6 @@ int SmallestPowerOf2(int x) {
 	return x;
 }
 
-#ifndef __WXMAC__
 void RestartAegisub() {
 	config::opt->Flush();
 
@@ -105,7 +98,6 @@ void RestartAegisub() {
 	wxExecute(wxStandardPaths::Get().GetExecutablePath());
 #endif
 }
-#endif
 
 bool ForwardMouseWheelEvent(wxWindow *source, wxMouseEvent &evt) {
 	wxWindow *target = wxFindWindowAtPoint(wxGetMousePosition());
@@ -208,46 +200,9 @@ void CleanCache(agi::fs::path const& directory, std::string const& file_type, ui
 	});
 }
 
-#ifndef __WXOSX_COCOA__
-// OS X implementation in osx_utils.mm
-void AddFullScreenButton(wxWindow *) { }
-void SetFloatOnParent(wxWindow *) { }
-
-// OS X implementation in retina_helper.mm
-RetinaHelper::RetinaHelper(wxWindow *) { }
-RetinaHelper::~RetinaHelper() { }
-int RetinaHelper::GetScaleFactor() const { return 1; }
-
-// OS X implementation in scintilla_ime.mm
-namespace osx { namespace ime {
-	void inject(wxStyledTextCtrl *) { }
-	void invalidate(wxStyledTextCtrl *) { }
-	bool process_key_event(wxStyledTextCtrl *, wxKeyEvent&) { return false; }
-} }
-#endif
-
 wxString FontFace(std::string opt_prefix) {
 	opt_prefix += "/Font Face";
 	auto value = OPT_GET(opt_prefix)->GetString();
-#ifdef __WXOSX_COCOA__
-	if (value.empty()) {
-		auto default_font = CTFontCreateUIFontForLanguage(kCTFontUserFontType, 0, nullptr);
-		auto default_font_name = CTFontCopyPostScriptName(default_font);
-		CFRelease(default_font);
-
-		auto utf8_str = CFStringGetCStringPtr(default_font_name, kCFStringEncodingUTF8);
-		if (utf8_str)
-			value = utf8_str;
-		else {
-			char buffer[1024];
-			CFStringGetCString(default_font_name, buffer, sizeof(buffer), kCFStringEncodingUTF8);
-			buffer[1023] = '\0';
-			value = buffer;
-		}
-
-		CFRelease(default_font_name);
-	}
-#endif
 	return to_wx(value);
 }
 

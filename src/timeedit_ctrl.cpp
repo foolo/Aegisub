@@ -146,12 +146,6 @@ void TimeEdit::OnKeyDown(wxKeyEvent &event) {
 	}
 	// Overwrite mode stuff
 
-	// On OS X backspace is reported as delete
-#ifdef __APPLE__
-	if (kc == WXK_DELETE)
-		kc = WXK_BACK;
-#endif
-
 	// Back just moves cursor back one without deleting
 	if (kc == WXK_BACK) {
 		long start = GetInsertionPoint();

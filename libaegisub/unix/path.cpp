@@ -17,19 +17,15 @@
 #include <libaegisub/path.h>
 
 #include <libaegisub/exception.h>
-#include <libaegisub/util_osx.h>
 
 #include <boost/filesystem/operations.hpp>
 #include <pwd.h>
 
-#ifndef __APPLE__
 #include <fstream>
 #include <stdlib.h>
 #include <libgen.h>
-#endif
 
 namespace {
-#ifndef __APPLE__
 std::string home_dir() {
 	const char *env = getenv("HOME");
 	if (env) return env;
@@ -64,12 +60,10 @@ std::string exe_dir() {
 	return data;
 }
 #endif  /* APPIMAGE_BUILD */
-#endif  /* !__APPLE__ */
 }
 
 namespace agi {
 void Path::FillPlatformSpecificPaths() {
-#ifndef __APPLE__
 	agi::fs::path home = home_dir();
 	SetToken("?user", home/".aegisub");
 	SetToken("?local", home/".aegisub");
@@ -84,13 +78,6 @@ void Path::FillPlatformSpecificPaths() {
 	SetToken("?dictionary", "/usr/share/hunspell");
 #endif
 
-#else
-	agi::fs::path app_support = agi::util::GetApplicationSupportDirectory();
-	SetToken("?user", app_support/"Aegisub");
-	SetToken("?local", app_support/"Aegisub");
-	SetToken("?data", agi::util::GetBundleSharedSupportDirectory());
-	SetToken("?dictionary", Decode("?data/dictionaries"));
-#endif
 	SetToken("?temp", boost::filesystem::temp_directory_path());
 }
 
