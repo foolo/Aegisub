@@ -65,13 +65,6 @@ public:
 	agi::Context& NewProjectContext();
 	void LoadRecentSubtitle(agi::Context& context);
 	void CloseAll();
-
-	// Apple events
-	void MacOpenFiles(wxArrayString const& filenames)
-#ifdef __APPLE__
-		override
-#endif
-	;
 };
 
 wxDECLARE_APP(AegisubApp);

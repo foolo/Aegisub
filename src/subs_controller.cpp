@@ -398,11 +398,5 @@ wxString SubsController::GetRedoDescription() const {
 
 agi::fs::path SubsController::Filename() const {
 	if (!filename.empty()) return filename;
-
-	// Apple HIG says "untitled" should not be capitalised
-#ifndef __WXMAC__
 	return _("Untitled").wx_str();
-#else
-	return _("untitled").wx_str();
-#endif
 }

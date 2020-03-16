@@ -223,14 +223,6 @@ bool AegisubApp::OnInit() {
 		// Init locale
 		locale.Init();
 
-#ifdef __APPLE__
-		// When run from an app bundle, LC_CTYPE defaults to "C", which breaks on
-		// anything involving unicode and in some cases number formatting.
-		// The right thing to do here would be to query CoreFoundation for the user's
-		// locale and add .UTF-8 to that, but :effort:
-		setlocale(LC_CTYPE, "en_US.UTF-8");
-#endif
-
 		exception_message = _("Oops, Aegisub has crashed!\n\nAn attempt has been made to save a copy of your file to:\n\n%s\n\nAegisub will now close.");
 
 		// Load plugins
@@ -414,10 +406,6 @@ int AegisubApp::OnRun() {
 
 	ExitMainLoop();
 	return 1;
-}
-
-void AegisubApp::MacOpenFiles(wxArrayString const& filenames) {
-	OpenFiles(filenames);
 }
 
 void AegisubApp::OpenFiles(wxArrayStringsAdapter filenames) {

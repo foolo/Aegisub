@@ -79,7 +79,6 @@ public:
 			d->Bind(wxEVT_CLOSE_WINDOW, &DialogManager::OnClose<wxCloseEvent>, this);
 			d->Bind(wxEVT_BUTTON, &DialogManager::OnClose<wxCommandEvent>, this, wxID_CANCEL);
 			d->Show();
-			SetFloatOnParent(d);
 		}
 		catch (agi::UserCancelException const&) { }
 	}
