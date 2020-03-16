@@ -169,7 +169,6 @@ opt_src = [
     ['PortAudio', 'audio_player_portaudio.cpp'],
     ['PulseAudio', 'audio_player_pulse.cpp'],
     ['OpenAL', 'audio_player_openal.cpp'],
-    ['OSS', 'audio_player_oss.cpp'],
     ['DirectSound', 'audio_player_dsound2.cpp'],
     ['Hunspell', 'spellchecker_hunspell.cpp'],
 ]

@@ -71,9 +71,6 @@ namespace {
 #ifdef WITH_LIBPULSE
 		{"PulseAudio", CreatePulseAudioPlayer, false},
 #endif
-#ifdef WITH_OSS
-		{"OSS", CreateOSSPlayer, false},
-#endif
 	};
 }
 

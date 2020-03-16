@@ -114,8 +114,6 @@ if (is_gccwin)
 endif
 
 
-# TODO: OSS
-
 def_audio = get_option('default_audio_output')
 if def_audio != 'auto'
     if not dep_avail.contains(def_audio)

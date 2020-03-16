@@ -298,9 +298,6 @@
 				"Buffer Latency" : 100,
 				"Buffer Length" : 5
 			},
-			"OSS" : {
-				"Device" : "/dev/dsp"
-			},
 			"PortAudio" : {
 				"Device Name" : "Default"
 			}

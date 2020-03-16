@@ -376,11 +376,6 @@ void Advanced_Audio(wxTreebook *book, Preferences *parent) {
 	p->OptionChoice(portaudio, _("Portaudio device"), PortAudioPlayer::GetOutputDevices(), "Player/Audio/PortAudio/Device Name");
 #endif
 
-#ifdef WITH_OSS
-	auto oss = p->PageSizer("OSS");
-	p->OptionBrowse(oss, _("OSS Device"), "Player/Audio/OSS/Device");
-#endif
-
 #ifdef WITH_DIRECTSOUND
 	auto dsound = p->PageSizer("DirectSound");
 	p->OptionAdd(dsound, _("Buffer latency"), "Player/Audio/DirectSound/Buffer Latency", 1, 1000);
