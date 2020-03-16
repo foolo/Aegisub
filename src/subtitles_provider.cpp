@@ -23,7 +23,6 @@
 #include "ass_style.h"
 #include "factory_manager.h"
 #include "options.h"
-#include "subtitles_provider_csri.h"
 #include "subtitles_provider_libass.h"
 
 namespace {
@@ -37,10 +36,6 @@ namespace {
 	std::vector<factory> const& factories() {
 		static std::vector<factory> factories;
 		if (factories.size()) return factories;
-#ifdef WITH_CSRI
-		for (auto const& subtype : csri::List())
-			factories.push_back(factory{"CSRI/" + subtype, subtype, csri::Create, false});
-#endif
 		factories.push_back(factory{"libass", "", libass::Create, false});
 		return factories;
 	}

@@ -105,12 +105,6 @@ void ShowAboutDialog(wxWindow *parent) {
 #ifdef WITH_AVISYNTH
 		"    Avisynth 2.5 - Copyright (c) Ben Rudiak-Gould et al;\n"
 #endif
-#ifdef WITH_CSRI
-		"    csri - Copyright (c) David Lamparter;\n"
-# ifdef __WINDOWS__
-		"    vsfilter - Copyright (c) Gabest et al;\n"
-# endif
-#endif
 		"    libass - Copyright (c) Evgeniy Stepanov, Grigori Goronzy;\n"
 		"    Matroska Parser - Copyright (c) Mike Matsnev;\n"
 		"    Freetype - Copyright (c) David Turner, Robert Wilhelm, Werner Lemberg;\n"
