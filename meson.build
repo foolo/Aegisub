@@ -154,5 +154,4 @@ deps += dep_gl
 acconf = configure_file(output: 'acconf.h', configuration: conf)
 
 subdir('libaegisub')
-subdir('packages')
 subdir('src')
