@@ -1,2 +1,0 @@
-# timecode format v1
-Assume 30
