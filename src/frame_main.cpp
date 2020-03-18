@@ -68,6 +68,7 @@
 #include <wx/sizer.h>
 #include <wx/statline.h>
 #include <wx/sysopt.h>
+#include <wx/splitter.h>
 
 enum {
 	ID_APP_TIMER_STATUSCLEAR = 12002
@@ -184,29 +185,33 @@ void FrameMain::InitContents() {
 	StartupLog("Create background panel");
 	auto Panel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL | wxCLIP_CHILDREN);
 
+	wxSplitterWindow* topWindow = new wxSplitterWindow(Panel, wxID_ANY);
+	topWindow->SetMinimumPaneSize(20);
+	wxPanel* leftPanel = new wxPanel(topWindow, wxID_ANY);
+
 	StartupLog("Create subtitles grid");
-	context->subsGrid = new BaseGrid(Panel, context.get());
+	context->subsGrid = new BaseGrid(topWindow, context.get());
 
 	StartupLog("Create video box");
-	videoBox = new VideoBox(Panel, false, context.get());
+	videoBox = new VideoBox(leftPanel, false, context.get());
 
 	StartupLog("Create audio box");
 	context->audioBox = audioBox = new AudioBox(Panel, context.get());
 
 	StartupLog("Create subtitle editing box");
-	auto EditBox = new SubsEditBox(Panel, context.get());
+	auto EditBox = new SubsEditBox(leftPanel, context.get());
 
 	StartupLog("Arrange main sizers");
 	ToolsSizer = new wxBoxSizer(wxVERTICAL);
-	ToolsSizer->Add(audioBox, 0, wxEXPAND);
+	ToolsSizer->Add(videoBox, 1, wxEXPAND);
 	ToolsSizer->Add(EditBox, 1, wxEXPAND);
-	TopSizer = new wxBoxSizer(wxHORIZONTAL);
-	TopSizer->Add(videoBox, 0, wxEXPAND, 0);
-	TopSizer->Add(ToolsSizer, 1, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
+	leftPanel->SetSizer(ToolsSizer);
+	topWindow->SplitVertically(leftPanel, context->subsGrid);
+
 	MainSizer = new wxBoxSizer(wxVERTICAL);
 	MainSizer->Add(new wxStaticLine(Panel),0,wxEXPAND | wxALL,0);
-	MainSizer->Add(TopSizer,0,wxEXPAND | wxALL,0);
-	MainSizer->Add(context->subsGrid,1,wxEXPAND | wxALL,0);
+	MainSizer->Add(topWindow,1,wxEXPAND | wxALL,0);
+	MainSizer->Add(audioBox, 0, wxEXPAND);
 	Panel->SetSizer(MainSizer);
 
 	StartupLog("Perform layout");
@@ -236,8 +241,8 @@ void FrameMain::SetDisplayMode(int video, int audio) {
 
 	context->videoController->Stop();
 
-	TopSizer->Show(videoBox, showVideo, true);
-	ToolsSizer->Show(audioBox, showAudio, true);
+	ToolsSizer->Show(videoBox, showVideo, true);
+	MainSizer->Show(audioBox, showAudio, true);
 
 	MainSizer->Layout();
 	Layout();

@@ -74,7 +74,6 @@ class FrameMain : public wxFrame {
 	VideoBox *videoBox;      ///< The video area
 
 	wxSizer *MainSizer;  ///< Arranges things from top to bottom in the window
-	wxSizer *TopSizer;   ///< Arranges video box and tool box from left to right
 	wxSizer *ToolsSizer; ///< Arranges audio and editing areas top to bottom
 
 public:
