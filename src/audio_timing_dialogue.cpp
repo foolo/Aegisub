@@ -352,9 +352,6 @@ class AudioTimingControllerDialogue final : public AudioTimingController {
 	/// Regenerate the list of active and inactive line markers
 	void RegenerateMarkers();
 
-	/// Get the end markers for the active line and all selected lines
-	std::vector<AudioMarker*> GetRightMarkers();
-
 	/// @brief Set the position of markers and announce the change to the world
 	/// @param upd_markers Markers to move
 	/// @param ms New position of the markers
@@ -623,10 +620,7 @@ std::vector<AudioMarker*> AudioTimingControllerDialogue::OnLeftClick(int ms, boo
 
 std::vector<AudioMarker*> AudioTimingControllerDialogue::OnRightClick(int ms, bool, int sensitivity, int snap_range)
 {
-	clicked_ms = INT_MIN;
-	std::vector<AudioMarker*> ret = GetRightMarkers();
-	SetMarkers(ret, ms, snap_range);
-	return ret;
+	return std::vector<AudioMarker*>();
 }
 
 void AudioTimingControllerDialogue::OnMarkerDrag(std::vector<AudioMarker*> const& markers, int new_position, int snap_range)
@@ -791,16 +785,6 @@ void AudioTimingControllerDialogue::RegenerateMarkers()
 	boost::sort(markers, marker_ptr_cmp());
 
 	AnnounceMarkerMoved();
-}
-
-std::vector<AudioMarker*> AudioTimingControllerDialogue::GetRightMarkers()
-{
-	std::vector<AudioMarker*> ret;
-	ret.reserve(selected_lines.size() + 1);
-	ret.push_back(active_line.GetRightMarker());
-	for (auto& line : selected_lines)
-		ret.push_back(line.GetRightMarker());
-	return ret;
 }
 
 int AudioTimingControllerDialogue::SnapMarkers(int snap_range, std::vector<AudioMarker*> const& active) const
