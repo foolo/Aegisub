@@ -352,9 +352,6 @@ class AudioTimingControllerDialogue final : public AudioTimingController {
 	/// Regenerate the list of active and inactive line markers
 	void RegenerateMarkers();
 
-	/// Get the start markers for the active line and all selected lines
-	std::vector<AudioMarker*> GetLeftMarkers();
-
 	/// Get the end markers for the active line and all selected lines
 	std::vector<AudioMarker*> GetRightMarkers();
 
@@ -593,17 +590,14 @@ std::vector<AudioMarker*> AudioTimingControllerDialogue::OnLeftClick(int ms, boo
 	int dist_l = tabs(*left - ms);
 	int dist_r = tabs(*right - ms);
 
-	if (dist_l > sensitivity && dist_r > sensitivity)
-	{
-		// Clicked far from either marker:
-		// Insta-set the left marker to the clicked position and return the
-		// right as the dragged one, such that if the user does start dragging,
-		// he will create a new selection from scratch
-		std::vector<AudioMarker*> jump = GetLeftMarkers();
-		ret = drag_timing->GetBool() ? GetRightMarkers() : jump;
-		// Get ret before setting as setting may swap left/right
-		SetMarkers(jump, ms, snap_range);
-		return ret;
+	if (dist_l > sensitivity && dist_r > sensitivity) {
+		for (AssDialogue& line : context->ass->Events) {
+			if (ms >= line.Start && ms <= line.End) {
+				context->selectionController->SetSelectionAndActive({&line}, &line);
+				break;
+			}
+		}
+		return std::vector<AudioMarker*>();
 	}
 
 	DialogueTimingMarker *clicked = dist_l <= dist_r ? left : right;
@@ -797,16 +791,6 @@ void AudioTimingControllerDialogue::RegenerateMarkers()
 	boost::sort(markers, marker_ptr_cmp());
 
 	AnnounceMarkerMoved();
-}
-
-std::vector<AudioMarker*> AudioTimingControllerDialogue::GetLeftMarkers()
-{
-	std::vector<AudioMarker*> ret;
-	ret.reserve(selected_lines.size() + 1);
-	ret.push_back(active_line.GetLeftMarker());
-	for (auto& line : selected_lines)
-		ret.push_back(line.GetLeftMarker());
-	return ret;
 }
 
 std::vector<AudioMarker*> AudioTimingControllerDialogue::GetRightMarkers()
