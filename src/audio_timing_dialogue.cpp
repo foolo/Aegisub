@@ -598,17 +598,7 @@ std::vector<AudioMarker*> AudioTimingControllerDialogue::OnLeftClick(int ms, boo
 	}
 
 	DialogueTimingMarker *clicked = dist_l <= dist_r ? left : right;
-
-	if (ctrl_down)
-	{
-		// The use of GetPosition here is important, as otherwise it'll start
-		// after lines ending at the same time as the active line begins
-		auto it = boost::lower_bound(markers, clicked->GetPosition(), marker_ptr_cmp());
-		for (; it != markers.end() && !(*clicked < **it); ++it)
-			ret.push_back(*it);
-	}
-	else
-		ret.push_back(clicked);
+	ret.push_back(clicked);
 
 	// Left-click within drag range should still move the left marker to the
 	// clicked position, but not the right marker
