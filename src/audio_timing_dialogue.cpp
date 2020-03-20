@@ -296,9 +296,6 @@ class AudioTimingControllerDialogue final : public AudioTimingController {
 	/// The currently active line
 	TimeableLine active_line;
 
-	/// Inactive lines which are currently modifiable
-	std::list<TimeableLine> inactive_lines;
-
 	/// Selected lines which are currently modifiable
 	std::list<TimeableLine> selected_lines;
 
@@ -326,13 +323,11 @@ class AudioTimingControllerDialogue final : public AudioTimingController {
 
 	/// Autocommit option
 	const agi::OptionValue *auto_commit = OPT_GET("Audio/Auto/Commit");
-	const agi::OptionValue *inactive_line_mode = OPT_GET("Audio/Inactive Lines Display Mode");
 	const agi::OptionValue *inactive_line_comments = OPT_GET("Audio/Display/Draw/Inactive Comments");
 	const agi::OptionValue *drag_timing = OPT_GET("Audio/Drag Timing");
 
 	agi::signal::Connection commit_connection;
 	agi::signal::Connection audio_open_connection;
-	agi::signal::Connection inactive_line_mode_connection;
 	agi::signal::Connection inactive_line_comment_connection;
 	agi::signal::Connection active_line_connection;
 	agi::signal::Connection selection_connection;
@@ -345,9 +340,6 @@ class AudioTimingControllerDialogue final : public AudioTimingController {
 
 	/// Regenerate the list of timeable selected lines
 	void RegenerateSelectedLines();
-
-	/// Add a line to the list of timeable inactive lines
-	void AddInactiveLine(Selection const& sel, AssDialogue *diag);
 
 	/// Regenerate the list of active and inactive line markers
 	void RegenerateMarkers();
@@ -409,7 +401,6 @@ AudioTimingControllerDialogue::AudioTimingControllerDialogue(agi::Context *c)
 , video_position_provider(c)
 , context(c)
 , commit_connection(c->ass->AddCommitListener(&AudioTimingControllerDialogue::OnFileChanged, this))
-, inactive_line_mode_connection(OPT_SUB("Audio/Inactive Lines Display Mode", &AudioTimingControllerDialogue::RegenerateInactiveLines, this))
 , inactive_line_comment_connection(OPT_SUB("Audio/Display/Draw/Inactive Comments", &AudioTimingControllerDialogue::RegenerateInactiveLines, this))
 , active_line_connection(c->selectionController->AddActiveLineListener(&AudioTimingControllerDialogue::Revert, this))
 , selection_connection(c->selectionController->AddSelectionListener(&AudioTimingControllerDialogue::OnSelectedSetChanged, this))
@@ -452,8 +443,6 @@ void AudioTimingControllerDialogue::GetRenderingStyles(AudioRenderingStyleRanges
 {
 	active_line.GetStyleRange(&ranges);
 	for (auto const& line : selected_lines)
-		line.GetStyleRange(&ranges);
-	for (auto const& line : inactive_lines)
 		line.GetStyleRange(&ranges);
 }
 
@@ -521,8 +510,7 @@ void AudioTimingControllerDialogue::Revert()
 		if (active_line.SetLine(line))
 		{
 			AnnounceUpdatedPrimaryRange();
-			if (inactive_line_mode->GetInt() == 0)
-				AnnounceUpdatedStyleRanges();
+			AnnounceUpdatedStyleRanges();
 		}
 		else
 		{
@@ -675,71 +663,7 @@ void AudioTimingControllerDialogue::SetMarkers(std::vector<AudioMarker*> const& 
 
 void AudioTimingControllerDialogue::RegenerateInactiveLines()
 {
-	using pred = bool(*)(AssDialogue const&);
-	auto predicate = inactive_line_comments->GetBool()
-		? static_cast<pred>([](AssDialogue const&) { return true; })
-		: static_cast<pred>([](AssDialogue const& d) { return !d.Comment; });
-
-	bool was_empty = inactive_lines.empty();
-	inactive_lines.clear();
-
-	auto const& sel = context->selectionController->GetSelectedSet();
-
-	switch (int mode = inactive_line_mode->GetInt())
-	{
-	case 1: // Previous line only
-	case 2: // Previous and next lines
-		if (AssDialogue *line = context->selectionController->GetActiveLine())
-		{
-			auto current_line = context->ass->iterator_to(*line);
-			if (current_line == context->ass->Events.end())
-				break;
-
-			if (current_line != context->ass->Events.begin())
-			{
-				auto prev = current_line;
-				while (--prev != context->ass->Events.begin() && !predicate(*prev)) ;
-				if (predicate(*prev))
-					AddInactiveLine(sel, &*prev);
-			}
-
-			if (mode == 2)
-			{
-				auto next = std::find_if(++current_line, context->ass->Events.end(), predicate);
-				if (next != context->ass->Events.end())
-					AddInactiveLine(sel, &*next);
-			}
-		}
-		break;
-	case 3: // All inactive lines
-	{
-		AssDialogue *active_line = context->selectionController->GetActiveLine();
-		for (auto& line : context->ass->Events)
-		{
-			if (&line != active_line && predicate(line))
-				AddInactiveLine(sel, &line);
-		}
-		break;
-	}
-	default:
-		if (was_empty)
-		{
-			RegenerateMarkers();
-			return;
-		}
-	}
-
-	AnnounceUpdatedStyleRanges();
-
 	RegenerateMarkers();
-}
-
-void AudioTimingControllerDialogue::AddInactiveLine(Selection const& sel, AssDialogue *diag)
-{
-	if (sel.count(diag)) return;
-
-	inactive_lines.emplace_back(AudioStyle_Inactive, &style_inactive, &style_inactive);
-	inactive_lines.back().SetLine(diag);
 }
 
 void AudioTimingControllerDialogue::RegenerateSelectedLines()
@@ -770,8 +694,6 @@ void AudioTimingControllerDialogue::RegenerateMarkers()
 	active_line.GetMarkers(&markers);
 	for (auto const& line : selected_lines)
 		line.GetMarkers(&markers);
-	for (auto const& line : inactive_lines)
-		line.GetMarkers(&markers);
 	boost::sort(markers, marker_ptr_cmp());
 
 	AnnounceMarkerMoved();
@@ -795,7 +717,7 @@ int AudioTimingControllerDialogue::SnapMarkers(int snap_range, std::vector<Audio
 	}();
 
 	std::vector<int> inactive_markers;
-	inactive_markers.reserve(inactive_lines.size() * 2 + selected_lines.size() * 2 + 2 - active.size());
+	inactive_markers.reserve(selected_lines.size() * 2 + 2 - active.size());
 
 	// Add a marker to the set to check for snaps if it's in the right time
 	// range, isn't at the same place as a marker already in the set, and isn't
@@ -809,14 +731,6 @@ int AudioTimingControllerDialogue::SnapMarkers(int snap_range, std::vector<Audio
 	};
 
 	bool moving_entire_selection = clicked_ms != INT_MIN;
-	for (auto const& line : inactive_lines)
-	{
-		// If we're alt-dragging the entire selection, there can't be any
-		// markers from inactive lines in the active set, so no need to check
-		// for them
-		add_inactive(line.GetLeftMarker(), !moving_entire_selection);
-		add_inactive(line.GetRightMarker(), !moving_entire_selection);
-	}
 
 	// And similarly, there can't be any inactive markers from selected lines
 	if (!moving_entire_selection)

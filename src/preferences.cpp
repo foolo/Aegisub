@@ -143,7 +143,6 @@ void Audio(wxTreebook *book, Preferences *parent) {
 
 	const wxString dtl_arr[] = { _("Don't show"), _("Show previous"), _("Show previous and next"), _("Show all") };
 	wxArrayString choice_dtl(4, dtl_arr);
-	p->OptionChoice(general, _("Show inactive lines"), choice_dtl, "Audio/Inactive Lines Display Mode");
 	p->CellSkip(general);
 	p->OptionAdd(general, _("Include commented inactive lines"), "Audio/Display/Draw/Inactive Comments");
 
