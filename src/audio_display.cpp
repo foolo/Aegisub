@@ -43,6 +43,8 @@
 #include "project.h"
 #include "utils.h"
 #include "video_controller.h"
+#include "ass_file.h"
+#include "ass_dialogue.h"
 
 #include <libaegisub/ass/time.h>
 #include <libaegisub/audio/provider.h>
@@ -575,6 +577,21 @@ void AudioDisplay::OnPaint(wxPaintEvent&)
 			PaintMarkers(dc, updtime);
 			PaintLabels(dc, updtime);
 		}
+	}
+
+	int start_time = TimeFromRelativeX(0 - foot_size);
+	int end_time = TimeFromRelativeX(GetClientSize().GetWidth() + foot_size);
+
+	dc.SetPen(*wxWHITE);
+	dc.SetBrush(*wxTRANSPARENT_BRUSH);
+	for (AssDialogue& line : context->ass->Events) {
+		bool off_screen = (line.Start > end_time) || (line.End < start_time);
+		if (off_screen) {
+			continue;
+		}
+		int x1 = RelativeXFromTime(line.Start);
+		int x2 = RelativeXFromTime(line.End);
+		dc.DrawRoundedRectangle(wxRect(x1, audio_top, x2-x1, audio_height), 5);
 	}
 
 	if (redraw_timeline)
