@@ -51,6 +51,10 @@ void SelectionController::SetSelectionAndActive(Selection new_selection, AssDial
 		AnnounceActiveLineChanged(new_line);
 }
 
+bool SelectionController::IsSelected(AssDialogue *line) const {
+	return selection.find(line) != selection.end();
+}
+
 std::vector<AssDialogue *> SelectionController::GetSortedSelection() const {
 	std::vector<AssDialogue *> ret(selection.begin(), selection.end());
 	sort(begin(ret), end(ret), [](AssDialogue *a, AssDialogue *b) { return a->Row < b->Row; });

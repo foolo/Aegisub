@@ -45,6 +45,7 @@
 #include "video_controller.h"
 #include "ass_file.h"
 #include "ass_dialogue.h"
+#include "selection_controller.h"
 
 #include <libaegisub/ass/time.h>
 #include <libaegisub/audio/provider.h>
@@ -553,6 +554,11 @@ void AudioDisplay::OnLoadTimer(wxTimerEvent&)
 	}
 }
 
+const int SUBTITLE_ALPHA = 160;
+const wxColour ACTIVE_SUBTITLE_COLOR(128, 255, 128, SUBTITLE_ALPHA);
+const wxColour SELECTED_SUBITLE_COLOR(192, 255, 192, SUBTITLE_ALPHA);
+const wxColour INACTIVE_SUBTITLE_COLOR(255, 255, 255, SUBTITLE_ALPHA);
+
 void AudioDisplay::OnPaint(wxPaintEvent&)
 {
 	if (!audio_renderer_provider || !provider) return;
@@ -585,12 +591,22 @@ void AudioDisplay::OnPaint(wxPaintEvent&)
 	int end_time = TimeFromRelativeX(GetClientSize().GetWidth() + foot_size);
 
 	gc->SetPen(*wxWHITE);
-	gc->SetBrush(wxColour(255, 255, 255, 100));
 	for (AssDialogue& line : context->ass->Events) {
 		bool off_screen = (line.Start > end_time) || (line.End < start_time);
 		if (off_screen) {
 			continue;
 		}
+
+		if (&line == context->selectionController->GetActiveLine()) {
+			gc->SetBrush(ACTIVE_SUBTITLE_COLOR);
+		}
+		else if (context->selectionController->IsSelected(&line)) {
+			gc->SetBrush(SELECTED_SUBITLE_COLOR);
+		}
+		else {
+			gc->SetBrush(INACTIVE_SUBTITLE_COLOR);
+		}
+
 		int x1 = RelativeXFromTime(line.Start);
 		int x2 = RelativeXFromTime(line.End);
 		gc->DrawRoundedRectangle(x1, audio_top, x2-x1, audio_height, 5);

@@ -81,6 +81,8 @@ public:
 	/// @return The selected set
 	Selection const& GetSelectedSet() const { return selection; }
 
+	bool IsSelected(AssDialogue *line) const;
+
 	/// Get the selection sorted by row number
 	std::vector<AssDialogue *> GetSortedSelection() const;
 
