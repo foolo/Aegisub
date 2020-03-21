@@ -474,7 +474,6 @@ void AudioTimingControllerDialogue::Revert()
 		if (active_line.SetLine(line))
 		{
 			AnnounceUpdatedPrimaryRange();
-			AnnounceUpdatedStyleRanges();
 		}
 		else
 		{
@@ -573,7 +572,6 @@ void AudioTimingControllerDialogue::OnMarkerDrag(std::vector<AudioMarker*> const
 void AudioTimingControllerDialogue::UpdateSelection()
 {
 	AnnounceUpdatedPrimaryRange();
-	AnnounceUpdatedStyleRanges();
 }
 
 void AudioTimingControllerDialogue::SetMarkers(std::vector<AudioMarker*> const& upd_markers, int ms, int snap_range)
@@ -646,7 +644,6 @@ void AudioTimingControllerDialogue::RegenerateSelectedLines()
 
 	if (!selected_lines.empty() || !was_empty)
 	{
-		AnnounceUpdatedStyleRanges();
 		RegenerateMarkers();
 	}
 }

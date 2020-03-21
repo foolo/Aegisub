@@ -291,7 +291,6 @@ class AudioDisplay: public wxWindow {
 	void OnAudioOpen(agi::AudioProvider *provider);
 	void OnPlaybackPosition(int ms_position);
 	void OnSelectionChanged();
-	void OnStyleRangesChanged();
 	void OnTimingController();
 	void OnMarkerMoved();
 

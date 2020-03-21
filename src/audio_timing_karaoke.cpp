@@ -174,7 +174,6 @@ void AudioTimingControllerKaraoke::Next(NextMode mode) {
 	}
 	else {
 		AnnounceUpdatedPrimaryRange();
-		AnnounceUpdatedStyleRanges();
 	}
 
 	c->audioController->PlayPrimaryRange();
@@ -187,13 +186,11 @@ void AudioTimingControllerKaraoke::Prev() {
 		if (old_line != active_line) {
 			cur_syl = markers.size();
 			AnnounceUpdatedPrimaryRange();
-			AnnounceUpdatedStyleRanges();
 		}
 	}
 	else {
 		--cur_syl;
 		AnnounceUpdatedPrimaryRange();
-		AnnounceUpdatedStyleRanges();
 	}
 
 	c->audioController->PlayPrimaryRange();
@@ -262,7 +259,6 @@ void AudioTimingControllerKaraoke::Revert() {
 	}
 
 	AnnounceUpdatedPrimaryRange();
-	AnnounceUpdatedStyleRanges();
 	AnnounceMarkerMoved();
 }
 
@@ -282,8 +278,6 @@ void AudioTimingControllerKaraoke::ApplyLead(bool announce_primary) {
 	active_line->Start = (int)start_marker;
 	active_line->End = (int)end_marker;
 	kara->SetLineTimes(start_marker, end_marker);
-	if (!announce_primary)
-		AnnounceUpdatedStyleRanges();
 	AnnounceChanges(announce_primary ? cur_syl : cur_syl + 2);
 }
 
@@ -342,7 +336,6 @@ std::vector<AudioMarker*> AudioTimingControllerKaraoke::OnLeftClick(int ms, bool
 	cur_syl = syl;
 
 	AnnounceUpdatedPrimaryRange();
-	AnnounceUpdatedStyleRanges();
 
 	return {};
 }
@@ -351,7 +344,6 @@ std::vector<AudioMarker*> AudioTimingControllerKaraoke::OnRightClick(int ms, boo
 	cur_syl = distance(markers.begin(), lower_bound(markers.begin(), markers.end(), ms));
 
 	AnnounceUpdatedPrimaryRange();
-	AnnounceUpdatedStyleRanges();
 	c->audioController->PlayPrimaryRange();
 
 	return {};
@@ -383,7 +375,6 @@ void AudioTimingControllerKaraoke::AnnounceChanges(int syl) {
 
 	if ((size_t)syl == cur_syl || (size_t)syl == cur_syl + 1) {
 		AnnounceUpdatedPrimaryRange();
-		AnnounceUpdatedStyleRanges();
 	}
 	AnnounceMarkerMoved();
 	AnnounceLabelChanged();

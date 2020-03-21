@@ -920,9 +920,7 @@ void AudioDisplay::OnTimingController()
 	{
 		timing_controller->AddMarkerMovedListener(&AudioDisplay::OnMarkerMoved, this);
 		timing_controller->AddUpdatedPrimaryRangeListener(&AudioDisplay::OnSelectionChanged, this);
-		timing_controller->AddUpdatedStyleRangesListener(&AudioDisplay::OnStyleRangesChanged, this);
 
-		OnStyleRangesChanged();
 		OnMarkerMoved();
 		OnSelectionChanged();
 	}
@@ -995,12 +993,6 @@ void AudioDisplay::OnScrollTimer(wxTimerEvent &event)
 	{
 		ScrollBy(rel_x - width + width / 20);
 	}
-}
-
-void AudioDisplay::OnStyleRangesChanged()
-{
-	if (!controller->GetTimingController()) return;
-	RefreshRect(wxRect(0, audio_top, GetClientSize().GetWidth(), audio_height), false);
 }
 
 void AudioDisplay::OnMarkerMoved()

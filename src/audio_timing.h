@@ -53,9 +53,6 @@ protected:
 	/// The primary playback range has changed, usually as a result of user interaction.
 	agi::signal::Signal<> AnnounceUpdatedPrimaryRange;
 
-	/// One or more rendering style ranges have changed in the timing controller.
-	agi::signal::Signal<> AnnounceUpdatedStyleRanges;
-
 public:
 	/// @brief Get any warning message to show in the audio display
 	/// @return The warning message to show, may be empty if there is none
@@ -171,7 +168,6 @@ public:
 	virtual ~AudioTimingController() = default;
 
 	DEFINE_SIGNAL_ADDERS(AnnounceUpdatedPrimaryRange, AddUpdatedPrimaryRangeListener)
-	DEFINE_SIGNAL_ADDERS(AnnounceUpdatedStyleRanges, AddUpdatedStyleRangesListener)
 };
 
 /// @brief Create a standard dialogue audio timing controller
