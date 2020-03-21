@@ -54,6 +54,7 @@
 
 #include <wx/dcbuffer.h>
 #include <wx/mousestate.h>
+#include <wx/graphics.h>
 
 void UIColours::SetColourScheme(std::string const& name)
 {
@@ -579,11 +580,12 @@ void AudioDisplay::OnPaint(wxPaintEvent&)
 		}
 	}
 
+	wxGraphicsContext *gc = wxGraphicsContext::Create(dc);
 	int start_time = TimeFromRelativeX(0 - foot_size);
 	int end_time = TimeFromRelativeX(GetClientSize().GetWidth() + foot_size);
 
-	dc.SetPen(*wxWHITE);
-	dc.SetBrush(*wxTRANSPARENT_BRUSH);
+	gc->SetPen(*wxWHITE);
+	gc->SetBrush(wxColour(255, 255, 255, 100));
 	for (AssDialogue& line : context->ass->Events) {
 		bool off_screen = (line.Start > end_time) || (line.End < start_time);
 		if (off_screen) {
@@ -591,7 +593,7 @@ void AudioDisplay::OnPaint(wxPaintEvent&)
 		}
 		int x1 = RelativeXFromTime(line.Start);
 		int x2 = RelativeXFromTime(line.End);
-		dc.DrawRoundedRectangle(wxRect(x1, audio_top, x2-x1, audio_height), 5);
+		gc->DrawRoundedRectangle(x1, audio_top, x2-x1, audio_height, 5);
 	}
 
 	if (redraw_timeline)
