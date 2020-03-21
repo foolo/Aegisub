@@ -241,9 +241,6 @@ class AudioDisplay: public wxWindow {
 
 	void JumpToTime(int mouse_x);
 
-	/// Previous style ranges for optimizing redraw when ranges change
-	std::vector<std::pair<int, int>> style_ranges;
-
 	/// @brief Reload all rendering settings from Options and reset caches
 	///
 	/// This can be called if some rendering quality settings have been changed

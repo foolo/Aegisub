@@ -33,6 +33,7 @@
 ///
 /// Manage colour schemes for the audio display
 
+#pragma once
 
 #include <vector>
 
@@ -69,7 +70,7 @@ public:
 	/// @param audio_rendering_style AudioRenderingStyle to init this colorscheme for
 	///
 	/// Allocates the palette array to 2^prec entries
-	AudioColorScheme(int prec, std::string const& scheme_name, int audio_rendering_style);
+	AudioColorScheme(int prec, std::string const& scheme_name);
 
 	/// @brief Map a floating point value to RGB
 	/// @param val   [in] The value to map from

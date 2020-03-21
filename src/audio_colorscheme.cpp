@@ -29,25 +29,16 @@
 
 #include "audio_colorscheme.h"
 
-#include "audio_rendering_style.h"
 #include "colorspace.h"
 #include "options.h"
 
 #include <libaegisub/exception.h>
 
-AudioColorScheme::AudioColorScheme(int prec, std::string const& scheme_name, int audio_rendering_style)
+AudioColorScheme::AudioColorScheme(int prec, std::string const& scheme_name)
 : palette((3<<prec) + 3)
 , factor((size_t)1<<prec)
 {
-	std::string opt_base = "Colour/Schemes/" + scheme_name + "/";
-	switch (static_cast<AudioRenderingStyle>(audio_rendering_style))
-	{
-		case AudioStyle_Normal:   opt_base += "Normal/"; break;
-		case AudioStyle_Inactive: opt_base += "Inactive/"; break;
-		case AudioStyle_Selected: opt_base += "Selection/"; break;
-		case AudioStyle_Primary:  opt_base += "Primary/"; break;
-		default: throw agi::InternalError("Unknown audio rendering styling");
-	}
+	std::string opt_base = "Colour/Schemes/" + scheme_name + "/" + "Normal/";
 
 	double h_base  = OPT_GET(opt_base + "Hue Offset")->GetDouble();
 	double h_scale = OPT_GET(opt_base + "Hue Scale")->GetDouble();

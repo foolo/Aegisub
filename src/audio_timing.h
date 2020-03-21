@@ -34,7 +34,6 @@
 class AssDialogue;
 class AssFile;
 class AssKaraoke;
-class AudioRenderingStyleRanges;
 namespace agi { struct Context; }
 
 #include "audio_marker.h"
@@ -81,10 +80,6 @@ public:
 	/// Get the time range which the active line would have if any pending
 	/// modifications were committed.
 	virtual TimeRange GetActiveLineRange() const = 0;
-
-	/// @brief Get all rendering style ranges
-	/// @param[out] ranges Rendering ranges will be added to this
-	virtual void GetRenderingStyles(AudioRenderingStyleRanges &ranges) const = 0;
 
 	enum NextMode {
 		/// Advance to the next timing unit, whether it's a line or a sub-part

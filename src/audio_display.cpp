@@ -228,59 +228,6 @@ void AudioDisplayTimeline::Paint(wxDC &dc)
 	} while (next_scale_mark_pos < bounds.width);
 }
 
-namespace {
-
-class AudioStyleRangeMerger final : public AudioRenderingStyleRanges {
-	typedef std::map<int, AudioRenderingStyle> style_map;
-public:
-	typedef style_map::iterator iterator;
-
-private:
-	style_map points;
-
-	void Split(int point)
-	{
-		auto it = points.lower_bound(point);
-		if (it == points.end() || it->first != point)
-		{
-			assert(it != points.begin());
-			points[point] = (--it)->second;
-		}
-	}
-
-	void Restyle(int start, int end, AudioRenderingStyle style)
-	{
-		assert(points.lower_bound(end) != points.end());
-		for (auto pt = points.lower_bound(start); pt->first < end; ++pt)
-		{
-			if (style > pt->second)
-				pt->second = style;
-		}
-	}
-
-public:
-	AudioStyleRangeMerger()
-	{
-		points[0] = AudioStyle_Normal;
-	}
-
-	void AddRange(int start, int end, AudioRenderingStyle style) override
-	{
-
-		if (start < 0) start = 0;
-		if (end < start) return;
-
-		Split(start);
-		Split(end);
-		Restyle(start, end, style);
-	}
-
-	iterator begin() { return points.begin(); }
-	iterator end() { return points.end(); }
-};
-
-} // namespace
-
 class AudioMarkerInteractionObject final : public AudioDisplayInteractionObject {
 	// Object-pair being interacted with
 	std::vector<AudioMarker*> markers;
@@ -329,7 +276,6 @@ AudioDisplay::AudioDisplay(wxWindow *parent, AudioController *controller, agi::C
 , controller(controller)
 , timeline(agi::make_unique<AudioDisplayTimeline>(this))
 , state(DRAGGING_IDLE)
-, style_ranges({{0, 0}})
 {
 	audio_renderer->SetAmplitudeScale(scale_amplitude);
 	SetZoomLevel(0);
@@ -621,20 +567,10 @@ void AudioDisplay::OnPaint(wxPaintEvent&)
 
 void AudioDisplay::PaintAudio(wxDC &dc, const TimeRange updtime, const wxRect updrect)
 {
-	auto pt = begin(style_ranges), pe = end(style_ranges);
-	while (pt != pe && pt + 1 != pe && (pt + 1)->first < updtime.begin()) ++pt;
-
-	while (pt != pe && pt->first < updtime.end())
-	{
-		const auto range_style = static_cast<AudioRenderingStyle>(pt->second);
-		const int range_x1 = std::max(updrect.x, RelativeXFromTime(pt->first));
-		int range_x2 = updrect.x + updrect.width;
-		if (++pt != pe)
-			range_x2 = std::min(range_x2, RelativeXFromTime(pt->first));
-
-		if (range_x2 > range_x1)
-			audio_renderer->Render(dc, wxPoint(range_x1, audio_top),
-				range_x1 + scroll_left, range_x2 - range_x1, range_style);
+	const int range_x1 = updrect.x;
+	int range_x2 = updrect.x + updrect.width;
+	if (range_x2 > range_x1) {
+		audio_renderer->Render(dc, wxPoint(range_x1, audio_top), range_x1 + scroll_left, range_x2 - range_x1);
 	}
 }
 
@@ -1064,13 +1000,6 @@ void AudioDisplay::OnScrollTimer(wxTimerEvent &event)
 void AudioDisplay::OnStyleRangesChanged()
 {
 	if (!controller->GetTimingController()) return;
-
-	AudioStyleRangeMerger asrm;
-	controller->GetTimingController()->GetRenderingStyles(asrm);
-
-	style_ranges.clear();
-	for (auto pair : asrm) style_ranges.push_back(pair);
-
 	RefreshRect(wxRect(0, audio_top, GetClientSize().GetWidth(), audio_height), false);
 }
 

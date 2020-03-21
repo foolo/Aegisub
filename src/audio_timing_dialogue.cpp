@@ -30,7 +30,6 @@
 #include "ass_dialogue.h"
 #include "ass_file.h"
 #include "audio_marker.h"
-#include "audio_rendering_style.h"
 #include "audio_timing.h"
 #include "command/command.h"
 #include "include/aegisub/context.h"
@@ -63,9 +62,6 @@ class DialogueTimingMarker final : public AudioMarker {
 	/// Feet style for the marker
 	FeetStyle feet;
 
-	/// Rendering style of the owning line, needed for sorting
-	AudioRenderingStyle type;
-
 	/// The line which owns this marker
 	TimeableLine *line;
 
@@ -87,11 +83,10 @@ public:
 	/// @param feet Foot style of this marker
 	/// @param type Type of this marker, used only for sorting
 	/// @param line Line which this is a marker for
-	DialogueTimingMarker(int position, const Pen *style, FeetStyle feet, AudioRenderingStyle type, TimeableLine *line)
+	DialogueTimingMarker(int position, const Pen *style, FeetStyle feet, TimeableLine *line)
 	: position(position)
 	, style(style)
 	, feet(feet)
-	, type(type)
 	, line(line)
 	{
 	}
@@ -100,7 +95,6 @@ public:
 	: position(other.position)
 	, style(other.style)
 	, feet(other.feet)
-	, type(other.type)
 	, line(line)
 	{
 	}
@@ -117,9 +111,7 @@ public:
 	/// markers for the active line end up after those for the inactive lines.
 	bool operator<(DialogueTimingMarker const& other) const
 	{
-		if (position < other.position) return true;
-		if (position > other.position) return false;
-		return type < other.type;
+		return (position < other.position);
 	}
 
 	/// Swap the rendering style of this marker with that of the passed marker
@@ -158,8 +150,6 @@ struct marker_ptr_cmp
 class TimeableLine {
 	/// The current tracked dialogue line
 	AssDialogue *line = nullptr;
-	/// The rendering style of this line
-	AudioRenderingStyle style;
 
 	/// One of the markers. Initially the left marker, but the user may change this.
 	DialogueTimingMarker marker1;
@@ -176,21 +166,9 @@ public:
 	/// @param style Rendering style to use for this line's time range
 	/// @param style_left The rendering style for the start marker
 	/// @param style_right The rendering style for the end marker
-	TimeableLine(AudioRenderingStyle style, const Pen *style_left, const Pen *style_right)
-	: style(style)
-	, marker1(0, style_left, AudioMarker::Feet_Right, style, this)
-	, marker2(0, style_right, AudioMarker::Feet_Left, style, this)
-	, left_marker(&marker1)
-	, right_marker(&marker2)
-	{
-	}
-
-	/// Explicit copy constructor needed due to that the markers have a pointer to this
-	TimeableLine(TimeableLine const& other)
-	: line(other.line)
-	, style(other.style)
-	, marker1(*other.left_marker, this)
-	, marker2(*other.right_marker, this)
+	TimeableLine(const Pen *style_left, const Pen *style_right)
+	: marker1(0, style_left, AudioMarker::Feet_Right, this)
+	, marker2(0, style_right, AudioMarker::Feet_Left, this)
 	, left_marker(&marker1)
 	, right_marker(&marker2)
 	{
@@ -201,12 +179,6 @@ public:
 
 	/// Get the time range for this line
 	operator TimeRange() const { return TimeRange(*left_marker, *right_marker); }
-
-	/// Add this line's style to the style ranges
-	void GetStyleRange(AudioRenderingStyleRanges *ranges) const
-	{
-		ranges->AddRange(*left_marker, *right_marker, style);
-	}
 
 	/// Get this line's markers
 	/// @param c Vector to add the markers to
@@ -369,7 +341,6 @@ public:
 	void GetMarkers(const TimeRange &range, AudioMarkerVector &out_markers) const override;
 
 	// AudioTimingController interface
-	void GetRenderingStyles(AudioRenderingStyleRanges &ranges) const override;
 	void GetLabels(TimeRange const& range, std::vector<AudioLabel> &out) const override { }
 	void Next(NextMode mode) override;
 	void Prev() override;
@@ -396,7 +367,7 @@ public:
 };
 
 AudioTimingControllerDialogue::AudioTimingControllerDialogue(agi::Context *c)
-: active_line(AudioStyle_Primary, &style_left, &style_right)
+: active_line(&style_left, &style_right)
 , keyframes_provider(c, "Audio/Display/Draw/Keyframes in Dialogue Mode")
 , video_position_provider(c)
 , context(c)
@@ -437,13 +408,6 @@ void AudioTimingControllerDialogue::OnFileChanged(int type) {
 		Revert();
 	else if (type & AssFile::COMMIT_DIAG_ADDREM)
 		RegenerateInactiveLines();
-}
-
-void AudioTimingControllerDialogue::GetRenderingStyles(AudioRenderingStyleRanges &ranges) const
-{
-	active_line.GetStyleRange(&ranges);
-	for (auto const& line : selected_lines)
-		line.GetStyleRange(&ranges);
 }
 
 void AudioTimingControllerDialogue::Next(NextMode mode)
@@ -676,7 +640,7 @@ void AudioTimingControllerDialogue::RegenerateSelectedLines()
 	{
 		if (line == active) continue;
 
-		selected_lines.emplace_back(AudioStyle_Selected, &style_inactive, &style_inactive);
+		selected_lines.emplace_back(&style_inactive, &style_inactive);
 		selected_lines.back().SetLine(line);
 	}
 

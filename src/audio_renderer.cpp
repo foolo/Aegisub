@@ -66,11 +66,8 @@ size_t AudioRendererBitmapCacheBitmapFactory::GetBlockSize() const
 }
 
 AudioRenderer::AudioRenderer()
+: bitmap(256, AudioRendererBitmapCacheBitmapFactory(this))
 {
-	bitmaps.reserve(AudioStyle_MAX);
-	for (int i = 0; i < AudioStyle_MAX; ++i)
-		bitmaps.emplace_back(256, AudioRendererBitmapCacheBitmapFactory(this));
-
 	// Make sure there's *some* values for those fields, and in the caches
 	SetMillisecondsPerPixel(1);
 	SetHeight(1);
@@ -148,7 +145,7 @@ void AudioRenderer::ResetBlockCount()
 	if (provider)
 	{
 		const size_t total_blocks = NumBlocks(provider->GetNumSamples());
-		for (auto& bmp : bitmaps) bmp.SetBlockCount(total_blocks);
+		bitmap.SetBlockCount(total_blocks);
 	}
 }
 
@@ -158,16 +155,16 @@ size_t AudioRenderer::NumBlocks(const int64_t samples) const
 	return static_cast<size_t>(duration / pixel_ms / cache_bitmap_width);
 }
 
-wxBitmap const& AudioRenderer::GetCachedBitmap(const int i, const AudioRenderingStyle style)
+wxBitmap const& AudioRenderer::GetCachedBitmap(const int i)
 {
 	assert(provider);
 	assert(renderer);
 
 	bool created = false;
-	auto& bmp = bitmaps[style].Get(i, &created);
+	auto& bmp = bitmap.Get(i, &created);
 	if (created)
 	{
-		renderer->Render(bmp, i*cache_bitmap_width, style);
+		renderer->Render(bmp, i*cache_bitmap_width);
 		needs_age = true;
 	}
 
@@ -175,7 +172,7 @@ wxBitmap const& AudioRenderer::GetCachedBitmap(const int i, const AudioRendering
 	return bmp;
 }
 
-void AudioRenderer::Render(wxDC &dc, wxPoint origin, const int start, const int length, const AudioRenderingStyle style)
+void AudioRenderer::Render(wxDC &dc, wxPoint origin, const int start, const int length)
 {
 	assert(start >= 0);
 
@@ -201,17 +198,17 @@ void AudioRenderer::Render(wxDC &dc, wxPoint origin, const int start, const int 
 
 	for (int i = firstbitmap; i <= lastbitmap; ++i)
 	{
-		dc.DrawBitmap(GetCachedBitmap(i, style), origin);
+		dc.DrawBitmap(GetCachedBitmap(i), origin);
 		origin.x += cache_bitmap_width;
 	}
 
 	// Now render blank audio from origin to end
 	if (origin.x < lastx)
-		renderer->RenderBlank(dc, wxRect(origin.x-1, origin.y, lastx-origin.x+1, pixel_height), style);
+		renderer->RenderBlank(dc, wxRect(origin.x-1, origin.y, lastx-origin.x+1, pixel_height));
 
 	if (needs_age)
 	{
-		bitmaps[style].Age(cache_bitmap_maxsize);
+		bitmap.Age(cache_bitmap_maxsize);
 		renderer->AgeCache(cache_renderer_maxsize);
 		needs_age = false;
 	}
@@ -219,7 +216,7 @@ void AudioRenderer::Render(wxDC &dc, wxPoint origin, const int start, const int 
 
 void AudioRenderer::Invalidate()
 {
-	for (auto& bmp : bitmaps) bmp.Age(0);
+	bitmap.Age(0);
 	needs_age = false;
 }
 

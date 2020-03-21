@@ -28,17 +28,17 @@
 // Aegisub Project http://www.aegisub.org/
 
 #include "audio_renderer.h"
+#include "audio_colorscheme.h"
 
 #include <memory>
 #include <vector>
 
-class AudioColorScheme;
 class wxArrayString;
 
 /// Render a waveform display of PCM audio data
 class AudioWaveformRenderer final : public AudioRendererBitmapProvider {
 	/// Colour tables used for rendering
-	std::vector<AudioColorScheme> colors;
+	AudioColorScheme color;
 
 	/// Pre-allocated buffer for audio fetched from provider
 	std::unique_ptr<char[]> audio_buffer;
@@ -61,10 +61,10 @@ public:
 	/// @param bmp   [in,out] Bitmap to render into, also carries length information
 	/// @param start First column of pixel data in display to render
 	/// @param style Style to render audio in
-	void Render(wxBitmap &bmp, int start, AudioRenderingStyle style) override;
+	void Render(wxBitmap &bmp, int start) override;
 
 	/// @brief Render blank area
-	void RenderBlank(wxDC &dc, const wxRect &rect, AudioRenderingStyle style) override;
+	void RenderBlank(wxDC &dc, const wxRect &rect) override;
 
 	/// @brief Cleans up the cache
 	/// @param max_size Maximum size in bytes for the cache

@@ -85,10 +85,8 @@ public:
 };
 
 AudioSpectrumRenderer::AudioSpectrumRenderer(std::string const& color_scheme_name)
+: color(6, color_scheme_name)
 {
-	colors.reserve(AudioStyle_MAX);
-	for (int i = 0; i < AudioStyle_MAX; ++i)
-		colors.emplace_back(12, color_scheme_name, i);
 }
 
 AudioSpectrumRenderer::~AudioSpectrumRenderer()
@@ -209,7 +207,7 @@ void AudioSpectrumRenderer::FillBlock(size_t block_index, float *block)
 #endif
 }
 
-void AudioSpectrumRenderer::Render(wxBitmap &bmp, int start, AudioRenderingStyle style)
+void AudioSpectrumRenderer::Render(wxBitmap &bmp, int start)
 {
 	if (!cache)
 		return;
@@ -229,7 +227,7 @@ void AudioSpectrumRenderer::Render(wxBitmap &bmp, int start, AudioRenderingStyle
 	ptrdiff_t stride = img.GetWidth()*3;
 	int imgheight = img.GetHeight();
 
-	const AudioColorScheme *pal = &colors[style];
+	const AudioColorScheme *pal = &color;
 
 	/// @todo Make minband and maxband configurable
 	int minband = 0;
@@ -283,10 +281,10 @@ void AudioSpectrumRenderer::Render(wxBitmap &bmp, int start, AudioRenderingStyle
 	targetdc.DrawBitmap(tmpbmp, 0, 0);
 }
 
-void AudioSpectrumRenderer::RenderBlank(wxDC &dc, const wxRect &rect, AudioRenderingStyle style)
+void AudioSpectrumRenderer::RenderBlank(wxDC &dc, const wxRect &rect)
 {
 	// Get the colour of silence
-	wxColour col = colors[style].get(0.0f);
+	wxColour col = color.get(0.0f);
 	dc.SetBrush(wxBrush(col));
 	dc.SetPen(wxPen(col));
 	dc.DrawRectangle(rect);
