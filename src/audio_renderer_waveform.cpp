@@ -45,28 +45,30 @@ enum {
 	Waveform_Continuous
 };
 
-AudioWaveformRenderer::AudioWaveformRenderer(std::string const& color_scheme_name)
+AudioWaveformRenderer::AudioWaveformRenderer()
 : render_averages(OPT_GET("Audio/Display/Waveform Style")->GetInt() == Waveform_MaxAvg)
 {
-	colors.reserve(AudioStyle_MAX);
-	for (int i = 0; i < AudioStyle_MAX; ++i)
-		colors.emplace_back(6, color_scheme_name, i);
 }
 
 AudioWaveformRenderer::~AudioWaveformRenderer() { }
 
-void AudioWaveformRenderer::Render(wxBitmap &bmp, int start, AudioRenderingStyle style)
+
+const wxBrush BACKGROUND_COLOR = *wxWHITE_BRUSH;
+const wxPen PEAKS_COLOR = *wxBLACK_PEN;
+const wxPen AVGS_COLOR(wxColour(0, 128, 0));
+const wxPen AVGS_MIDPOINT_COLOR(wxColour(0, 160, 0));
+const wxPen LINE_COLOR = *wxRED_PEN;
+
+void AudioWaveformRenderer::Render(wxBitmap &bmp, int start)
 {
 	wxMemoryDC dc(bmp);
 	wxRect rect(wxPoint(0, 0), bmp.GetSize());
 	int midpoint = rect.height / 2;
 
-	const AudioColorScheme *pal = &colors[style];
-
 	double pixel_samples = pixel_ms * provider->GetSampleRate() / 1000.0;
 
 	// Fill the background
-	dc.SetBrush(wxBrush(pal->get(0.0f)));
+	dc.SetBrush(BACKGROUND_COLOR);
 	dc.SetPen(*wxTRANSPARENT_PEN);
 	dc.DrawRectangle(rect);
 
@@ -82,9 +84,6 @@ void AudioWaveformRenderer::Render(wxBitmap &bmp, int start, AudioRenderingStyle
 
 	assert(provider->GetBytesPerSample() == 2);
 	assert(provider->GetChannels() == 1);
-
-	wxPen pen_peaks(wxPen(pal->get(0.4f)));
-	wxPen pen_avgs(wxPen(pal->get(0.7f)));
 
 	for (int x = 0; x < rect.width; ++x)
 	{
@@ -114,39 +113,35 @@ void AudioWaveformRenderer::Render(wxBitmap &bmp, int start, AudioRenderingStyle
 		int avg_min = std::max((int)(avg_min_accum * amplitude_scale * midpoint / pixel_samples) / 0x8000, -midpoint);
 		int avg_max = std::min((int)(avg_max_accum * amplitude_scale * midpoint / pixel_samples) / 0x8000, midpoint);
 
-		dc.SetPen(pen_peaks);
+		dc.SetPen(PEAKS_COLOR);
 		dc.DrawLine(x, midpoint - peak_max, x, midpoint - peak_min);
 		if (render_averages) {
-			dc.SetPen(pen_avgs);
+			dc.SetPen(AVGS_COLOR);
 			dc.DrawLine(x, midpoint - avg_max, x, midpoint - avg_min);
 		}
 	}
 
 	// Horizontal zero-point line
 	if (render_averages)
-		dc.SetPen(wxPen(pal->get(1.0f)));
+		dc.SetPen(AVGS_MIDPOINT_COLOR);
 	else
-		dc.SetPen(pen_peaks);
+		dc.SetPen(PEAKS_COLOR);
 
 	dc.DrawLine(0, midpoint, rect.width, midpoint);
 }
 
-void AudioWaveformRenderer::RenderBlank(wxDC &dc, const wxRect &rect, AudioRenderingStyle style)
+void AudioWaveformRenderer::RenderBlank(wxDC &dc, const wxRect &rect)
 {
-	const AudioColorScheme *pal = &colors[style];
-	wxColor line(pal->get(1.0));
-	wxColor bg(pal->get(0.0));
-
 	// Draw the line as background above and below, and line in the middle, to avoid
 	// overdraw flicker (the common theme in all of audio display direct drawing).
 	int halfheight = rect.height / 2;
 
-	dc.SetBrush(wxBrush(bg));
+	dc.SetBrush(BACKGROUND_COLOR);
 	dc.SetPen(*wxTRANSPARENT_PEN);
 	dc.DrawRectangle(rect.x, rect.y, rect.width, halfheight);
 	dc.DrawRectangle(rect.x, rect.y + halfheight + 1, rect.width, rect.height - halfheight - 1);
 
-	dc.SetPen(wxPen(line));
+	dc.SetPen(LINE_COLOR);
 	dc.DrawLine(rect.x, rect.y+halfheight, rect.x+rect.width, rect.y+halfheight);
 }
 

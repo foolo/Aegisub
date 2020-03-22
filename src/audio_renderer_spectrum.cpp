@@ -84,11 +84,8 @@ public:
 	}
 };
 
-AudioSpectrumRenderer::AudioSpectrumRenderer(std::string const& color_scheme_name)
+AudioSpectrumRenderer::AudioSpectrumRenderer()
 {
-	colors.reserve(AudioStyle_MAX);
-	for (int i = 0; i < AudioStyle_MAX; ++i)
-		colors.emplace_back(12, color_scheme_name, i);
 }
 
 AudioSpectrumRenderer::~AudioSpectrumRenderer()
@@ -209,7 +206,7 @@ void AudioSpectrumRenderer::FillBlock(size_t block_index, float *block)
 #endif
 }
 
-void AudioSpectrumRenderer::Render(wxBitmap &bmp, int start, AudioRenderingStyle style)
+void AudioSpectrumRenderer::Render(wxBitmap &bmp, int start)
 {
 	if (!cache)
 		return;
@@ -228,8 +225,6 @@ void AudioSpectrumRenderer::Render(wxBitmap &bmp, int start, AudioRenderingStyle
 	unsigned char *imgdata = img.GetData();
 	ptrdiff_t stride = img.GetWidth()*3;
 	int imgheight = img.GetHeight();
-
-	const AudioColorScheme *pal = &colors[style];
 
 	/// @todo Make minband and maxband configurable
 	int minband = 0;
@@ -258,7 +253,7 @@ void AudioSpectrumRenderer::Render(wxBitmap &bmp, int start, AudioRenderingStyle
 				float sample2 = power[(int)ceil(ideal)+minband];
 				float frac = ideal - floor(ideal);
 				float val = (1-frac)*sample1 + frac*sample2;
-				pal->map(val*amplitude_scale, px);
+				AudioColorScheme::map(val*amplitude_scale, px);
 				px -= stride;
 			}
 		}
@@ -272,7 +267,7 @@ void AudioSpectrumRenderer::Render(wxBitmap &bmp, int start, AudioRenderingStyle
 				int sample1 = std::max(0, maxband * y/imgheight + minband);
 				int sample2 = std::min((1<<derivation_size)-1, maxband * (y+1)/imgheight + minband);
 				float maxval = *std::max_element(&power[sample1], &power[sample2 + 1]);
-				pal->map(maxval*amplitude_scale, px);
+				AudioColorScheme::map(maxval*amplitude_scale, px);
 				px -= stride;
 			}
 		}
@@ -283,10 +278,12 @@ void AudioSpectrumRenderer::Render(wxBitmap &bmp, int start, AudioRenderingStyle
 	targetdc.DrawBitmap(tmpbmp, 0, 0);
 }
 
-void AudioSpectrumRenderer::RenderBlank(wxDC &dc, const wxRect &rect, AudioRenderingStyle style)
+void AudioSpectrumRenderer::RenderBlank(wxDC &dc, const wxRect &rect)
 {
 	// Get the colour of silence
-	wxColour col = colors[style].get(0.0f);
+	unsigned char rgb[3];
+	AudioColorScheme::map(0.0f, rgb);
+	wxColour col(rgb[0], rgb[1], rgb[2]);
 	dc.SetBrush(wxBrush(col));
 	dc.SetPen(wxPen(col));
 	dc.DrawRectangle(rect);

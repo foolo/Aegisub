@@ -34,7 +34,6 @@
 class AssDialogue;
 class AssFile;
 class AssKaraoke;
-class AudioRenderingStyleRanges;
 namespace agi { struct Context; }
 
 #include "audio_marker.h"
@@ -53,9 +52,6 @@ class AudioTimingController : public AudioMarkerProvider, public AudioLabelProvi
 protected:
 	/// The primary playback range has changed, usually as a result of user interaction.
 	agi::signal::Signal<> AnnounceUpdatedPrimaryRange;
-
-	/// One or more rendering style ranges have changed in the timing controller.
-	agi::signal::Signal<> AnnounceUpdatedStyleRanges;
 
 public:
 	/// @brief Get any warning message to show in the audio display
@@ -81,10 +77,6 @@ public:
 	/// Get the time range which the active line would have if any pending
 	/// modifications were committed.
 	virtual TimeRange GetActiveLineRange() const = 0;
-
-	/// @brief Get all rendering style ranges
-	/// @param[out] ranges Rendering ranges will be added to this
-	virtual void GetRenderingStyles(AudioRenderingStyleRanges &ranges) const = 0;
 
 	enum NextMode {
 		/// Advance to the next timing unit, whether it's a line or a sub-part
@@ -176,7 +168,6 @@ public:
 	virtual ~AudioTimingController() = default;
 
 	DEFINE_SIGNAL_ADDERS(AnnounceUpdatedPrimaryRange, AddUpdatedPrimaryRangeListener)
-	DEFINE_SIGNAL_ADDERS(AnnounceUpdatedStyleRanges, AddUpdatedStyleRangesListener)
 };
 
 /// @brief Create a standard dialogue audio timing controller

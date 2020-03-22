@@ -57,31 +57,12 @@
 #include <wx/mousestate.h>
 #include <wx/graphics.h>
 
-void UIColours::SetColourScheme(std::string const& name)
-{
-	std::string opt_prefix = "Colour/Schemes/" + name + "/UI/";
-	light_colour = to_wx(OPT_GET(opt_prefix + "Light")->GetColor());
-	dark_colour = to_wx(OPT_GET(opt_prefix + "Dark")->GetColor());
-	sel_colour = to_wx(OPT_GET(opt_prefix + "Selection")->GetColor());
-
-	opt_prefix = "Colour/Schemes/" + name + "/UI Focused/";
-	light_focused_colour = to_wx(OPT_GET(opt_prefix + "Light")->GetColor());
-	dark_focused_colour = to_wx(OPT_GET(opt_prefix + "Dark")->GetColor());
-	sel_focused_colour = to_wx(OPT_GET(opt_prefix + "Selection")->GetColor());
-}
-
-
 AudioDisplayTimeline::AudioDisplayTimeline(AudioDisplay *display)
 : display(display)
 {
 	int width, height;
 	display->GetTextExtent("0123456789:.", &width, &height);
 	bounds.height = height + 4;
-}
-
-void AudioDisplayTimeline::SetColourScheme(std::string const& name)
-{
-	colours.SetColourScheme(name);
 }
 
 void AudioDisplayTimeline::SetDisplaySize(const wxSize &display_size)
@@ -148,22 +129,25 @@ bool AudioDisplayTimeline::OnMouseEvent(wxMouseEvent &event)
 	return false;
 }
 
+wxColor FOREGROUND_COLOR = *wxBLACK;
+wxColor BACKGROUND_COLOR = *wxWHITE;
+
 void AudioDisplayTimeline::Paint(wxDC &dc)
 {
 	int bottom = bounds.y + bounds.height;
 
 	// Background
-	dc.SetPen(wxPen(colours.Dark()));
-	dc.SetBrush(wxBrush(colours.Dark()));
+	dc.SetPen(wxPen(BACKGROUND_COLOR));
+	dc.SetBrush(wxBrush(BACKGROUND_COLOR));
 	dc.DrawRectangle(bounds);
 
 	// Top line
-	dc.SetPen(wxPen(colours.Light()));
+	dc.SetPen(wxPen(FOREGROUND_COLOR));
 	dc.DrawLine(bounds.x, bottom-1, bounds.x+bounds.width, bottom-1);
 
 	// Prepare for writing text
-	dc.SetTextBackground(colours.Dark());
-	dc.SetTextForeground(colours.Light());
+	dc.SetTextBackground(BACKGROUND_COLOR);
+	dc.SetTextForeground(FOREGROUND_COLOR);
 
 	// Figure out the first scale mark to show
 	int ms_left = int(pixel_left * ms_per_pixel);
@@ -228,59 +212,6 @@ void AudioDisplayTimeline::Paint(wxDC &dc)
 	} while (next_scale_mark_pos < bounds.width);
 }
 
-namespace {
-
-class AudioStyleRangeMerger final : public AudioRenderingStyleRanges {
-	typedef std::map<int, AudioRenderingStyle> style_map;
-public:
-	typedef style_map::iterator iterator;
-
-private:
-	style_map points;
-
-	void Split(int point)
-	{
-		auto it = points.lower_bound(point);
-		if (it == points.end() || it->first != point)
-		{
-			assert(it != points.begin());
-			points[point] = (--it)->second;
-		}
-	}
-
-	void Restyle(int start, int end, AudioRenderingStyle style)
-	{
-		assert(points.lower_bound(end) != points.end());
-		for (auto pt = points.lower_bound(start); pt->first < end; ++pt)
-		{
-			if (style > pt->second)
-				pt->second = style;
-		}
-	}
-
-public:
-	AudioStyleRangeMerger()
-	{
-		points[0] = AudioStyle_Normal;
-	}
-
-	void AddRange(int start, int end, AudioRenderingStyle style) override
-	{
-
-		if (start < 0) start = 0;
-		if (end < start) return;
-
-		Split(start);
-		Split(end);
-		Restyle(start, end, style);
-	}
-
-	iterator begin() { return points.begin(); }
-	iterator end() { return points.end(); }
-};
-
-} // namespace
-
 class AudioMarkerInteractionObject final : public AudioDisplayInteractionObject {
 	// Object-pair being interacted with
 	std::vector<AudioMarker*> markers;
@@ -329,7 +260,6 @@ AudioDisplay::AudioDisplay(wxWindow *parent, AudioController *controller, agi::C
 , controller(controller)
 , timeline(agi::make_unique<AudioDisplayTimeline>(this))
 , state(DRAGGING_IDLE)
-, style_ranges({{0, 0}})
 {
 	audio_renderer->SetAmplitudeScale(scale_amplitude);
 	SetZoomLevel(0);
@@ -490,8 +420,7 @@ void AudioDisplay::ReloadRenderingSettings()
 
 	if (OPT_GET("Audio/Spectrum")->GetBool())
 	{
-		colour_scheme_name = OPT_GET("Colour/Audio Display/Spectrum")->GetString();
-		auto audio_spectrum_renderer = agi::make_unique<AudioSpectrumRenderer>(colour_scheme_name);
+		auto audio_spectrum_renderer = agi::make_unique<AudioSpectrumRenderer>();
 
 		int64_t spectrum_quality = OPT_GET("Audio/Renderer/Spectrum/Quality")->GetInt();
 #ifdef WITH_FFTW3
@@ -512,12 +441,10 @@ void AudioDisplay::ReloadRenderingSettings()
 	}
 	else
 	{
-		colour_scheme_name = OPT_GET("Colour/Audio Display/Waveform")->GetString();
-		audio_renderer_provider = agi::make_unique<AudioWaveformRenderer>(colour_scheme_name);
+		audio_renderer_provider = agi::make_unique<AudioWaveformRenderer>();
 	}
 
 	audio_renderer->SetRenderer(audio_renderer_provider.get());
-	timeline->SetColourScheme(colour_scheme_name);
 
 	Refresh();
 }
@@ -590,7 +517,7 @@ void AudioDisplay::OnPaint(wxPaintEvent&)
 	int start_time = TimeFromRelativeX(0 - foot_size);
 	int end_time = TimeFromRelativeX(GetClientSize().GetWidth() + foot_size);
 
-	gc->SetPen(*wxWHITE);
+	gc->SetPen(*wxBLACK);
 	for (AssDialogue& line : context->ass->Events) {
 		bool off_screen = (line.Start > end_time) || (line.End < start_time);
 		if (off_screen) {
@@ -621,20 +548,10 @@ void AudioDisplay::OnPaint(wxPaintEvent&)
 
 void AudioDisplay::PaintAudio(wxDC &dc, const TimeRange updtime, const wxRect updrect)
 {
-	auto pt = begin(style_ranges), pe = end(style_ranges);
-	while (pt != pe && pt + 1 != pe && (pt + 1)->first < updtime.begin()) ++pt;
-
-	while (pt != pe && pt->first < updtime.end())
-	{
-		const auto range_style = static_cast<AudioRenderingStyle>(pt->second);
-		const int range_x1 = std::max(updrect.x, RelativeXFromTime(pt->first));
-		int range_x2 = updrect.x + updrect.width;
-		if (++pt != pe)
-			range_x2 = std::min(range_x2, RelativeXFromTime(pt->first));
-
-		if (range_x2 > range_x1)
-			audio_renderer->Render(dc, wxPoint(range_x1, audio_top),
-				range_x1 + scroll_left, range_x2 - range_x1, range_style);
+	const int range_x1 = updrect.x;
+	int range_x2 = updrect.x + updrect.width;
+	if (range_x2 > range_x1) {
+		audio_renderer->Render(dc, wxPoint(range_x1, audio_top), range_x1 + scroll_left, range_x2 - range_x1);
 	}
 }
 
@@ -707,7 +624,7 @@ void AudioDisplay::PaintLabels(wxDC &dc, TimeRange updtime)
 
 
 void AudioDisplay::PaintTrackCursor(wxDC &dc) {
-	wxDCPenChanger penchanger(dc, wxPen(*wxWHITE));
+	wxDCPenChanger penchanger(dc, wxPen(*wxBLACK));
 	dc.DrawLine(track_cursor_pos-scroll_left, 0, track_cursor_pos-scroll_left, GetClientSize().GetHeight());
 
 	if (track_cursor_label.empty()) return;
@@ -984,9 +901,7 @@ void AudioDisplay::OnTimingController()
 	{
 		timing_controller->AddMarkerMovedListener(&AudioDisplay::OnMarkerMoved, this);
 		timing_controller->AddUpdatedPrimaryRangeListener(&AudioDisplay::OnSelectionChanged, this);
-		timing_controller->AddUpdatedStyleRangesListener(&AudioDisplay::OnStyleRangesChanged, this);
 
-		OnStyleRangesChanged();
 		OnMarkerMoved();
 		OnSelectionChanged();
 	}
@@ -1059,19 +974,6 @@ void AudioDisplay::OnScrollTimer(wxTimerEvent &event)
 	{
 		ScrollBy(rel_x - width + width / 20);
 	}
-}
-
-void AudioDisplay::OnStyleRangesChanged()
-{
-	if (!controller->GetTimingController()) return;
-
-	AudioStyleRangeMerger asrm;
-	controller->GetTimingController()->GetRenderingStyles(asrm);
-
-	style_ranges.clear();
-	for (auto pair : asrm) style_ranges.push_back(pair);
-
-	RefreshRect(wxRect(0, audio_top, GetClientSize().GetWidth(), audio_height), false);
 }
 
 void AudioDisplay::OnMarkerMoved()

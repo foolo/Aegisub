@@ -266,11 +266,6 @@ void Interface_Colours(wxTreebook *book, Preferences *parent) {
 	main_sizer->AddSpacer(5);
 	main_sizer->Add(p->sizer, wxEXPAND);
 
-	auto color_schemes = p->PageSizer(_("Audio Color Schemes"));
-	wxArrayString schemes = to_wx(OPT_GET("Audio/Colour Schemes")->GetListString());
-	p->OptionChoice(color_schemes, _("Spectrum"), schemes, "Colour/Audio Display/Spectrum");
-	p->OptionChoice(color_schemes, _("Waveform"), schemes, "Colour/Audio Display/Waveform");
-
 	auto grid = p->PageSizer(_("Subtitle Grid"));
 	p->OptionAdd(grid, _("Standard foreground"), "Colour/Subtitle Grid/Standard");
 	p->OptionAdd(grid, _("Standard background"), "Colour/Subtitle Grid/Background/Background");

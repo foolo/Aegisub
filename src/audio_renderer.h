@@ -34,7 +34,6 @@
 
 #include <wx/gdicmn.h>
 
-#include "audio_rendering_style.h"
 #include "block_cache.h"
 
 class AudioRenderer;
@@ -90,7 +89,7 @@ class AudioRenderer {
 	const int cache_bitmap_width = 32; // Completely arbitrary value
 
 	/// Cached bitmaps for audio ranges
-	std::vector<AudioRendererBitmapCache> bitmaps;
+	AudioRendererBitmapCache bitmap;
 	/// The maximum allowed size of each bitmap cache, in bytes
 	size_t cache_bitmap_maxsize = 0;
 	/// The maximum allowed size of the renderer's cache, in bytes
@@ -111,7 +110,7 @@ class AudioRenderer {
 	///
 	/// Will attempt retrieving the requested bitmap from the cache, creating it
 	/// if the cache doesn't have it.
-	wxBitmap const& GetCachedBitmap(int i, AudioRenderingStyle style);
+	wxBitmap const& GetCachedBitmap(int i);
 
 	/// @brief Update the block count in the bitmap caches
 	///
@@ -202,7 +201,7 @@ public:
 	///
 	/// The first audio sample rendered is start*pixel_samples, and the number
 	/// of audio samples rendered is length*pixel_samples.
-	void Render(wxDC &dc, wxPoint origin, int start, int length, AudioRenderingStyle style);
+	void Render(wxDC &dc, wxPoint origin, int start, int length);
 
 	/// @brief Invalidate all cached data
 	///
@@ -258,7 +257,7 @@ public:
 	///
 	/// Deriving classes must implement this method. The bitmap in bmp holds
 	/// the width and height to render.
-	virtual void Render(wxBitmap &bmp, int start, AudioRenderingStyle style) = 0;
+	virtual void Render(wxBitmap &bmp, int start) = 0;
 
 	/// @brief Blank audio rendering function
 	/// @param dc    The device context to render to
@@ -267,7 +266,7 @@ public:
 	///
 	/// Deriving classes must implement this method. The rectangle has the height
 	/// of the entire canvas the audio is being rendered in.
-	virtual void RenderBlank(wxDC &dc, const wxRect &rect, AudioRenderingStyle style) = 0;
+	virtual void RenderBlank(wxDC &dc, const wxRect &rect) = 0;
 
 	/// @brief Change audio provider
 	/// @param provider Audio provider to change to

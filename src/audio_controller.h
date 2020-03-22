@@ -95,9 +95,6 @@ class AudioController final : public wxEvtHandler {
 	/// @brief Timing controller signals primary playback range changed
 	void OnTimingControllerUpdatedPrimaryRange();
 
-	/// @brief Timing controller signals that the rendering style ranges have changed
-	void OnTimingControllerUpdatedStyleRanges();
-
 	/// Handler for the current audio player changing
 	void OnAudioPlayerChanged();
 

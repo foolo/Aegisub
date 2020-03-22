@@ -38,6 +38,7 @@
 #include <vector>
 
 #include "audio_renderer.h"
+#include "audio_colorscheme.h"
 
 #ifdef WITH_FFTW3
 #include <fftw3.h>
@@ -57,9 +58,6 @@ class AudioSpectrumRenderer final : public AudioRendererBitmapProvider {
 
 	/// Internal cache management for the spectrum
 	std::unique_ptr<AudioSpectrumCache> cache;
-
-	/// Colour tables used for rendering
-	std::vector<AudioColorScheme> colors;
 
 	/// Binary logarithm of number of samples to use in deriving frequency-power data
 	size_t derivation_size = 0;
@@ -108,7 +106,7 @@ class AudioSpectrumRenderer final : public AudioRendererBitmapProvider {
 public:
 	/// @brief Constructor
 	/// @param color_scheme_name Name of the color scheme to use
-	AudioSpectrumRenderer(std::string const& color_scheme_name);
+	AudioSpectrumRenderer();
 
 	/// @brief Destructor
 	~AudioSpectrumRenderer();
@@ -117,10 +115,10 @@ public:
 	/// @param bmp   [in,out] Bitmap to render into, also carries length information
 	/// @param start First column of pixel data in display to render
 	/// @param style Style to render audio in
-	void Render(wxBitmap &bmp, int start, AudioRenderingStyle style) override;
+	void Render(wxBitmap &bmp, int start) override;
 
 	/// @brief Render blank area
-	void RenderBlank(wxDC &dc, const wxRect &rect, AudioRenderingStyle style) override;
+	void RenderBlank(wxDC &dc, const wxRect &rect) override;
 
 	/// @brief Set the derivation resolution
 	/// @param derivation_size Binary logarithm of number of samples to use in deriving frequency-power data
