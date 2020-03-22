@@ -532,6 +532,18 @@ void AudioDisplay::OnPaint(wxPaintEvent&)
 
 	timeline->Paint(dc);
 
+	int video_position = controller->GetTimingController()->GetVideoPosition();
+	if (video_position >= start_time && video_position <= end_time) {
+		dc.SetPen(*wxBLACK);
+		int x = RelativeXFromTime(video_position);
+		int client_height = GetClientSize().GetHeight();
+		dc.DrawLine(x, 0, x, client_height);
+
+		wxPoint foot_top[3] = { wxPoint(-foot_size, 0), wxPoint(foot_size, 0), wxPoint(0, foot_size) };
+		dc.SetBrush(*wxBLACK);
+		dc.DrawPolygon(3, foot_top, x, 0);
+	}
+
 	if (track_cursor_pos >= 0)
 		PaintTrackCursor(dc);
 }
@@ -614,11 +626,9 @@ void AudioDisplay::PaintLabels(wxDC &dc, TimeRange updtime)
 
 
 void AudioDisplay::PaintTrackCursor(wxDC &dc) {
-	wxDCPenChanger penchanger(dc, wxPen(*wxBLACK));
-	dc.DrawLine(track_cursor_pos-scroll_left, 0, track_cursor_pos-scroll_left, GetClientSize().GetHeight());
-
 	if (track_cursor_label.empty()) return;
 
+	wxDCPenChanger penchanger(dc, wxPen(*wxBLACK));
 	wxDCFontChanger fc(dc);
 	wxFont font = dc.GetFont();
 	font.SetWeight(wxFONTWEIGHT_BOLD);
@@ -651,7 +661,7 @@ void AudioDisplay::PaintTrackCursor(wxDC &dc) {
 	track_cursor_label_rect.SetPosition(label_pos);
 	track_cursor_label_rect.SetSize(label_size);
 	if (need_extra_redraw)
-		RefreshRect(track_cursor_label_rect, false);
+		Refresh(false);
 }
 
 void AudioDisplay::SetTrackCursor(int new_pos, bool show_time)
@@ -661,19 +671,18 @@ void AudioDisplay::SetTrackCursor(int new_pos, bool show_time)
 	int old_pos = track_cursor_pos;
 	track_cursor_pos = new_pos;
 
-	int client_height = GetClientSize().GetHeight();
-	RefreshRect(wxRect(old_pos - scroll_left - 1, 0, 2, client_height), false);
-	RefreshRect(wxRect(new_pos - scroll_left - 1, 0, 2, client_height), false);
+	Refresh(false);
+	Refresh(false);
 
 	// Make sure the old label gets cleared away
-	RefreshRect(track_cursor_label_rect, false);
+	Refresh(false);
 
 	if (show_time)
 	{
 		agi::Time new_label_time = TimeFromAbsoluteX(track_cursor_pos);
 		track_cursor_label = to_wx(new_label_time.GetAssFormatted());
 		track_cursor_label_rect.x += new_pos - old_pos;
-		RefreshRect(track_cursor_label_rect, false);
+		Refresh(false);
 	}
 	else
 	{
@@ -968,5 +977,5 @@ void AudioDisplay::OnScrollTimer(wxTimerEvent &event)
 
 void AudioDisplay::OnMarkerMoved()
 {
-	RefreshRect(wxRect(0, audio_top, GetClientSize().GetWidth(), audio_height), false);
+	Refresh(false);
 }

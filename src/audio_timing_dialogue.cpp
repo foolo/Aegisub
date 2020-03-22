@@ -353,6 +353,7 @@ public:
 	std::vector<AudioMarker*> OnLeftClick(int ms, bool ctrl_down, bool alt_down, int sensitivity, int snap_range) override;
 	std::vector<AudioMarker*> OnRightClick(int ms, bool, int sensitivity, int snap_range) override;
 	void OnMarkerDrag(std::vector<AudioMarker*> const& markers, int new_position, int snap_range) override;
+	int GetVideoPosition() const override;
 
 	// We have no warning messages currently, maybe add the old "Modified" message back later?
 	wxString GetWarningMessage() const override { return wxString(); }
@@ -394,7 +395,6 @@ void AudioTimingControllerDialogue::GetMarkers(const TimeRange &range, AudioMark
 		back_inserter(out_markers));
 
 	keyframes_provider.GetMarkers(range, out_markers);
-	video_position_provider.GetMarkers(range, out_markers);
 }
 
 void AudioTimingControllerDialogue::OnSelectedSetChanged()
@@ -567,6 +567,10 @@ std::vector<AudioMarker*> AudioTimingControllerDialogue::OnRightClick(int ms, bo
 void AudioTimingControllerDialogue::OnMarkerDrag(std::vector<AudioMarker*> const& markers, int new_position, int snap_range)
 {
 	SetMarkers(markers, new_position, snap_range);
+}
+
+int AudioTimingControllerDialogue::GetVideoPosition() const {
+	return video_position_provider.GetPosition();
 }
 
 void AudioTimingControllerDialogue::UpdateSelection()

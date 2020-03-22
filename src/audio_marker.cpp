@@ -128,3 +128,10 @@ void VideoPositionMarkerProvider::GetMarkers(const TimeRange &range, AudioMarker
 	if (marker && range.contains(*marker))
 		out.push_back(marker.get());
 }
+
+int VideoPositionMarkerProvider::GetPosition() const {
+	if (!marker) {
+		return -1;
+	}
+	return marker->GetPosition();
+}

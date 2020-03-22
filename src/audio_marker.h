@@ -155,4 +155,5 @@ public:
 	~VideoPositionMarkerProvider();
 
 	void GetMarkers(const TimeRange &range, AudioMarkerVector &out) const override;
+	int GetPosition() const;
 };

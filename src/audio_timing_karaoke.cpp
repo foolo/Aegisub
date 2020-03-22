@@ -133,6 +133,7 @@ public:
 	std::vector<AudioMarker*> OnLeftClick(int ms, bool, bool, int sensitivity, int) override;
 	std::vector<AudioMarker*> OnRightClick(int ms, bool, int, int) override;
 	void OnMarkerDrag(std::vector<AudioMarker*> const& marker, int new_position, int) override;
+	int GetVideoPosition() const override;
 
 	AudioTimingControllerKaraoke(agi::Context *c, AssKaraoke *kara, agi::signal::Connection& file_changed);
 };
@@ -220,7 +221,6 @@ void AudioTimingControllerKaraoke::GetMarkers(TimeRange const& range, AudioMarke
 	if (range.contains(end_marker)) out.push_back(&end_marker);
 
 	keyframes_provider.GetMarkers(range, out);
-	video_position_provider.GetMarkers(range, out);
 }
 
 void AudioTimingControllerKaraoke::DoCommit() {
@@ -400,6 +400,10 @@ void AudioTimingControllerKaraoke::OnMarkerDrag(std::vector<AudioMarker*> const&
 	}
 
 	AnnounceChanges(syl);
+}
+
+int AudioTimingControllerKaraoke::GetVideoPosition() const {
+	return video_position_provider.GetPosition();
 }
 
 void AudioTimingControllerKaraoke::GetLabels(TimeRange const& range, std::vector<AudioLabel> &out) const {

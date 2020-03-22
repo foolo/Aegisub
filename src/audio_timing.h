@@ -164,6 +164,8 @@ public:
 	/// @param snap_range   Maximum snapping range in milliseconds
 	virtual void OnMarkerDrag(std::vector<AudioMarker*> const& marker, int new_position, int snap_range) = 0;
 
+	virtual int GetVideoPosition() const = 0;
+
 	/// @brief Destructor
 	virtual ~AudioTimingController() = default;
 
