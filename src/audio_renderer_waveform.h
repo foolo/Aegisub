@@ -37,9 +37,6 @@ class wxArrayString;
 
 /// Render a waveform display of PCM audio data
 class AudioWaveformRenderer final : public AudioRendererBitmapProvider {
-	/// Colour tables used for rendering
-	AudioColorScheme color;
-
 	/// Pre-allocated buffer for audio fetched from provider
 	std::unique_ptr<char[]> audio_buffer;
 
@@ -51,8 +48,7 @@ class AudioWaveformRenderer final : public AudioRendererBitmapProvider {
 
 public:
 	/// @brief Constructor
-	/// @param color_scheme_name Name of the color scheme to use
-	AudioWaveformRenderer(std::string const& color_scheme_name);
+	AudioWaveformRenderer();
 
 	/// @brief Destructor
 	~AudioWaveformRenderer();

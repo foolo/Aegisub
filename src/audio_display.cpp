@@ -437,7 +437,7 @@ void AudioDisplay::ReloadRenderingSettings()
 	if (OPT_GET("Audio/Spectrum")->GetBool())
 	{
 		colour_scheme_name = OPT_GET("Colour/Audio Display/Spectrum")->GetString();
-		auto audio_spectrum_renderer = agi::make_unique<AudioSpectrumRenderer>(colour_scheme_name);
+		auto audio_spectrum_renderer = agi::make_unique<AudioSpectrumRenderer>();
 
 		int64_t spectrum_quality = OPT_GET("Audio/Renderer/Spectrum/Quality")->GetInt();
 #ifdef WITH_FFTW3
@@ -459,7 +459,7 @@ void AudioDisplay::ReloadRenderingSettings()
 	else
 	{
 		colour_scheme_name = OPT_GET("Colour/Audio Display/Waveform")->GetString();
-		audio_renderer_provider = agi::make_unique<AudioWaveformRenderer>(colour_scheme_name);
+		audio_renderer_provider = agi::make_unique<AudioWaveformRenderer>();
 	}
 
 	audio_renderer->SetRenderer(audio_renderer_provider.get());

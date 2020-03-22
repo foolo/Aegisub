@@ -84,8 +84,7 @@ public:
 	}
 };
 
-AudioSpectrumRenderer::AudioSpectrumRenderer(std::string const& color_scheme_name)
-: color(6, color_scheme_name)
+AudioSpectrumRenderer::AudioSpectrumRenderer()
 {
 }
 
@@ -227,8 +226,6 @@ void AudioSpectrumRenderer::Render(wxBitmap &bmp, int start)
 	ptrdiff_t stride = img.GetWidth()*3;
 	int imgheight = img.GetHeight();
 
-	const AudioColorScheme *pal = &color;
-
 	/// @todo Make minband and maxband configurable
 	int minband = 0;
 	int maxband = 1 << derivation_size;
@@ -256,7 +253,7 @@ void AudioSpectrumRenderer::Render(wxBitmap &bmp, int start)
 				float sample2 = power[(int)ceil(ideal)+minband];
 				float frac = ideal - floor(ideal);
 				float val = (1-frac)*sample1 + frac*sample2;
-				pal->map(val*amplitude_scale, px);
+				AudioColorScheme::map(val*amplitude_scale, px);
 				px -= stride;
 			}
 		}
@@ -270,7 +267,7 @@ void AudioSpectrumRenderer::Render(wxBitmap &bmp, int start)
 				int sample1 = std::max(0, maxband * y/imgheight + minband);
 				int sample2 = std::min((1<<derivation_size)-1, maxband * (y+1)/imgheight + minband);
 				float maxval = *std::max_element(&power[sample1], &power[sample2 + 1]);
-				pal->map(maxval*amplitude_scale, px);
+				AudioColorScheme::map(maxval*amplitude_scale, px);
 				px -= stride;
 			}
 		}
@@ -284,7 +281,9 @@ void AudioSpectrumRenderer::Render(wxBitmap &bmp, int start)
 void AudioSpectrumRenderer::RenderBlank(wxDC &dc, const wxRect &rect)
 {
 	// Get the colour of silence
-	wxColour col = color.get(0.0f);
+	unsigned char rgb[3];
+	AudioColorScheme::map(0.0f, rgb);
+	wxColour col(rgb[0], rgb[1], rgb[2]);
 	dc.SetBrush(wxBrush(col));
 	dc.SetPen(wxPen(col));
 	dc.DrawRectangle(rect);

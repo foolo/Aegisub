@@ -59,9 +59,6 @@ class AudioSpectrumRenderer final : public AudioRendererBitmapProvider {
 	/// Internal cache management for the spectrum
 	std::unique_ptr<AudioSpectrumCache> cache;
 
-	/// Colour tables used for rendering
-	AudioColorScheme color;
-
 	/// Binary logarithm of number of samples to use in deriving frequency-power data
 	size_t derivation_size = 0;
 
@@ -109,7 +106,7 @@ class AudioSpectrumRenderer final : public AudioRendererBitmapProvider {
 public:
 	/// @brief Constructor
 	/// @param color_scheme_name Name of the color scheme to use
-	AudioSpectrumRenderer(std::string const& color_scheme_name);
+	AudioSpectrumRenderer();
 
 	/// @brief Destructor
 	~AudioSpectrumRenderer();
