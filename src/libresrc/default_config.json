@@ -31,7 +31,6 @@
 			},
 			"Type" : 1
 		},
-		"Display Height" : 200,
 		"Display" : {
 			"Draw" : {
 				"Cursor Time" : true,

@@ -57,7 +57,7 @@ enum {
 };
 
 AudioBox::AudioBox(wxWindow *parent, agi::Context *context)
-: wxSashWindow(parent, -1, wxDefaultPosition, wxDefaultSize, wxSW_3D | wxCLIP_CHILDREN)
+: wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSW_3D | wxCLIP_CHILDREN)
 , controller(context->audioController.get())
 , context(context)
 , audio_open_connection(context->audioController->AddAudioPlayerOpenListener(&AudioBox::OnAudioOpen, this))
@@ -67,9 +67,6 @@ AudioBox::AudioBox(wxWindow *parent, agi::Context *context)
 , VerticalZoom(new wxSlider(panel, Audio_Vertical_Zoom, OPT_GET("Audio/Zoom/Vertical")->GetInt(), 0, 100, wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL|wxSL_BOTH|wxSL_INVERSE))
 , VolumeBar(new wxSlider(panel, Audio_Volume, OPT_GET("Audio/Volume")->GetInt(), 0, 100, wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL|wxSL_BOTH|wxSL_INVERSE))
 {
-	SetSashVisible(wxSASH_BOTTOM, true);
-	Bind(wxEVT_SASH_DRAGGED, &AudioBox::OnSashDrag, this);
-
 	HorizontalZoom->SetToolTip(_("Horizontal zoom"));
 	VerticalZoom->SetToolTip(_("Vertical zoom"));
 	VolumeBar->SetToolTip(_("Audio Volume"));
@@ -111,8 +108,7 @@ AudioBox::AudioBox(wxWindow *parent, agi::Context *context)
 	wxSizer *audioSashSizer = new wxBoxSizer(wxHORIZONTAL);
 	audioSashSizer->Add(panel, 1, wxEXPAND);
 	SetSizerAndFit(audioSashSizer);
-	SetMinSize(wxSize(-1, OPT_GET("Audio/Display Height")->GetInt()));
-	SetMinimumSizeY(panel->GetSize().GetHeight());
+	SetMinSize(wxSize(-1, 160));
 
 	audioDisplay->Bind(wxEVT_MOUSEWHEEL, &AudioBox::OnMouseWheel, this);
 
@@ -145,23 +141,6 @@ void AudioBox::OnMouseWheel(wxMouseEvent &evt) {
 		mouse_zoom_accum %= evt.GetWheelDelta();
 		SetHorizontalZoom(audioDisplay->GetZoomLevel() + zoom_delta);
 	}
-}
-
-void AudioBox::OnSashDrag(wxSashEvent &event) {
-	if (event.GetDragStatus() == wxSASH_STATUS_OUT_OF_RANGE)
-		return;
-
-	int new_height = std::min(event.GetDragRect().GetHeight(), GetParent()->GetSize().GetHeight() - 1);
-
-	SetMinSize(wxSize(-1, new_height));
-	GetParent()->Layout();
-
-	// Karaoke mode is always disabled when the audio box is first opened, so
-	// the initial height shouldn't include it
-	if (context->karaoke->IsEnabled())
-		new_height -= context->karaoke->GetSize().GetHeight() + 6;
-
-	OPT_SET("Audio/Display Height")->SetInt(new_height);
 }
 
 void AudioBox::OnHorizontalZoom(wxEvent &event) {

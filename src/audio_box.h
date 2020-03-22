@@ -48,7 +48,7 @@ class wxSlider;
 
 /// @class AudioBox
 /// @brief Panel with audio playback and timing controls, also containing an AudioDisplay
-class AudioBox final : public wxSashWindow {
+class AudioBox final : public wxWindow {
 	/// The controller controlling this audio box
 	AudioController *controller;
 
@@ -75,7 +75,6 @@ class AudioBox final : public wxSashWindow {
 	void OnAudioOpen();
 	void OnHorizontalZoom(wxEvent &event);
 	void OnMouseWheel(wxMouseEvent &evt);
-	void OnSashDrag(wxSashEvent &event);
 	void OnVerticalLink(agi::OptionValue const& opt);
 	void OnVerticalZoom(wxEvent &event);
 	void OnVolume(wxEvent &event);
