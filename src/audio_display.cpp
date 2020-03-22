@@ -517,7 +517,7 @@ void AudioDisplay::OnPaint(wxPaintEvent&)
 	int start_time = TimeFromRelativeX(0 - foot_size);
 	int end_time = TimeFromRelativeX(GetClientSize().GetWidth() + foot_size);
 
-	gc->SetPen(*wxWHITE);
+	gc->SetPen(*wxBLACK);
 	for (AssDialogue& line : context->ass->Events) {
 		bool off_screen = (line.Start > end_time) || (line.End < start_time);
 		if (off_screen) {
@@ -624,7 +624,7 @@ void AudioDisplay::PaintLabels(wxDC &dc, TimeRange updtime)
 
 
 void AudioDisplay::PaintTrackCursor(wxDC &dc) {
-	wxDCPenChanger penchanger(dc, wxPen(*wxWHITE));
+	wxDCPenChanger penchanger(dc, wxPen(*wxBLACK));
 	dc.DrawLine(track_cursor_pos-scroll_left, 0, track_cursor_pos-scroll_left, GetClientSize().GetHeight());
 
 	if (track_cursor_label.empty()) return;
