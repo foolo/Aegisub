@@ -81,39 +81,6 @@ public:
 	virtual ~AudioDisplayInteractionObject() = default;
 };
 
-/// @brief Colourscheme-based UI colour provider
-///
-/// This class provides UI colours corresponding to the supplied audio colour
-/// scheme.
-///
-/// SetColourScheme must be called to set the active colour scheme before
-/// colours can be retrieved
-class UIColours {
-	wxColour light_colour;         ///< Light unfocused colour from the colour scheme
-	wxColour dark_colour;          ///< Dark unfocused colour from the colour scheme
-	wxColour sel_colour;           ///< Selection unfocused colour from the colour scheme
-	wxColour light_focused_colour; ///< Light focused colour from the colour scheme
-	wxColour dark_focused_colour;  ///< Dark focused colour from the colour scheme
-	wxColour sel_focused_colour;   ///< Selection focused colour from the colour scheme
-
-	bool focused = false; ///< Use the focused colours?
-public:
-	/// Set the colour scheme to load colours from
-	/// @param name Name of the colour scheme
-	void SetColourScheme(std::string const& name);
-
-	/// Set whether to use the focused or unfocused colours
-	/// @param focused If true, focused colours will be returned
-	void SetFocused(bool focused) { this->focused = focused; }
-
-	/// Get the current Light colour
-	wxColour Light() const { return focused ? light_focused_colour : light_colour; }
-	/// Get the current Dark colour
-	wxColour Dark() const { return focused ? dark_focused_colour : dark_colour; }
-	/// Get the current Selection colour
-	wxColour Selection() const { return focused ? sel_focused_colour : sel_colour; }
-};
-
 class AudioDisplayTimeline final : public AudioDisplayInteractionObject {
 	int duration = 0;          ///< Total duration in ms
 	double ms_per_pixel = 1.0; ///< Milliseconds per pixel
@@ -136,11 +103,9 @@ class AudioDisplayTimeline final : public AudioDisplayInteractionObject {
 	int scale_major_modulo; ///< If minor_scale_mark_index % scale_major_modulo == 0 the mark is a major mark
 	double scale_minor_divisor; ///< Absolute scale-mark index multiplied by this number gives sample index for scale mark
 	AudioDisplay *display; ///< Containing audio display
-	UIColours colours; ///< Colour provider
 
 public:
 	AudioDisplayTimeline(AudioDisplay *display);
-	void SetColourScheme(std::string const& name);
 	void SetDisplaySize(const wxSize &display_size);
 	int GetHeight() const { return bounds.height; }
 	const wxRect & GetBounds() const { return bounds; }

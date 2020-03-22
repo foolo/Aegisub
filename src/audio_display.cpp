@@ -57,31 +57,12 @@
 #include <wx/mousestate.h>
 #include <wx/graphics.h>
 
-void UIColours::SetColourScheme(std::string const& name)
-{
-	std::string opt_prefix = "Colour/Schemes/" + name + "/UI/";
-	light_colour = to_wx(OPT_GET(opt_prefix + "Light")->GetColor());
-	dark_colour = to_wx(OPT_GET(opt_prefix + "Dark")->GetColor());
-	sel_colour = to_wx(OPT_GET(opt_prefix + "Selection")->GetColor());
-
-	opt_prefix = "Colour/Schemes/" + name + "/UI Focused/";
-	light_focused_colour = to_wx(OPT_GET(opt_prefix + "Light")->GetColor());
-	dark_focused_colour = to_wx(OPT_GET(opt_prefix + "Dark")->GetColor());
-	sel_focused_colour = to_wx(OPT_GET(opt_prefix + "Selection")->GetColor());
-}
-
-
 AudioDisplayTimeline::AudioDisplayTimeline(AudioDisplay *display)
 : display(display)
 {
 	int width, height;
 	display->GetTextExtent("0123456789:.", &width, &height);
 	bounds.height = height + 4;
-}
-
-void AudioDisplayTimeline::SetColourScheme(std::string const& name)
-{
-	colours.SetColourScheme(name);
 }
 
 void AudioDisplayTimeline::SetDisplaySize(const wxSize &display_size)
@@ -148,22 +129,25 @@ bool AudioDisplayTimeline::OnMouseEvent(wxMouseEvent &event)
 	return false;
 }
 
+wxColor FOREGROUND_COLOR = *wxBLACK;
+wxColor BACKGROUND_COLOR = *wxWHITE;
+
 void AudioDisplayTimeline::Paint(wxDC &dc)
 {
 	int bottom = bounds.y + bounds.height;
 
 	// Background
-	dc.SetPen(wxPen(colours.Dark()));
-	dc.SetBrush(wxBrush(colours.Dark()));
+	dc.SetPen(wxPen(BACKGROUND_COLOR));
+	dc.SetBrush(wxBrush(BACKGROUND_COLOR));
 	dc.DrawRectangle(bounds);
 
 	// Top line
-	dc.SetPen(wxPen(colours.Light()));
+	dc.SetPen(wxPen(FOREGROUND_COLOR));
 	dc.DrawLine(bounds.x, bottom-1, bounds.x+bounds.width, bottom-1);
 
 	// Prepare for writing text
-	dc.SetTextBackground(colours.Dark());
-	dc.SetTextForeground(colours.Light());
+	dc.SetTextBackground(BACKGROUND_COLOR);
+	dc.SetTextForeground(FOREGROUND_COLOR);
 
 	// Figure out the first scale mark to show
 	int ms_left = int(pixel_left * ms_per_pixel);
@@ -436,7 +420,6 @@ void AudioDisplay::ReloadRenderingSettings()
 
 	if (OPT_GET("Audio/Spectrum")->GetBool())
 	{
-		colour_scheme_name = OPT_GET("Colour/Audio Display/Spectrum")->GetString();
 		auto audio_spectrum_renderer = agi::make_unique<AudioSpectrumRenderer>();
 
 		int64_t spectrum_quality = OPT_GET("Audio/Renderer/Spectrum/Quality")->GetInt();
@@ -458,12 +441,10 @@ void AudioDisplay::ReloadRenderingSettings()
 	}
 	else
 	{
-		colour_scheme_name = OPT_GET("Colour/Audio Display/Waveform")->GetString();
 		audio_renderer_provider = agi::make_unique<AudioWaveformRenderer>();
 	}
 
 	audio_renderer->SetRenderer(audio_renderer_provider.get());
-	timeline->SetColourScheme(colour_scheme_name);
 
 	Refresh();
 }
