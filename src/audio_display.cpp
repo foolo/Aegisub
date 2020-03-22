@@ -491,27 +491,18 @@ void AudioDisplay::OnPaint(wxPaintEvent&)
 	if (!audio_renderer_provider || !provider) return;
 
 	wxAutoBufferedPaintDC dc(this);
+	int client_width = GetClientSize().GetWidth();
+	int client_height = GetClientSize().GetHeight();
 
-	wxRect audio_bounds(0, audio_top, GetClientSize().GetWidth(), audio_height);
-	bool redraw_timeline = false;
+	wxRect updrect(0, 0, client_width, client_height);
 
-	for (wxRegionIterator region(GetUpdateRegion()); region; ++region)
-	{
-		wxRect updrect = region.GetRect();
+	TimeRange updtime(
+		std::max(0, TimeFromRelativeX(updrect.x - foot_size)),
+		std::max(0, TimeFromRelativeX(updrect.x + updrect.width + foot_size)));
 
-		redraw_timeline |= timeline->GetBounds().Intersects(updrect);
-
-		if (audio_bounds.Intersects(updrect))
-		{
-			TimeRange updtime(
-				std::max(0, TimeFromRelativeX(updrect.x - foot_size)),
-				std::max(0, TimeFromRelativeX(updrect.x + updrect.width + foot_size)));
-
-			PaintAudio(dc, updtime, updrect);
-			PaintMarkers(dc, updtime);
-			PaintLabels(dc, updtime);
-		}
-	}
+	PaintAudio(dc, updtime, updrect);
+	PaintMarkers(dc, updtime);
+	PaintLabels(dc, updtime);
 
 	wxGraphicsContext *gc = wxGraphicsContext::Create(dc);
 	int start_time = TimeFromRelativeX(0 - foot_size);
@@ -539,8 +530,7 @@ void AudioDisplay::OnPaint(wxPaintEvent&)
 		gc->DrawRoundedRectangle(x1, audio_top, x2-x1, audio_height, 5);
 	}
 
-	if (redraw_timeline)
-		timeline->Paint(dc);
+	timeline->Paint(dc);
 
 	if (track_cursor_pos >= 0)
 		PaintTrackCursor(dc);
