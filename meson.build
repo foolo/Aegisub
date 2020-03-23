@@ -27,7 +27,6 @@ endif
 
 conf = configuration_data()
 conf.set_quoted('P_DATA', dataroot)
-conf.set('WITH_UPDATE_CHECKER', get_option('enable_update_checker'))
 
 deps = []
 deps_inc = []
