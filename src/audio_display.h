@@ -86,6 +86,7 @@ class AudioDisplayTimeline final : public AudioDisplayInteractionObject {
 	double ms_per_pixel = 1.0; ///< Milliseconds per pixel
 	int pixel_left = 0;        ///< Leftmost visible pixel (i.e. scroll position)
 	wxRect bounds;
+	static const int head_space = 6;
 
 	enum Scale {
 		Sc_Millisecond,

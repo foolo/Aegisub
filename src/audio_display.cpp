@@ -58,11 +58,14 @@
 #include <wx/graphics.h>
 
 AudioDisplayTimeline::AudioDisplayTimeline(AudioDisplay *display)
-: display(display)
+: scale_minor(Sc_Decisecond)
+, scale_major_modulo(10)
+, scale_minor_divisor(100.0)
+, display(display)
 {
-	int width, height;
-	display->GetTextExtent("0123456789:.", &width, &height);
-	bounds.height = height + 4;
+	int text_width, text_height;
+	display->GetTextExtent("0123456789:.", &text_width, &text_height);
+	bounds.height = head_space + text_height + head_space;
 }
 
 void AudioDisplayTimeline::SetDisplaySize(const wxSize &display_size)
@@ -204,7 +207,7 @@ void AudioDisplayTimeline::Paint(wxDC &dc)
 			dc.GetTextExtent(time_string, &tw, &th);
 			last_text_right = next_scale_mark_pos + tw;
 
-			dc.DrawText(time_string, next_scale_mark_pos, 0);
+			dc.DrawText(time_string, next_scale_mark_pos, head_space - 1);
 		}
 
 		next_scale_mark += 1;
@@ -538,10 +541,10 @@ void AudioDisplay::OnPaint(wxPaintEvent&)
 		int x = RelativeXFromTime(video_position);
 		int client_height = GetClientSize().GetHeight();
 		dc.DrawLine(x, 0, x, client_height);
-
-		wxPoint foot_top[3] = { wxPoint(-foot_size, 0), wxPoint(foot_size, 0), wxPoint(0, foot_size) };
+		int head_size = 4;
+		wxPoint head[3] = { wxPoint(-head_size, 0), wxPoint(head_size, 0), wxPoint(0, head_size) };
 		dc.SetBrush(*wxBLACK);
-		dc.DrawPolygon(3, foot_top, x, 0);
+		dc.DrawPolygon(3, head, x, 0);
 	}
 
 	if (track_cursor_pos >= 0)
