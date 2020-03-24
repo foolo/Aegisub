@@ -26,7 +26,6 @@ if host_machine.system() == 'windows'
 endif
 
 conf = configuration_data()
-conf.set_quoted('P_DATA', dataroot)
 
 deps = []
 deps_inc = []
