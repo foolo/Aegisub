@@ -54,8 +54,8 @@ public:
 	}
 
 	void log(agi::log::SinkMessage const& sm) override {
-		time_t time = sm.time / 1000000000;
 #ifndef _WIN32
+		time_t time = sm.time / 1000000000;
 		tm tmtime;
 		localtime_r(&time, &tmtime);
 		auto log = fmt_wx("%c %02d:%02d:%02d %-6d <%-25s> [%s:%s:%d]  %s\n",
