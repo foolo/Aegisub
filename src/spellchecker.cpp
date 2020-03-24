@@ -23,9 +23,5 @@
 #include <libaegisub/spellchecker.h>
 
 std::unique_ptr<agi::SpellChecker> SpellCheckerFactory::GetSpellChecker() {
-#if defined(WITH_HUNSPELL)
 	return agi::make_unique<HunspellSpellChecker>();
-#else
-	return {};
-#endif
 }

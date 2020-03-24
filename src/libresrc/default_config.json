@@ -390,7 +390,6 @@
 			"Type" : 0
 		},
 		"Spell Checker" : {
-			"Backend" : "hunspell",
 			"Language" : "en_US",
 			"Skip Comments" : false,
 			"Skip Uppercase" : false

@@ -13,7 +13,6 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifdef WITH_HUNSPELL
 #include "spellchecker_hunspell.h"
 
 #include "options.h"
@@ -224,5 +223,3 @@ void HunspellSpellChecker::OnLanguageChanged() {
 void HunspellSpellChecker::OnPathChanged() {
 	languages.clear();
 }
-
-#endif // WITH_HUNSPELL

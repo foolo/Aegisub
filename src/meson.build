@@ -103,6 +103,7 @@ aegisub_src = files(
     'search_replace_engine.cpp',
     'selection_controller.cpp',
     'spellchecker.cpp',
+    'spellchecker_hunspell.cpp',
     'spline.cpp',
     'spline_curve.cpp',
     'string_codec.cpp',
@@ -169,7 +170,6 @@ opt_src = [
     ['PulseAudio', 'audio_player_pulse.cpp'],
     ['OpenAL', 'audio_player_openal.cpp'],
     ['DirectSound', 'audio_player_dsound2.cpp'],
-    ['Hunspell', 'spellchecker_hunspell.cpp'],
 ]
 
 foreach opt: opt_src

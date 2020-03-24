@@ -19,7 +19,6 @@
 /// @ingroup spelling
 ///
 
-#ifdef WITH_HUNSPELL
 #include <libaegisub/spellchecker.h>
 
 #include <libaegisub/fs_fwd.h>
@@ -77,5 +76,3 @@ public:
 	std::vector<std::string> GetSuggestions(std::string const& word) override;
 	std::vector<std::string> GetLanguageList() override;
 };
-
-#endif
