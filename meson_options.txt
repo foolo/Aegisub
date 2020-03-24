@@ -5,7 +5,7 @@ option('portaudio', type: 'feature', description: 'PortAudio audio output')
 option('directsound', type: 'feature', description: 'DirectSound audio output')
 option('default_audio_output', type: 'combo', choices: ['auto', 'ALSA', 'OpenAL', 'PulseAudio', 'PortAudio', 'DirectSound'], description: 'Default audio output')
 
-option('fftw3', type: 'feature', description: 'FFTW3 support')
+option('fftw3', type: 'feature', value: 'enabled', description: 'FFTW3 support')
 
 option('system_luajit', type: 'boolean', value: false, description: 'Force using system luajit')
 

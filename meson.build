@@ -68,8 +68,6 @@ foreach dep: [
     ['alsa', '', 'ALSA'],
     ['portaudio-2.0', '', 'PortAudio'],
     ['openal', '>=0.0.8', 'OpenAL'],
-    # other
-    ['fftw3', '', 'FFTW3'],
 ]
     d = dependency(dep[0], version: dep[1] != '' ? dep[1]: '>=0',
                    required: false)
@@ -87,6 +85,11 @@ endforeach
 deps += dependency('ffms2')
 deps += dependency('hunspell')
 deps += dependency('uchardet')
+
+if get_option('fftw3').enabled()
+	deps += dependency('fftw3')
+	add_project_arguments('-DWITH_FFTW3=1', language: 'cpp')
+endif
 
 # DirectSound
 if is_msvcwin and not get_option('directsound').disabled()
