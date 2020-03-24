@@ -70,7 +70,6 @@ foreach dep: [
     ['openal', '>=0.0.8', 'OpenAL'],
     # other
     ['fftw3', '', 'FFTW3'],
-    ['uchardet', '', 'uchardet'], # needs a proper port
 ]
     d = dependency(dep[0], version: dep[1] != '' ? dep[1]: '>=0',
                    required: false)
@@ -87,6 +86,7 @@ endforeach
 
 deps += dependency('ffms2')
 deps += dependency('hunspell')
+deps += dependency('uchardet')
 
 # DirectSound
 if is_msvcwin and not get_option('directsound').disabled()

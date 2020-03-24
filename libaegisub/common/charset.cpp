@@ -21,9 +21,7 @@
 #include "libaegisub/file_mapping.h"
 #include "libaegisub/scoped_ptr.h"
 
-#ifdef WITH_UCHARDET
 #include <uchardet/uchardet.h>
-#endif
 
 namespace agi { namespace charset {
 std::string Detect(agi::fs::path const& file) {
@@ -53,7 +51,6 @@ std::string Detect(agi::fs::path const& file) {
 
 	uint64_t binaryish = 0;
 
-#ifdef WITH_UCHARDET
 	agi::scoped_holder<uchardet_t> ud(uchardet_new(), uchardet_delete);
 	for (uint64_t offset = 0; offset < fp.size(); ) {
 		auto read = std::min<uint64_t>(4096, fp.size() - offset);
@@ -73,17 +70,5 @@ std::string Detect(agi::fs::path const& file) {
 	}
 	uchardet_data_end(ud);
 	return uchardet_get_charset(ud);
-#else
-	auto read = std::min<uint64_t>(4096, fp.size());
-	auto buf = fp.read(0, read);
-	for (size_t i = 0; i < read; ++i) {
-		if ((unsigned char)buf[i] < 32 && (buf[i] != '\r' && buf[i] != '\n' && buf[i] != '\t'))
-			++binaryish;
-	}
-
-	if (binaryish > read / 8)
-		return "binary";
-	return "utf-8";
-#endif
 }
 } }
