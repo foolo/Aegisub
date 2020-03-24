@@ -25,8 +25,6 @@ if host_machine.system() == 'windows'
 	add_project_arguments('-DUNICODE', language: 'cpp')
 endif
 
-conf = configuration_data()
-
 deps = []
 deps_inc = []
 
@@ -74,7 +72,7 @@ foreach dep: [
     optname = dep[0].split('-')[0]
     if d.found() and not get_option(optname).disabled()
         deps += d
-        conf.set('WITH_@0@'.format(dep[0].split('-')[0].to_upper()), '1')
+        add_project_arguments('-DWITH_@0@=1'.format(dep[0].split('-')[0].to_upper()), language: 'cpp')
         dep_avail += dep[2]
     elif get_option(optname).enabled()
         error('@0@ enabled but not found'.format(dep[2]))
@@ -101,7 +99,6 @@ if is_msvcwin and not get_option('directsound').disabled()
     endif
     if dsound_dep.found() and winmm_dep.found() and ole32_dep.found() and have_dsound_h
         deps += [dsound_dep, winmm_dep, ole32_dep]
-        conf.set('WITH_DIRECTSOUND', '1')
 		add_project_arguments('-DWITH_DIRECTSOUND', language: 'cpp')
         dep_avail += 'DirectSound'
     endif
@@ -149,8 +146,6 @@ endif
 deps += dep_gl
 
 # TODO: csri
-
-acconf = configure_file(output: 'acconf.h', configuration: conf)
 
 subdir('libaegisub')
 subdir('src')

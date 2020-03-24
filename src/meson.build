@@ -183,7 +183,7 @@ if cxx.get_id() == 'msvc'
     aegisub_cpp_pch += 'include/agi_pre.cpp'
 endif
 
-aegisub = executable('aegisub', aegisub_src, acconf,
+aegisub = executable('aegisub', aegisub_src,
                      link_with: [libresrc, libaegisub],
                      include_directories: [libaegisub_inc, libresrc_inc, deps_inc],
                      cpp_pch: aegisub_cpp_pch,

@@ -69,7 +69,7 @@ endif
 
 libaegisub_inc = include_directories('include')
 
-libaegisub = static_library('aegisub', libaegisub_src, acconf,
+libaegisub = static_library('aegisub', libaegisub_src,
                             include_directories: [libaegisub_inc, deps_inc],
                             cpp_pch: libaegisub_cpp_pch,
                             dependencies: deps)
