@@ -39,7 +39,6 @@ uint32_t murmur3(const char *data, uint32_t len) {
 
 	uint32_t hash = 0;
 
-	const int nblocks = len / 4;
 	auto blocks = reinterpret_cast<const uint32_t *>(data);
 	for (uint32_t i = 0; i * 4 < len; ++i) {
 		uint32_t k = blocks[i];
