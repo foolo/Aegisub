@@ -183,6 +183,16 @@ if cxx.get_id() == 'msvc'
     aegisub_cpp_pch += 'include/agi_pre.cpp'
 endif
 
+if host_machine.system() == 'windows'
+	wx_include_str = get_option('wx_include')
+	if wx_include_str == ''
+		error('no wx_include specified')
+	endif
+	wx_include = include_directories(wx_include_str)
+	windows = import('windows')
+	aegisub_src += windows.compile_resources('res/res.rc', include_directories: wx_include)
+endif
+
 aegisub = executable('aegisub', aegisub_src,
                      link_with: [libresrc, libaegisub],
                      include_directories: [libaegisub_inc, libresrc_inc, deps_inc],

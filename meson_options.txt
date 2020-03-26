@@ -11,5 +11,7 @@ option('system_luajit', type: 'boolean', value: false, description: 'Force using
 
 option('local_path', type: 'string', value: '', description: 'Path to downloaded libraries')
 
+option('wx_include', type: 'string', value: '')
+
 option('update_server', type: 'string', value: 'updates.aegisub.org', description: 'Server to use for the update checker')
 option('update_url', type: 'string', value: '/trunk', description: 'Base path to use for the update checker')

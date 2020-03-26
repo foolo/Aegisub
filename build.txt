@@ -10,6 +10,8 @@ pacman -S mingw-w64-x86_64-xz  #liblzma-5.dll
 pacman -S mingw-w64-x86_64-hunspell
 pacman -S mingw-w64-x86_64-uchardet
 
+meson build -Dfftw3=disabled -Dwx_include=C:/msys64/mingw64/include/wx-3.0
+
 wget -nc http://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-libiconv-1.16-1-any.pkg.tar.xz
 wget -nc http://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-libass-0.14.0-1-any.pkg.tar.xz
 wget -nc http://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-wxWidgets-3.0.4-3-any.pkg.tar.xz
