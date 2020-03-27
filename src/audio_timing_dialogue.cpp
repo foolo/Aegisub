@@ -369,7 +369,7 @@ public:
 
 AudioTimingControllerDialogue::AudioTimingControllerDialogue(agi::Context *c)
 : active_line(&style_left, &style_right)
-, keyframes_provider(c, "Audio/Display/Draw/Keyframes in Dialogue Mode")
+, keyframes_provider(c, "Audio/Display/Draw/Keyframes")
 , video_position_provider(c)
 , context(c)
 , commit_connection(c->ass->AddCommitListener(&AudioTimingControllerDialogue::OnFileChanged, this))

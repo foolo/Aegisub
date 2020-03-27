@@ -150,7 +150,7 @@ AudioTimingControllerKaraoke::AudioTimingControllerKaraoke(agi::Context *c, AssK
 , kara(kara)
 , start_marker(active_line->Start, &start_pen, AudioMarker::Feet_Right)
 , end_marker(active_line->End, &end_pen, AudioMarker::Feet_Left)
-, keyframes_provider(c, "Audio/Display/Draw/Keyframes in Karaoke Mode")
+, keyframes_provider(c, "Audio/Display/Draw/Keyframes")
 , video_position_provider(c)
 {
 	connections.push_back(kara->AddSyllablesChangedListener(&AudioTimingControllerKaraoke::Revert, this));

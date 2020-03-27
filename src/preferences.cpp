@@ -147,10 +147,10 @@ void Audio(wxTreebook *book, Preferences *parent) {
 	p->OptionAdd(general, _("Include commented inactive lines"), "Audio/Display/Draw/Inactive Comments");
 
 	auto display = p->PageSizer(_("Display Visual Options"));
-	p->OptionAdd(display, _("Keyframes in dialogue mode"), "Audio/Display/Draw/Keyframes in Dialogue Mode");
-	p->OptionAdd(display, _("Keyframes in karaoke mode"), "Audio/Display/Draw/Keyframes in Karaoke Mode");
+	p->OptionAdd(display, _("Keyframes"), "Audio/Display/Draw/Keyframes");
 	p->OptionAdd(display, _("Cursor time"), "Audio/Display/Draw/Cursor Time");
 	p->OptionAdd(display, _("Video position"), "Audio/Display/Draw/Video Position");
+	p->CellSkip(display);
 	p->OptionChoice(display, _("Waveform Style"), AudioWaveformRenderer::GetWaveformStyles(), "Audio/Display/Waveform Style");
 
 	auto label = p->PageSizer(_("Audio labels"));
