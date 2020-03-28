@@ -154,22 +154,36 @@ CONFIG_OPTIONVALUE_LIST(Double, double)
 CONFIG_OPTIONVALUE_LIST(Color, Color)
 CONFIG_OPTIONVALUE_LIST(Bool, bool)
 
-#define CONFIG_OPTIONVALUE_ACCESSORS(ReturnType, Type) \
-	inline ReturnType const& OptionValue::Get##Type() const { return As<OptionValue##Type>(OptionType::Type)->GetValue(); } \
-	inline void OptionValue::Set##Type(ReturnType v) { As<OptionValue##Type>(OptionType::Type)->SetValue(std::move(v)); }
+inline std::string const& OptionValue::GetString() const { return As<OptionValueString>(OptionType::String)->GetValue(); }
+inline void OptionValue::SetString(std::string v) { As<OptionValueString>(OptionType::String)->SetValue(std::move(v)); }
 
-CONFIG_OPTIONVALUE_ACCESSORS(std::string, String)
-CONFIG_OPTIONVALUE_ACCESSORS(int64_t, Int)
-CONFIG_OPTIONVALUE_ACCESSORS(double, Double)
-CONFIG_OPTIONVALUE_ACCESSORS(Color, Color)
-CONFIG_OPTIONVALUE_ACCESSORS(bool, Bool)
-CONFIG_OPTIONVALUE_ACCESSORS(std::vector<std::string>, ListString)
-CONFIG_OPTIONVALUE_ACCESSORS(std::vector<int64_t>, ListInt)
-CONFIG_OPTIONVALUE_ACCESSORS(std::vector<double>, ListDouble)
-CONFIG_OPTIONVALUE_ACCESSORS(std::vector<Color>, ListColor)
-CONFIG_OPTIONVALUE_ACCESSORS(std::vector<bool>, ListBool)
+inline int64_t const& OptionValue::GetInt() const { return As<OptionValueInt>(OptionType::Int)->GetValue(); }
+inline void OptionValue::SetInt(int64_t v) { As<OptionValueInt>(OptionType::Int)->SetValue(std::move(v)); }
+
+inline double const& OptionValue::GetDouble() const { return As<OptionValueDouble>(OptionType::Double)->GetValue(); }
+inline void OptionValue::SetDouble(double v) { As<OptionValueDouble>(OptionType::Double)->SetValue(std::move(v)); }
+
+inline Color const& OptionValue::GetColor() const { return As<OptionValueColor>(OptionType::Color)->GetValue(); }
+inline void OptionValue::SetColor(Color v) { As<OptionValueColor>(OptionType::Color)->SetValue(std::move(v)); }
+
+inline bool const& OptionValue::GetBool() const { return As<OptionValueBool>(OptionType::Bool)->GetValue(); }
+inline void OptionValue::SetBool(bool v) { As<OptionValueBool>(OptionType::Bool)->SetValue(std::move(v)); }
+
+inline std::vector<std::string> const& OptionValue::GetListString() const { return As<OptionValueListString>(OptionType::ListString)->GetValue(); }
+inline void OptionValue::SetListString(std::vector<std::string> v) { As<OptionValueListString>(OptionType::ListString)->SetValue(std::move(v)); }
+
+inline std::vector<int64_t> const& OptionValue::GetListInt() const { return As<OptionValueListInt>(OptionType::ListInt)->GetValue(); }
+inline void OptionValue::SetListInt(std::vector<int64_t> v) { As<OptionValueListInt>(OptionType::ListInt)->SetValue(std::move(v)); }
+
+inline std::vector<double> const& OptionValue::GetListDouble() const { return As<OptionValueListDouble>(OptionType::ListDouble)->GetValue(); }
+inline void OptionValue::SetListDouble(std::vector<double> v) { As<OptionValueListDouble>(OptionType::ListDouble)->SetValue(std::move(v)); }
+
+inline std::vector<Color> const& OptionValue::GetListColor() const { return As<OptionValueListColor>(OptionType::ListColor)->GetValue(); }
+inline void OptionValue::SetListColor(std::vector<Color> v) { As<OptionValueListColor>(OptionType::ListColor)->SetValue(std::move(v)); }
+
+inline std::vector<bool> const& OptionValue::GetListBool() const { return As<OptionValueListBool>(OptionType::ListBool)->GetValue(); }
+inline void OptionValue::SetListBool(std::vector<bool> v) { As<OptionValueListBool>(OptionType::ListBool)->SetValue(std::move(v)); }
 
 #undef CONFIG_OPTIONVALUE
 #undef CONFIG_OPTIONVALUE_LIST
-#undef CONFIG_OPTIONVALUE_ACCESSORS
 } // namespace agi
