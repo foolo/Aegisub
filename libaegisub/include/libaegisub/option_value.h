@@ -187,29 +187,90 @@ class OptionValueBool final : public OptionValue {
 		void Set(const OptionValue *nv);
 	};
 
-#define CONFIG_OPTIONVALUE_LIST(type_name, type)                                          \
-	class OptionValueList##type_name final : public OptionValue {                         \
-		std::vector<type> array;                                                          \
-		std::vector<type> array_default;                                                  \
-		std::string name;                                                                 \
-	public:                                                                               \
-		typedef std::vector<type> value_type;                                             \
-		OptionValueList##type_name(std::string name, std::vector<type> const& value = std::vector<type>()) \
-		: OptionValue(std::move(name))                                                    \
-		, array(value), array_default(value) { }                                          \
-		std::vector<type> const& GetValue() const { return array; }                       \
-		void SetValue(std::vector<type> val) { array = std::move(val); NotifyChanged(); } \
-		OptionType GetType() const { return OptionType::List##type_name; }                \
-		void Reset() { array = array_default; NotifyChanged(); }                          \
-		bool IsDefault() const { return array == array_default; }                         \
-		void Set(const OptionValue *nv);                                                  \
+class OptionValueListString final : public OptionValue {
+		std::vector<std::string> array;
+		std::vector<std::string> array_default;
+		std::string name;
+	public:
+		typedef std::vector<std::string> value_type;
+		OptionValueListString(std::string name, std::vector<std::string> const& value = std::vector<std::string>())
+		: OptionValue(std::move(name))
+		, array(value), array_default(value) { }
+		std::vector<std::string> const& GetValue() const { return array; }
+		void SetValue(std::vector<std::string> val) { array = std::move(val); NotifyChanged(); }
+		OptionType GetType() const { return OptionType::ListString; }
+		void Reset() { array = array_default; NotifyChanged(); }
+		bool IsDefault() const { return array == array_default; }
+		void Set(const OptionValue *nv);
 	};
 
-CONFIG_OPTIONVALUE_LIST(String, std::string)
-CONFIG_OPTIONVALUE_LIST(Int, int64_t)
-CONFIG_OPTIONVALUE_LIST(Double, double)
-CONFIG_OPTIONVALUE_LIST(Color, Color)
-CONFIG_OPTIONVALUE_LIST(Bool, bool)
+class OptionValueListInt final : public OptionValue {
+		std::vector<int64_t> array;
+		std::vector<int64_t> array_default;
+		std::string name;
+	public:
+		typedef std::vector<int64_t> value_type;
+		OptionValueListInt(std::string name, std::vector<int64_t> const& value = std::vector<int64_t>())
+		: OptionValue(std::move(name))
+		, array(value), array_default(value) { }
+		std::vector<int64_t> const& GetValue() const { return array; }
+		void SetValue(std::vector<int64_t> val) { array = std::move(val); NotifyChanged(); }
+		OptionType GetType() const { return OptionType::ListInt; }
+		void Reset() { array = array_default; NotifyChanged(); }
+		bool IsDefault() const { return array == array_default; }
+		void Set(const OptionValue *nv);
+	};
+
+class OptionValueListDouble final : public OptionValue {
+		std::vector<double> array;
+		std::vector<double> array_default;
+		std::string name;
+	public:
+		typedef std::vector<double> value_type;
+		OptionValueListDouble(std::string name, std::vector<double> const& value = std::vector<double>())
+		: OptionValue(std::move(name))
+		, array(value), array_default(value) { }
+		std::vector<double> const& GetValue() const { return array; }
+		void SetValue(std::vector<double> val) { array = std::move(val); NotifyChanged(); }
+		OptionType GetType() const { return OptionType::ListDouble; }
+		void Reset() { array = array_default; NotifyChanged(); }
+		bool IsDefault() const { return array == array_default; }
+		void Set(const OptionValue *nv);
+	};
+
+class OptionValueListColor final : public OptionValue {
+		std::vector<Color> array;
+		std::vector<Color> array_default;
+		std::string name;
+	public:
+		typedef std::vector<Color> value_type;
+		OptionValueListColor(std::string name, std::vector<Color> const& value = std::vector<Color>())
+		: OptionValue(std::move(name))
+		, array(value), array_default(value) { }
+		std::vector<Color> const& GetValue() const { return array; }
+		void SetValue(std::vector<Color> val) { array = std::move(val); NotifyChanged(); }
+		OptionType GetType() const { return OptionType::ListColor; }
+		void Reset() { array = array_default; NotifyChanged(); }
+		bool IsDefault() const { return array == array_default; }
+		void Set(const OptionValue *nv);
+	};
+
+class OptionValueListBool final : public OptionValue {
+		std::vector<bool> array;
+		std::vector<bool> array_default;
+		std::string name;
+	public:
+		typedef std::vector<bool> value_type;
+		OptionValueListBool(std::string name, std::vector<bool> const& value = std::vector<bool>())
+		: OptionValue(std::move(name))
+		, array(value), array_default(value) { }
+		std::vector<bool> const& GetValue() const { return array; }
+		void SetValue(std::vector<bool> val) { array = std::move(val); NotifyChanged(); }
+		OptionType GetType() const { return OptionType::ListBool; }
+		void Reset() { array = array_default; NotifyChanged(); }
+		bool IsDefault() const { return array == array_default; }
+		void Set(const OptionValue *nv);
+	};
 
 inline std::string const& OptionValue::GetString() const { return As<OptionValueString>(OptionType::String)->GetValue(); }
 inline void OptionValue::SetString(std::string v) { As<OptionValueString>(OptionType::String)->SetValue(std::move(v)); }
@@ -241,5 +302,4 @@ inline void OptionValue::SetListColor(std::vector<Color> v) { As<OptionValueList
 inline std::vector<bool> const& OptionValue::GetListBool() const { return As<OptionValueListBool>(OptionType::ListBool)->GetValue(); }
 inline void OptionValue::SetListBool(std::vector<bool> v) { As<OptionValueListBool>(OptionType::ListBool)->SetValue(std::move(v)); }
 
-#undef CONFIG_OPTIONVALUE_LIST
 } // namespace agi
