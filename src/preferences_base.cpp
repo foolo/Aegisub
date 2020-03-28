@@ -40,24 +40,71 @@
 
 #undef Bool
 
-#define OPTION_UPDATER(type, evttype, opt, body)                            \
-	class type {                                                            \
-		std::string name;                                                   \
-		Preferences *parent;                                                \
-	public:                                                                 \
-		type(std::string const& n, Preferences *p) : name(n), parent(p) { } \
-		void operator()(evttype& evt) {                                     \
-			evt.Skip();                                                     \
-			parent->SetOption(agi::make_unique<agi::opt>(name, body));      \
-		}                                                                   \
+class StringUpdater {
+	std::string name;
+	Preferences *parent;
+public:
+	StringUpdater(std::string const& n, Preferences *p) : name(n), parent(p) { }
+	void operator()(wxCommandEvent& evt) {
+		evt.Skip();
+		parent->SetOption(agi::make_unique<agi::OptionValueString>(name, from_wx(evt.GetString())));
 	}
+};
 
-OPTION_UPDATER(StringUpdater, wxCommandEvent, OptionValueString, from_wx(evt.GetString()));
-OPTION_UPDATER(IntUpdater, wxSpinEvent, OptionValueInt, evt.GetInt());
-OPTION_UPDATER(IntCBUpdater, wxCommandEvent, OptionValueInt, evt.GetInt());
-OPTION_UPDATER(DoubleUpdater, wxSpinDoubleEvent, OptionValueDouble, evt.GetValue());
-OPTION_UPDATER(BoolUpdater, wxCommandEvent, OptionValueBool, !!evt.GetInt());
-OPTION_UPDATER(ColourUpdater, ValueEvent<agi::Color>, OptionValueColor, evt.Get());
+class IntUpdater {
+	std::string name;
+	Preferences *parent;
+public:
+	IntUpdater(std::string const& n, Preferences *p) : name(n), parent(p) { }
+	void operator()(wxSpinEvent& evt) {
+		evt.Skip();
+		parent->SetOption(agi::make_unique<agi::OptionValueInt>(name, evt.GetInt()));
+	}
+};
+
+class IntCBUpdater {
+	std::string name;
+	Preferences *parent;
+public:
+	IntCBUpdater(std::string const& n, Preferences *p) : name(n), parent(p) { }
+	void operator()(wxCommandEvent& evt) {
+		evt.Skip();
+		parent->SetOption(agi::make_unique<agi::OptionValueInt>(name, evt.GetInt()));
+	}
+};
+
+class DoubleUpdater {
+	std::string name;
+	Preferences *parent;
+public:
+	DoubleUpdater(std::string const& n, Preferences *p) : name(n), parent(p) { }
+	void operator()(wxSpinDoubleEvent& evt) {
+		evt.Skip();
+		parent->SetOption(agi::make_unique<agi::OptionValueDouble>(name, evt.GetValue()));
+	}
+};
+
+class BoolUpdater {
+	std::string name;
+	Preferences *parent;
+public:
+	BoolUpdater(std::string const& n, Preferences *p) : name(n), parent(p) { }
+	void operator()(wxCommandEvent& evt) {
+		evt.Skip();
+		parent->SetOption(agi::make_unique<agi::OptionValueBool>(name, !!evt.GetInt()));
+	}
+};
+
+class ColourUpdater {
+	std::string name;
+	Preferences *parent;
+public:
+	ColourUpdater(std::string const& n, Preferences *p) : name(n), parent(p) { }
+	void operator()(ValueEvent<agi::Color>& evt) {
+		evt.Skip();
+		parent->SetOption(agi::make_unique<agi::OptionValueColor>(name, evt.Get()));
+	}
+};
 
 static void browse_button(wxTextCtrl *ctrl) {
 	wxDirDialog dlg(nullptr, _("Please choose the folder:"), config::path->Decode(from_wx(ctrl->GetValue())).wstring());
