@@ -38,13 +38,18 @@ namespace agi {
 			TypeToString(type) + ", got " + TypeToString(GetType()));
 	}
 
-#define CONFIG_DEFINE_SET(type_name, type) \
-	void OptionValue##type_name::Set(const OptionValue *nv) { SetValue(nv->Get##type_name()); } \
-	void OptionValueList##type_name::Set(const OptionValue *nv) { SetValue(nv->GetList##type_name()); }
+void OptionValueString::Set(const OptionValue *nv) { SetValue(nv->GetString()); }
+void OptionValueListString::Set(const OptionValue *nv) { SetValue(nv->GetListString()); }
 
-CONFIG_DEFINE_SET(String, std::string)
-CONFIG_DEFINE_SET(Int, int64_t)
-CONFIG_DEFINE_SET(Double, double)
-CONFIG_DEFINE_SET(Color, Color)
-CONFIG_DEFINE_SET(Bool, bool)
+void OptionValueInt::Set(const OptionValue *nv) { SetValue(nv->GetInt()); }
+void OptionValueListInt::Set(const OptionValue *nv) { SetValue(nv->GetListInt()); }
+
+void OptionValueDouble::Set(const OptionValue *nv) { SetValue(nv->GetDouble()); }
+void OptionValueListDouble::Set(const OptionValue *nv) { SetValue(nv->GetListDouble()); }
+
+void OptionValueColor::Set(const OptionValue *nv) { SetValue(nv->GetColor()); }
+void OptionValueListColor::Set(const OptionValue *nv) { SetValue(nv->GetListColor()); }
+
+void OptionValueBool::Set(const OptionValue *nv) { SetValue(nv->GetBool()); }
+void OptionValueListBool::Set(const OptionValue *nv) { SetValue(nv->GetListBool()); }
 }
