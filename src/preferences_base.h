@@ -42,7 +42,11 @@ public:
 	wxFlexGridSizer *PageSizer(wxString name);
 
 	void CellSkip(wxFlexGridSizer *flex);
-	wxControl *OptionAdd(wxFlexGridSizer *flex, const wxString &name, const char *opt_name, double min=0, double max=INT_MAX, double inc=1);
+	wxControl *OptionAddBool(wxFlexGridSizer *flex, const wxString &name, const char *opt_name);
+	wxControl *OptionAddInt(wxFlexGridSizer *flex, const wxString &name, const char *opt_name, double min=0, double max=INT_MAX);
+	wxControl *OptionAddDouble(wxFlexGridSizer *flex, const wxString &name, const char *opt_name, double min=0, double max=INT_MAX, double inc=1);
+	wxControl *OptionAddString(wxFlexGridSizer *flex, const wxString &name, const char *opt_name);
+	wxControl *OptionAddColor(wxFlexGridSizer *flex, const wxString &name, const char *opt_name);
 	void OptionChoice(wxFlexGridSizer *flex, const wxString &name, const wxArrayString &choices, const char *opt_name);
 	void OptionBrowse(wxFlexGridSizer *flex, const wxString &name, const char *opt_name, wxControl *enabler = nullptr, bool do_enable = false);
 	void OptionFont(wxSizer *sizer, std::string opt_prefix);

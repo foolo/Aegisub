@@ -60,21 +60,21 @@ void General(wxTreebook *book, Preferences *parent) {
 	auto p = new OptionPage(book, parent, _("General"));
 
 	auto general = p->PageSizer(_("General"));
-	p->OptionAdd(general, _("Check for updates on startup"), "App/Auto/Check For Updates");
-	p->OptionAdd(general, _("Show main toolbar"), "App/Show Toolbar");
-	p->OptionAdd(general, _("Save UI state in subtitles files"), "App/Save UI State");
+	p->OptionAddBool(general, _("Check for updates on startup"), "App/Auto/Check For Updates");
+	p->OptionAddBool(general, _("Show main toolbar"), "App/Show Toolbar");
+	p->OptionAddBool(general, _("Save UI state in subtitles files"), "App/Save UI State");
 	p->CellSkip(general);
 
-	p->OptionAdd(general, _("Toolbar Icon Size"), "App/Toolbar Icon Size");
+	p->OptionAddInt(general, _("Toolbar Icon Size"), "App/Toolbar Icon Size");
 	wxString autoload_modes[] = { _("Never"), _("Always"), _("Ask") };
 	wxArrayString autoload_modes_arr(3, autoload_modes);
 	p->OptionChoice(general, _("Automatically load linked files"), autoload_modes_arr, "App/Auto/Load Linked Files");
-	p->OptionAdd(general, _("Undo Levels"), "Limits/Undo Levels", 2, 10000);
+	p->OptionAddInt(general, _("Undo Levels"), "Limits/Undo Levels", 2, 10000);
 
 	auto recent = p->PageSizer(_("Recently Used Lists"));
-	p->OptionAdd(recent, _("Files"), "Limits/MRU", 0, 16);
-	p->OptionAdd(recent, _("Find/Replace"), "Limits/Find Replace");
-	p->OptionAdd(recent, _("Load recently used subtitle on startup"), "App/Load Recent Subtitle On Startup");
+	p->OptionAddInt(recent, _("Files"), "Limits/MRU", 0, 16);
+	p->OptionAddInt(recent, _("Find/Replace"), "Limits/Find Replace");
+	p->OptionAddBool(recent, _("Load recently used subtitle on startup"), "App/Load Recent Subtitle On Startup");
 
 	p->SetSizerAndFit(p->sizer);
 }
@@ -125,31 +125,31 @@ void Audio(wxTreebook *book, Preferences *parent) {
 	auto p = new OptionPage(book, parent, _("Audio"));
 
 	auto general = p->PageSizer(_("Options"));
-	p->OptionAdd(general, _("Default mouse wheel to zoom"), "Audio/Wheel Default to Zoom");
-	p->OptionAdd(general, _("Lock scroll on cursor"), "Audio/Lock Scroll on Cursor");
-	p->OptionAdd(general, _("Smooth scrolling"), "Audio/Smooth Scrolling");
-	p->OptionAdd(general, _("Snap markers by default"), "Audio/Snap/Enable");
-	p->OptionAdd(general, _("Auto-focus on mouse over"), "Audio/Auto/Focus");
-	p->OptionAdd(general, _("Play audio when stepping in video"), "Audio/Plays When Stepping Video");
-	p->OptionAdd(general, _("Left-click-drag moves end marker"), "Audio/Drag Timing");
+	p->OptionAddBool(general, _("Default mouse wheel to zoom"), "Audio/Wheel Default to Zoom");
+	p->OptionAddBool(general, _("Lock scroll on cursor"), "Audio/Lock Scroll on Cursor");
+	p->OptionAddBool(general, _("Smooth scrolling"), "Audio/Smooth Scrolling");
+	p->OptionAddBool(general, _("Snap markers by default"), "Audio/Snap/Enable");
+	p->OptionAddBool(general, _("Auto-focus on mouse over"), "Audio/Auto/Focus");
+	p->OptionAddBool(general, _("Play audio when stepping in video"), "Audio/Plays When Stepping Video");
+	p->OptionAddBool(general, _("Left-click-drag moves end marker"), "Audio/Drag Timing");
 	p->CellSkip(general);
-	p->OptionAdd(general, _("Default timing length (ms)"), "Timing/Default Duration", 0, 36000);
-	p->OptionAdd(general, _("Default lead-in length (ms)"), "Audio/Lead/IN", 0, 36000);
-	p->OptionAdd(general, _("Default lead-out length (ms)"), "Audio/Lead/OUT", 0, 36000);
+	p->OptionAddInt(general, _("Default timing length (ms)"), "Timing/Default Duration", 0, 36000);
+	p->OptionAddInt(general, _("Default lead-in length (ms)"), "Audio/Lead/IN", 0, 36000);
+	p->OptionAddInt(general, _("Default lead-out length (ms)"), "Audio/Lead/OUT", 0, 36000);
 
-	p->OptionAdd(general, _("Marker drag-start sensitivity (px)"), "Audio/Start Drag Sensitivity", 1, 15);
-	p->OptionAdd(general, _("Line boundary thickness (px)"), "Audio/Line Boundaries Thickness", 1, 5);
-	p->OptionAdd(general, _("Maximum snap distance (px)"), "Audio/Snap/Distance", 0, 25);
+	p->OptionAddInt(general, _("Marker drag-start sensitivity (px)"), "Audio/Start Drag Sensitivity", 1, 15);
+	p->OptionAddInt(general, _("Line boundary thickness (px)"), "Audio/Line Boundaries Thickness", 1, 5);
+	p->OptionAddInt(general, _("Maximum snap distance (px)"), "Audio/Snap/Distance", 0, 25);
 
 	const wxString dtl_arr[] = { _("Don't show"), _("Show previous"), _("Show previous and next"), _("Show all") };
 	wxArrayString choice_dtl(4, dtl_arr);
 	p->CellSkip(general);
-	p->OptionAdd(general, _("Include commented inactive lines"), "Audio/Display/Draw/Inactive Comments");
+	p->OptionAddBool(general, _("Include commented inactive lines"), "Audio/Display/Draw/Inactive Comments");
 
 	auto display = p->PageSizer(_("Display Visual Options"));
-	p->OptionAdd(display, _("Keyframes"), "Audio/Display/Draw/Keyframes");
-	p->OptionAdd(display, _("Cursor time"), "Audio/Display/Draw/Cursor Time");
-	p->OptionAdd(display, _("Video position"), "Audio/Display/Draw/Video Position");
+	p->OptionAddBool(display, _("Keyframes"), "Audio/Display/Draw/Keyframes");
+	p->OptionAddBool(display, _("Cursor time"), "Audio/Display/Draw/Cursor Time");
+	p->OptionAddBool(display, _("Video position"), "Audio/Display/Draw/Video Position");
 	p->CellSkip(display);
 	p->OptionChoice(display, _("Waveform Style"), AudioWaveformRenderer::GetWaveformStyles(), "Audio/Display/Waveform Style");
 
@@ -164,32 +164,32 @@ void Video(wxTreebook *book, Preferences *parent) {
 	auto p = new OptionPage(book, parent, _("Video"));
 
 	auto general = p->PageSizer(_("Options"));
-	p->OptionAdd(general, _("Show keyframes in slider"), "Video/Slider/Show Keyframes");
+	p->OptionAddBool(general, _("Show keyframes in slider"), "Video/Slider/Show Keyframes");
 	p->CellSkip(general);
-	p->OptionAdd(general, _("Only show visual tools when mouse is over video"), "Tool/Visual/Autohide");
+	p->OptionAddBool(general, _("Only show visual tools when mouse is over video"), "Tool/Visual/Autohide");
 	p->CellSkip(general);
-	p->OptionAdd(general, _("Seek video to line start on selection change"), "Video/Subtitle Sync");
+	p->OptionAddBool(general, _("Seek video to line start on selection change"), "Video/Subtitle Sync");
 	p->CellSkip(general);
-	p->OptionAdd(general, _("Automatically open audio when opening video"), "Video/Open Audio");
+	p->OptionAddBool(general, _("Automatically open audio when opening video"), "Video/Open Audio");
 	p->CellSkip(general);
 
 	const wxString czoom_arr[24] = { "12.5%", "25%", "37.5%", "50%", "62.5%", "75%", "87.5%", "100%", "112.5%", "125%", "137.5%", "150%", "162.5%", "175%", "187.5%", "200%", "212.5%", "225%", "237.5%", "250%", "262.5%", "275%", "287.5%", "300%" };
 	wxArrayString choice_zoom(24, czoom_arr);
 	p->OptionChoice(general, _("Default Zoom"), choice_zoom, "Video/Default Zoom");
 
-	p->OptionAdd(general, _("Fast jump step in frames"), "Video/Slider/Fast Jump Step");
+	p->OptionAddInt(general, _("Fast jump step in frames"), "Video/Slider/Fast Jump Step");
 
 	const wxString cscr_arr[3] = { "?video", "?script", "." };
 	wxArrayString scr_res(3, cscr_arr);
 	p->OptionChoice(general, _("Screenshot save path"), scr_res, "Path/Screenshot");
 
 	auto resolution = p->PageSizer(_("Script Resolution"));
-	wxControl *autocb = p->OptionAdd(resolution, _("Use resolution of first video opened"), "Subtitle/Default Resolution/Auto");
+	wxControl *autocb = p->OptionAddBool(resolution, _("Use resolution of first video opened"), "Subtitle/Default Resolution/Auto");
 	p->CellSkip(resolution);
 	p->DisableIfChecked(autocb,
-		p->OptionAdd(resolution, _("Default width"), "Subtitle/Default Resolution/Width"));
+		p->OptionAddInt(resolution, _("Default width"), "Subtitle/Default Resolution/Width"));
 	p->DisableIfChecked(autocb,
-		p->OptionAdd(resolution, _("Default height"), "Subtitle/Default Resolution/Height"));
+		p->OptionAddInt(resolution, _("Default height"), "Subtitle/Default Resolution/Height"));
 
 	const wxString cres_arr[] = {_("Never"), _("Ask"), _("Always set"), _("Always resample")};
 	wxArrayString choice_res(4, cres_arr);
@@ -203,29 +203,29 @@ void Interface(wxTreebook *book, Preferences *parent) {
 	auto p = new OptionPage(book, parent, _("Interface"));
 
 	auto edit_box = p->PageSizer(_("Edit Box"));
-	p->OptionAdd(edit_box, _("Enable call tips"), "App/Call Tips");
-	p->OptionAdd(edit_box, _("Overwrite in time boxes"), "Subtitle/Time Edit/Insert Mode");
+	p->OptionAddBool(edit_box, _("Enable call tips"), "App/Call Tips");
+	p->OptionAddBool(edit_box, _("Overwrite in time boxes"), "Subtitle/Time Edit/Insert Mode");
 	p->CellSkip(edit_box);
-	p->OptionAdd(edit_box, _("Enable syntax highlighting"), "Subtitle/Highlight/Syntax");
+	p->OptionAddBool(edit_box, _("Enable syntax highlighting"), "Subtitle/Highlight/Syntax");
 	p->OptionBrowse(edit_box, _("Dictionaries path"), "Path/Dictionary");
 	p->OptionFont(edit_box, "Subtitle/Edit Box/");
 
 	auto character_count = p->PageSizer(_("Character Counter"));
-	p->OptionAdd(character_count, _("Maximum characters per line"), "Subtitle/Character Limit", 0, 1000);
-	p->OptionAdd(character_count, _("Characters Per Second Warning Threshold"), "Subtitle/Character Counter/CPS Warning Threshold", 0, 1000);
-	p->OptionAdd(character_count, _("Characters Per Second Error Threshold"), "Subtitle/Character Counter/CPS Error Threshold", 0, 1000);
-	p->OptionAdd(character_count, _("Ignore whitespace"), "Subtitle/Character Counter/Ignore Whitespace");
-	p->OptionAdd(character_count, _("Ignore punctuation"), "Subtitle/Character Counter/Ignore Punctuation");
+	p->OptionAddInt(character_count, _("Maximum characters per line"), "Subtitle/Character Limit", 0, 1000);
+	p->OptionAddInt(character_count, _("Characters Per Second Warning Threshold"), "Subtitle/Character Counter/CPS Warning Threshold", 0, 1000);
+	p->OptionAddInt(character_count, _("Characters Per Second Error Threshold"), "Subtitle/Character Counter/CPS Error Threshold", 0, 1000);
+	p->OptionAddBool(character_count, _("Ignore whitespace"), "Subtitle/Character Counter/Ignore Whitespace");
+	p->OptionAddBool(character_count, _("Ignore punctuation"), "Subtitle/Character Counter/Ignore Punctuation");
 
 	auto grid = p->PageSizer(_("Grid"));
-	p->OptionAdd(grid, _("Focus grid on click"), "Subtitle/Grid/Focus Allow");
-	p->OptionAdd(grid, _("Highlight visible subtitles"), "Subtitle/Grid/Track Video Position in Grid View");
-	p->OptionAdd(grid, _("Hide overrides symbol"), "Subtitle/Grid/Hide Overrides Char");
-	p->OptionAdd(grid, _("Newline representation in grid view"), "Subtitle/Grid/Newline Representation");
+	p->OptionAddBool(grid, _("Focus grid on click"), "Subtitle/Grid/Focus Allow");
+	p->OptionAddBool(grid, _("Highlight visible subtitles"), "Subtitle/Grid/Track Video Position in Grid View");
+	p->OptionAddString(grid, _("Hide overrides symbol"), "Subtitle/Grid/Hide Overrides Char");
+	p->OptionAddString(grid, _("Newline representation in grid view"), "Subtitle/Grid/Newline Representation");
 	p->OptionFont(grid, "Subtitle/Grid/");
 
 	auto tl_assistant = p->PageSizer(_("Translation Assistant"));
-	p->OptionAdd(tl_assistant, _("Skip over whitespace"), "Tool/Translation Assistant/Skip Whitespace");
+	p->OptionAddBool(tl_assistant, _("Skip over whitespace"), "Tool/Translation Assistant/Skip Whitespace");
 
 	p->SetSizerAndFit(p->sizer);
 }
@@ -241,55 +241,55 @@ void Interface_Colours(wxTreebook *book, Preferences *parent) {
 	main_sizer->Add(p->sizer, wxEXPAND);
 
 	auto audio = p->PageSizer(_("Audio Display"));
-	p->OptionAdd(audio, _("Play cursor"), "Colour/Audio Display/Play Cursor");
-	p->OptionAdd(audio, _("Line boundary start"), "Colour/Audio Display/Line boundary Start");
-	p->OptionAdd(audio, _("Line boundary end"), "Colour/Audio Display/Line boundary End");
-	p->OptionAdd(audio, _("Line boundary inactive line"), "Colour/Audio Display/Line Boundary Inactive Line");
-	p->OptionAdd(audio, _("Syllable boundaries"), "Colour/Audio Display/Syllable Boundaries");
+	p->OptionAddColor(audio, _("Play cursor"), "Colour/Audio Display/Play Cursor");
+	p->OptionAddColor(audio, _("Line boundary start"), "Colour/Audio Display/Line boundary Start");
+	p->OptionAddColor(audio, _("Line boundary end"), "Colour/Audio Display/Line boundary End");
+	p->OptionAddColor(audio, _("Line boundary inactive line"), "Colour/Audio Display/Line Boundary Inactive Line");
+	p->OptionAddColor(audio, _("Syllable boundaries"), "Colour/Audio Display/Syllable Boundaries");
 
 	auto syntax = p->PageSizer(_("Syntax Highlighting"));
-	p->OptionAdd(syntax, _("Background"), "Colour/Subtitle/Background");
-	p->OptionAdd(syntax, _("Normal"), "Colour/Subtitle/Syntax/Normal");
-	p->OptionAdd(syntax, _("Comments"), "Colour/Subtitle/Syntax/Comment");
-	p->OptionAdd(syntax, _("Drawings"), "Colour/Subtitle/Syntax/Drawing");
-	p->OptionAdd(syntax, _("Brackets"), "Colour/Subtitle/Syntax/Brackets");
-	p->OptionAdd(syntax, _("Slashes and Parentheses"), "Colour/Subtitle/Syntax/Slashes");
-	p->OptionAdd(syntax, _("Tags"), "Colour/Subtitle/Syntax/Tags");
-	p->OptionAdd(syntax, _("Parameters"), "Colour/Subtitle/Syntax/Parameters");
-	p->OptionAdd(syntax, _("Error"), "Colour/Subtitle/Syntax/Error");
-	p->OptionAdd(syntax, _("Error Background"), "Colour/Subtitle/Syntax/Background/Error");
-	p->OptionAdd(syntax, _("Line Break"), "Colour/Subtitle/Syntax/Line Break");
-	p->OptionAdd(syntax, _("Karaoke templates"), "Colour/Subtitle/Syntax/Karaoke Template");
-	p->OptionAdd(syntax, _("Karaoke variables"), "Colour/Subtitle/Syntax/Karaoke Variable");
+	p->OptionAddColor(syntax, _("Background"), "Colour/Subtitle/Background");
+	p->OptionAddColor(syntax, _("Normal"), "Colour/Subtitle/Syntax/Normal");
+	p->OptionAddColor(syntax, _("Comments"), "Colour/Subtitle/Syntax/Comment");
+	p->OptionAddColor(syntax, _("Drawings"), "Colour/Subtitle/Syntax/Drawing");
+	p->OptionAddColor(syntax, _("Brackets"), "Colour/Subtitle/Syntax/Brackets");
+	p->OptionAddColor(syntax, _("Slashes and Parentheses"), "Colour/Subtitle/Syntax/Slashes");
+	p->OptionAddColor(syntax, _("Tags"), "Colour/Subtitle/Syntax/Tags");
+	p->OptionAddColor(syntax, _("Parameters"), "Colour/Subtitle/Syntax/Parameters");
+	p->OptionAddColor(syntax, _("Error"), "Colour/Subtitle/Syntax/Error");
+	p->OptionAddColor(syntax, _("Error Background"), "Colour/Subtitle/Syntax/Background/Error");
+	p->OptionAddColor(syntax, _("Line Break"), "Colour/Subtitle/Syntax/Line Break");
+	p->OptionAddColor(syntax, _("Karaoke templates"), "Colour/Subtitle/Syntax/Karaoke Template");
+	p->OptionAddColor(syntax, _("Karaoke variables"), "Colour/Subtitle/Syntax/Karaoke Variable");
 
 	p->sizer = new wxBoxSizer(wxVERTICAL);
 	main_sizer->AddSpacer(5);
 	main_sizer->Add(p->sizer, wxEXPAND);
 
 	auto grid = p->PageSizer(_("Subtitle Grid"));
-	p->OptionAdd(grid, _("Standard foreground"), "Colour/Subtitle Grid/Standard");
-	p->OptionAdd(grid, _("Standard background"), "Colour/Subtitle Grid/Background/Background");
-	p->OptionAdd(grid, _("Selection foreground"), "Colour/Subtitle Grid/Selection");
-	p->OptionAdd(grid, _("Selection background"), "Colour/Subtitle Grid/Background/Selection");
-	p->OptionAdd(grid, _("Collision foreground"), "Colour/Subtitle Grid/Collision");
-	p->OptionAdd(grid, _("In frame background"), "Colour/Subtitle Grid/Background/Inframe");
-	p->OptionAdd(grid, _("Comment background"), "Colour/Subtitle Grid/Background/Comment");
-	p->OptionAdd(grid, _("Selected comment background"), "Colour/Subtitle Grid/Background/Selected Comment");
-	p->OptionAdd(grid, _("Header background"), "Colour/Subtitle Grid/Header");
-	p->OptionAdd(grid, _("Left Column"), "Colour/Subtitle Grid/Left Column");
-	p->OptionAdd(grid, _("Active Line Border"), "Colour/Subtitle Grid/Active Border");
-	p->OptionAdd(grid, _("Lines"), "Colour/Subtitle Grid/Lines");
-	p->OptionAdd(grid, _("CPS Error"), "Colour/Subtitle Grid/CPS Error");
+	p->OptionAddColor(grid, _("Standard foreground"), "Colour/Subtitle Grid/Standard");
+	p->OptionAddColor(grid, _("Standard background"), "Colour/Subtitle Grid/Background/Background");
+	p->OptionAddColor(grid, _("Selection foreground"), "Colour/Subtitle Grid/Selection");
+	p->OptionAddColor(grid, _("Selection background"), "Colour/Subtitle Grid/Background/Selection");
+	p->OptionAddColor(grid, _("Collision foreground"), "Colour/Subtitle Grid/Collision");
+	p->OptionAddColor(grid, _("In frame background"), "Colour/Subtitle Grid/Background/Inframe");
+	p->OptionAddColor(grid, _("Comment background"), "Colour/Subtitle Grid/Background/Comment");
+	p->OptionAddColor(grid, _("Selected comment background"), "Colour/Subtitle Grid/Background/Selected Comment");
+	p->OptionAddColor(grid, _("Header background"), "Colour/Subtitle Grid/Header");
+	p->OptionAddColor(grid, _("Left Column"), "Colour/Subtitle Grid/Left Column");
+	p->OptionAddColor(grid, _("Active Line Border"), "Colour/Subtitle Grid/Active Border");
+	p->OptionAddColor(grid, _("Lines"), "Colour/Subtitle Grid/Lines");
+	p->OptionAddColor(grid, _("CPS Error"), "Colour/Subtitle Grid/CPS Error");
 
 	auto visual_tools = p->PageSizer(_("Visual Typesetting Tools"));
-	p->OptionAdd(visual_tools, _("Primary Lines"), "Colour/Visual Tools/Lines Primary");
-	p->OptionAdd(visual_tools, _("Secondary Lines"), "Colour/Visual Tools/Lines Secondary");
-	p->OptionAdd(visual_tools, _("Primary Highlight"), "Colour/Visual Tools/Highlight Primary");
-	p->OptionAdd(visual_tools, _("Secondary Highlight"), "Colour/Visual Tools/Highlight Secondary");
+	p->OptionAddColor(visual_tools, _("Primary Lines"), "Colour/Visual Tools/Lines Primary");
+	p->OptionAddColor(visual_tools, _("Secondary Lines"), "Colour/Visual Tools/Lines Secondary");
+	p->OptionAddColor(visual_tools, _("Primary Highlight"), "Colour/Visual Tools/Highlight Primary");
+	p->OptionAddColor(visual_tools, _("Secondary Highlight"), "Colour/Visual Tools/Highlight Secondary");
 
 	// Separate sizer to prevent the colors in the visual tools section from getting resized
 	auto visual_tools_alpha = p->PageSizer(_("Visual Typesetting Tools Alpha"));
-	p->OptionAdd(visual_tools_alpha, _("Shaded Area"), "Colour/Visual Tools/Shaded Area Alpha", 0, 1, 0.1);
+	p->OptionAddDouble(visual_tools_alpha, _("Shaded Area"), "Colour/Visual Tools/Shaded Area Alpha", 0, 1, 0.1);
 
 	p->sizer = main_sizer;
 
@@ -301,15 +301,15 @@ void Backup(wxTreebook *book, Preferences *parent) {
 	auto p = new OptionPage(book, parent, _("Backup"));
 
 	auto save = p->PageSizer(_("Automatic Save"));
-	wxControl *cb = p->OptionAdd(save, _("Enable"), "App/Auto/Save");
+	wxControl *cb = p->OptionAddBool(save, _("Enable"), "App/Auto/Save");
 	p->CellSkip(save);
 	p->EnableIfChecked(cb,
-		p->OptionAdd(save, _("Interval in seconds"), "App/Auto/Save Every Seconds", 1));
+		p->OptionAddInt(save, _("Interval in seconds"), "App/Auto/Save Every Seconds", 1));
 	p->OptionBrowse(save, _("Path"), "Path/Auto/Save", cb, true);
-	p->OptionAdd(save, _("Autosave after every change"), "App/Auto/Save on Every Change");
+	p->OptionAddBool(save, _("Autosave after every change"), "App/Auto/Save on Every Change");
 
 	auto backup = p->PageSizer(_("Automatic Backup"));
-	cb = p->OptionAdd(backup, _("Enable"), "App/Auto/Backup");
+	cb = p->OptionAddBool(backup, _("Enable"), "App/Auto/Backup");
 	p->CellSkip(backup);
 	p->OptionBrowse(backup, _("Path"), "Path/Auto/Backup", cb, true);
 
@@ -355,7 +355,7 @@ void Advanced_Audio(wxTreebook *book, Preferences *parent) {
 	wxArrayString sq_choice(4, sq_arr);
 	p->OptionChoice(spectrum, _("Quality"), sq_choice, "Audio/Renderer/Spectrum/Quality");
 
-	p->OptionAdd(spectrum, _("Cache memory max (MB)"), "Audio/Renderer/Spectrum/Memory Max", 2, 1024);
+	p->OptionAddInt(spectrum, _("Cache memory max (MB)"), "Audio/Renderer/Spectrum/Memory Max", 2, 1024);
 
 	auto ffms = p->PageSizer("FFmpegSource");
 
@@ -363,7 +363,7 @@ void Advanced_Audio(wxTreebook *book, Preferences *parent) {
 	wxArrayString error_modes_choice(4, error_modes);
 	p->OptionChoice(ffms, _("Audio indexing error handling mode"), error_modes_choice, "Provider/Audio/FFmpegSource/Decode Error Handling");
 
-	p->OptionAdd(ffms, _("Always index all audio tracks"), "Provider/FFmpegSource/Index All Tracks");
+	p->OptionAddBool(ffms, _("Always index all audio tracks"), "Provider/FFmpegSource/Index All Tracks");
 
 #ifdef WITH_PORTAUDIO
 	auto portaudio = p->PageSizer("Portaudio");
@@ -397,8 +397,8 @@ void Advanced_Video(wxTreebook *book, Preferences *parent) {
 	wxArrayString log_levels_choice(8, log_levels);
 	p->OptionChoice(ffms, _("Debug log verbosity"), log_levels_choice, "Provider/FFmpegSource/Log Level");
 
-	p->OptionAdd(ffms, _("Decoding threads"), "Provider/Video/FFmpegSource/Decoding Threads", -1);
-	p->OptionAdd(ffms, _("Enable unsafe seeking"), "Provider/Video/FFmpegSource/Unsafe Seeking");
+	p->OptionAddInt(ffms, _("Decoding threads"), "Provider/Video/FFmpegSource/Decoding Threads", -1);
+	p->OptionAddBool(ffms, _("Enable unsafe seeking"), "Provider/Video/FFmpegSource/Unsafe Seeking");
 
 	p->SetSizerAndFit(p->sizer);
 }

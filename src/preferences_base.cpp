@@ -110,50 +110,50 @@ void OptionPage::CellSkip(wxFlexGridSizer *flex) {
 	flex->AddStretchSpacer();
 }
 
-wxControl *OptionPage::OptionAdd(wxFlexGridSizer *flex, const wxString &name, const char *opt_name, double min, double max, double inc) {
+wxControl *OptionPage::OptionAddBool(wxFlexGridSizer *flex, const wxString &name, const char *opt_name) {
 	parent->AddChangeableOption(opt_name);
 	const auto opt = OPT_GET(opt_name);
+	auto cb = new wxCheckBox(this, -1, name);
+	flex->Add(cb, 1, wxEXPAND, 0);
+	cb->SetValue(opt->GetBool());
+	cb->Bind(wxEVT_CHECKBOX, BoolUpdater(opt_name, parent));
+	return cb;
+}
 
-	switch (opt->GetType()) {
-		case agi::OptionType::Bool: {
-			auto cb = new wxCheckBox(this, -1, name);
-			flex->Add(cb, 1, wxEXPAND, 0);
-			cb->SetValue(opt->GetBool());
-			cb->Bind(wxEVT_CHECKBOX, BoolUpdater(opt_name, parent));
-			return cb;
-		}
+wxControl *OptionPage::OptionAddInt(wxFlexGridSizer *flex, const wxString &name, const char *opt_name, double min, double max) {
+	parent->AddChangeableOption(opt_name);
+	const auto opt = OPT_GET(opt_name);
+	auto sc = new wxSpinCtrl(this, -1, std::to_wstring((int)opt->GetInt()), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, min, max, opt->GetInt());
+	sc->Bind(wxEVT_SPINCTRL, IntUpdater(opt_name, parent));
+	Add(flex, name, sc);
+	return sc;
+}
 
-		case agi::OptionType::Int: {
-			auto sc = new wxSpinCtrl(this, -1, std::to_wstring((int)opt->GetInt()), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, min, max, opt->GetInt());
-			sc->Bind(wxEVT_SPINCTRL, IntUpdater(opt_name, parent));
-			Add(flex, name, sc);
-			return sc;
-		}
+wxControl *OptionPage::OptionAddDouble(wxFlexGridSizer *flex, const wxString &name, const char *opt_name, double min, double max, double inc) {
+	parent->AddChangeableOption(opt_name);
+	const auto opt = OPT_GET(opt_name);
+	auto scd = new wxSpinCtrlDouble(this, -1, std::to_wstring(opt->GetDouble()), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, min, max, opt->GetDouble(), inc);
+	scd->Bind(wxEVT_SPINCTRLDOUBLE, DoubleUpdater(opt_name, parent));
+	Add(flex, name, scd);
+	return scd;
+}
 
-		case agi::OptionType::Double: {
-			auto scd = new wxSpinCtrlDouble(this, -1, std::to_wstring(opt->GetDouble()), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, min, max, opt->GetDouble(), inc);
-			scd->Bind(wxEVT_SPINCTRLDOUBLE, DoubleUpdater(opt_name, parent));
-			Add(flex, name, scd);
-			return scd;
-		}
+wxControl *OptionPage::OptionAddString(wxFlexGridSizer *flex, const wxString &name, const char *opt_name) {
+	parent->AddChangeableOption(opt_name);
+	const auto opt = OPT_GET(opt_name);
+	auto text = new wxTextCtrl(this, -1 , to_wx(opt->GetString()));
+	text->Bind(wxEVT_TEXT, StringUpdater(opt_name, parent));
+	Add(flex, name, text);
+	return text;
+}
 
-		case agi::OptionType::String: {
-			auto text = new wxTextCtrl(this, -1 , to_wx(opt->GetString()));
-			text->Bind(wxEVT_TEXT, StringUpdater(opt_name, parent));
-			Add(flex, name, text);
-			return text;
-		}
-
-		case agi::OptionType::Color: {
-			auto cb = new ColourButton(this, wxSize(40,10), false, opt->GetColor());
-			cb->Bind(EVT_COLOR, ColourUpdater(opt_name, parent));
-			Add(flex, name, cb);
-			return cb;
-		}
-
-		default:
-			throw agi::InternalError("Unsupported type");
-	}
+wxControl *OptionPage::OptionAddColor(wxFlexGridSizer *flex, const wxString &name, const char *opt_name) {
+	parent->AddChangeableOption(opt_name);
+	const auto opt = OPT_GET(opt_name);
+	auto cb = new ColourButton(this, wxSize(40,10), false, opt->GetColor());
+	cb->Bind(EVT_COLOR, ColourUpdater(opt_name, parent));
+	Add(flex, name, cb);
+	return cb;
 }
 
 void OptionPage::OptionChoice(wxFlexGridSizer *flex, const wxString &name, const wxArrayString &choices, const char *opt_name) {
