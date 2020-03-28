@@ -107,28 +107,85 @@ public:
 	DEFINE_SIGNAL_ADDERS(ValueChanged, Subscribe)
 };
 
-#define CONFIG_OPTIONVALUE(type_name, type)                                           \
-	class OptionValue##type_name final : public OptionValue {                         \
-		type value;                                                                   \
-		type value_default;                                                           \
-	public:                                                                           \
-		typedef type value_type;                                                      \
-		OptionValue##type_name(std::string member_name, type member_value)            \
-		: OptionValue(std::move(member_name))                                         \
-		, value(member_value), value_default(member_value) { }                        \
-		type const& GetValue() const { return value; }                                \
-		void SetValue(type new_val) { value = std::move(new_val); NotifyChanged(); }  \
-		OptionType GetType() const { return OptionType::type_name; }                  \
-		void Reset() { value = value_default; NotifyChanged(); }                      \
-		bool IsDefault() const { return value == value_default; }                     \
-		void Set(const OptionValue *nv);                                              \
+class OptionValueString final : public OptionValue {
+		std::string value;
+		std::string value_default;
+	public:
+		typedef std::string value_type;
+		OptionValueString(std::string member_name, std::string member_value)
+		: OptionValue(std::move(member_name))
+		, value(member_value), value_default(member_value) { }
+		std::string const& GetValue() const { return value; }
+		void SetValue(std::string new_val) { value = std::move(new_val); NotifyChanged(); }
+		OptionType GetType() const { return OptionType::String; }
+		void Reset() { value = value_default; NotifyChanged(); }
+		bool IsDefault() const { return value == value_default; }
+		void Set(const OptionValue *nv);
 	};
 
-CONFIG_OPTIONVALUE(String, std::string)
-CONFIG_OPTIONVALUE(Int, int64_t)
-CONFIG_OPTIONVALUE(Double, double)
-CONFIG_OPTIONVALUE(Color, Color)
-CONFIG_OPTIONVALUE(Bool, bool)
+class OptionValueInt final : public OptionValue {
+		int64_t value;
+		int64_t value_default;
+	public:
+		typedef int64_t value_type;
+		OptionValueInt(std::string member_name, int64_t member_value)
+		: OptionValue(std::move(member_name))
+		, value(member_value), value_default(member_value) { }
+		int64_t const& GetValue() const { return value; }
+		void SetValue(int64_t new_val) { value = std::move(new_val); NotifyChanged(); }
+		OptionType GetType() const { return OptionType::Int; }
+		void Reset() { value = value_default; NotifyChanged(); }
+		bool IsDefault() const { return value == value_default; }
+		void Set(const OptionValue *nv);
+	};
+
+class OptionValueDouble final : public OptionValue {
+		double value;
+		double value_default;
+	public:
+		typedef double value_type;
+		OptionValueDouble(std::string member_name, double member_value)
+		: OptionValue(std::move(member_name))
+		, value(member_value), value_default(member_value) { }
+		double const& GetValue() const { return value; }
+		void SetValue(double new_val) { value = std::move(new_val); NotifyChanged(); }
+		OptionType GetType() const { return OptionType::Double; }
+		void Reset() { value = value_default; NotifyChanged(); }
+		bool IsDefault() const { return value == value_default; }
+		void Set(const OptionValue *nv);
+	};
+
+class OptionValueColor final : public OptionValue {
+		Color value;
+		Color value_default;
+	public:
+		typedef Color value_type;
+		OptionValueColor(std::string member_name, Color member_value)
+		: OptionValue(std::move(member_name))
+		, value(member_value), value_default(member_value) { }
+		Color const& GetValue() const { return value; }
+		void SetValue(Color new_val) { value = std::move(new_val); NotifyChanged(); }
+		OptionType GetType() const { return OptionType::Color; }
+		void Reset() { value = value_default; NotifyChanged(); }
+		bool IsDefault() const { return value == value_default; }
+		void Set(const OptionValue *nv);
+	};
+
+class OptionValueBool final : public OptionValue {
+		bool value;
+		bool value_default;
+	public:
+		typedef bool value_type;
+		OptionValueBool(std::string member_name, bool member_value)
+		: OptionValue(std::move(member_name))
+		, value(member_value), value_default(member_value) { }
+		bool const& GetValue() const { return value; }
+		void SetValue(bool new_val) { value = std::move(new_val); NotifyChanged(); }
+		OptionType GetType() const { return OptionType::Bool; }
+		void Reset() { value = value_default; NotifyChanged(); }
+		bool IsDefault() const { return value == value_default; }
+		void Set(const OptionValue *nv);
+	};
 
 #define CONFIG_OPTIONVALUE_LIST(type_name, type)                                          \
 	class OptionValueList##type_name final : public OptionValue {                         \
@@ -184,6 +241,5 @@ inline void OptionValue::SetListColor(std::vector<Color> v) { As<OptionValueList
 inline std::vector<bool> const& OptionValue::GetListBool() const { return As<OptionValueListBool>(OptionType::ListBool)->GetValue(); }
 inline void OptionValue::SetListBool(std::vector<bool> v) { As<OptionValueListBool>(OptionType::ListBool)->SetValue(std::move(v)); }
 
-#undef CONFIG_OPTIONVALUE
 #undef CONFIG_OPTIONVALUE_LIST
 } // namespace agi
