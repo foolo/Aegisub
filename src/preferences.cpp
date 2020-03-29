@@ -68,7 +68,7 @@ void General(wxTreebook *book, Preferences *parent) {
 	p->OptionAddInt(general, _("Toolbar Icon Size"), "App/Toolbar Icon Size");
 	wxString autoload_modes[] = { _("Never"), _("Always"), _("Ask") };
 	wxArrayString autoload_modes_arr(3, autoload_modes);
-	p->OptionChoice(general, _("Automatically load linked files"), autoload_modes_arr, "App/Auto/Load Linked Files");
+	p->OptionChoiceInt(general, _("Automatically load linked files"), autoload_modes_arr, "App/Auto/Load Linked Files");
 	p->OptionAddInt(general, _("Undo Levels"), "Limits/Undo Levels", 2, 10000);
 
 	auto recent = p->PageSizer(_("Recently Used Lists"));
@@ -111,11 +111,11 @@ void General_DefaultStyles(wxTreebook *book, Preferences *parent) {
 		catalogs.Add(to_wx(cn));
 	catalogs.Sort();
 
-	p->OptionChoice(general, _("New files"), catalogs, "Subtitle Format/ASS/Default Style Catalog");
-	p->OptionChoice(general, _("MicroDVD import"), catalogs, "Subtitle Format/MicroDVD/Default Style Catalog");
-	p->OptionChoice(general, _("SRT import"), catalogs, "Subtitle Format/SRT/Default Style Catalog");
-	p->OptionChoice(general, _("TTXT import"), catalogs, "Subtitle Format/TTXT/Default Style Catalog");
-	p->OptionChoice(general, _("Plain text import"), catalogs, "Subtitle Format/TXT/Default Style Catalog");
+	p->OptionChoiceString(general, _("New files"), catalogs, "Subtitle Format/ASS/Default Style Catalog");
+	p->OptionChoiceString(general, _("MicroDVD import"), catalogs, "Subtitle Format/MicroDVD/Default Style Catalog");
+	p->OptionChoiceString(general, _("SRT import"), catalogs, "Subtitle Format/SRT/Default Style Catalog");
+	p->OptionChoiceString(general, _("TTXT import"), catalogs, "Subtitle Format/TTXT/Default Style Catalog");
+	p->OptionChoiceString(general, _("Plain text import"), catalogs, "Subtitle Format/TXT/Default Style Catalog");
 
 	p->SetSizerAndFit(p->sizer);
 }
@@ -151,7 +151,7 @@ void Audio(wxTreebook *book, Preferences *parent) {
 	p->OptionAddBool(display, _("Cursor time"), "Audio/Display/Draw/Cursor Time");
 	p->OptionAddBool(display, _("Video position"), "Audio/Display/Draw/Video Position");
 	p->CellSkip(display);
-	p->OptionChoice(display, _("Waveform Style"), AudioWaveformRenderer::GetWaveformStyles(), "Audio/Display/Waveform Style");
+	p->OptionChoiceInt(display, _("Waveform Style"), AudioWaveformRenderer::GetWaveformStyles(), "Audio/Display/Waveform Style");
 
 	auto label = p->PageSizer(_("Audio labels"));
 	p->OptionFont(label, "Audio/Karaoke/");
@@ -175,13 +175,13 @@ void Video(wxTreebook *book, Preferences *parent) {
 
 	const wxString czoom_arr[24] = { "12.5%", "25%", "37.5%", "50%", "62.5%", "75%", "87.5%", "100%", "112.5%", "125%", "137.5%", "150%", "162.5%", "175%", "187.5%", "200%", "212.5%", "225%", "237.5%", "250%", "262.5%", "275%", "287.5%", "300%" };
 	wxArrayString choice_zoom(24, czoom_arr);
-	p->OptionChoice(general, _("Default Zoom"), choice_zoom, "Video/Default Zoom");
+	p->OptionChoiceInt(general, _("Default Zoom"), choice_zoom, "Video/Default Zoom");
 
 	p->OptionAddInt(general, _("Fast jump step in frames"), "Video/Slider/Fast Jump Step");
 
 	const wxString cscr_arr[3] = { "?video", "?script", "." };
 	wxArrayString scr_res(3, cscr_arr);
-	p->OptionChoice(general, _("Screenshot save path"), scr_res, "Path/Screenshot");
+	p->OptionChoiceString(general, _("Screenshot save path"), scr_res, "Path/Screenshot");
 
 	auto resolution = p->PageSizer(_("Script Resolution"));
 	wxControl *autocb = p->OptionAddBool(resolution, _("Use resolution of first video opened"), "Subtitle/Default Resolution/Auto");
@@ -193,7 +193,7 @@ void Video(wxTreebook *book, Preferences *parent) {
 
 	const wxString cres_arr[] = {_("Never"), _("Ask"), _("Always set"), _("Always resample")};
 	wxArrayString choice_res(4, cres_arr);
-	p->OptionChoice(resolution, _("Match video resolution on open"), choice_res, "Video/Script Resolution Mismatch");
+	p->OptionChoiceInt(resolution, _("Match video resolution on open"), choice_res, "Video/Script Resolution Mismatch");
 
 	p->SetSizerAndFit(p->sizer);
 }
@@ -338,22 +338,22 @@ void Advanced_Audio(wxTreebook *book, Preferences *parent) {
 	auto expert = p->PageSizer(_("Expert"));
 
 	wxArrayString ap_choice = to_wx(GetAudioProviderNames());
-	p->OptionChoice(expert, _("Audio provider"), ap_choice, "Audio/Provider");
+	p->OptionChoiceString(expert, _("Audio provider"), ap_choice, "Audio/Provider");
 
 	wxArrayString apl_choice = to_wx(AudioPlayerFactory::GetClasses());
-	p->OptionChoice(expert, _("Audio player"), apl_choice, "Audio/Player");
+	p->OptionChoiceString(expert, _("Audio player"), apl_choice, "Audio/Player");
 
 	auto cache = p->PageSizer(_("Cache"));
 	const wxString ct_arr[3] = { _("None (NOT RECOMMENDED)"), _("RAM"), _("Hard Disk") };
 	wxArrayString ct_choice(3, ct_arr);
-	p->OptionChoice(cache, _("Cache type"), ct_choice, "Audio/Cache/Type");
+	p->OptionChoiceInt(cache, _("Cache type"), ct_choice, "Audio/Cache/Type");
 	p->OptionBrowse(cache, _("Path"), "Audio/Cache/HD/Location");
 
 	auto spectrum = p->PageSizer(_("Spectrum"));
 
 	const wxString sq_arr[4] = { _("Regular quality"), _("Better quality"), _("High quality"), _("Insane quality") };
 	wxArrayString sq_choice(4, sq_arr);
-	p->OptionChoice(spectrum, _("Quality"), sq_choice, "Audio/Renderer/Spectrum/Quality");
+	p->OptionChoiceInt(spectrum, _("Quality"), sq_choice, "Audio/Renderer/Spectrum/Quality");
 
 	p->OptionAddInt(spectrum, _("Cache memory max (MB)"), "Audio/Renderer/Spectrum/Memory Max", 2, 1024);
 
@@ -361,7 +361,7 @@ void Advanced_Audio(wxTreebook *book, Preferences *parent) {
 
 	const wxString error_modes[] = { _("Ignore"), _("Clear"), _("Stop"), _("Abort") };
 	wxArrayString error_modes_choice(4, error_modes);
-	p->OptionChoice(ffms, _("Audio indexing error handling mode"), error_modes_choice, "Provider/Audio/FFmpegSource/Decode Error Handling");
+	p->OptionChoiceString(ffms, _("Audio indexing error handling mode"), error_modes_choice, "Provider/Audio/FFmpegSource/Decode Error Handling");
 
 	p->OptionAddBool(ffms, _("Always index all audio tracks"), "Provider/FFmpegSource/Index All Tracks");
 
@@ -386,16 +386,16 @@ void Advanced_Video(wxTreebook *book, Preferences *parent) {
 	auto expert = p->PageSizer(_("Expert"));
 
 	wxArrayString vp_choice = to_wx(VideoProviderFactory::GetClasses());
-	p->OptionChoice(expert, _("Video provider"), vp_choice, "Video/Provider");
+	p->OptionChoiceString(expert, _("Video provider"), vp_choice, "Video/Provider");
 
 	wxArrayString sp_choice = to_wx(SubtitlesProviderFactory::GetClasses());
-	p->OptionChoice(expert, _("Subtitles provider"), sp_choice, "Subtitle/Provider");
+	p->OptionChoiceString(expert, _("Subtitles provider"), sp_choice, "Subtitle/Provider");
 
 	auto ffms = p->PageSizer("FFmpegSource");
 
 	const wxString log_levels[] = { "Quiet", "Panic", "Fatal", "Error", "Warning", "Info", "Verbose", "Debug" };
 	wxArrayString log_levels_choice(8, log_levels);
-	p->OptionChoice(ffms, _("Debug log verbosity"), log_levels_choice, "Provider/FFmpegSource/Log Level");
+	p->OptionChoiceString(ffms, _("Debug log verbosity"), log_levels_choice, "Provider/FFmpegSource/Log Level");
 
 	p->OptionAddInt(ffms, _("Decoding threads"), "Provider/Video/FFmpegSource/Decoding Threads", -1);
 	p->OptionAddBool(ffms, _("Enable unsafe seeking"), "Provider/Video/FFmpegSource/Unsafe Seeking");

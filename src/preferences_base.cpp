@@ -203,33 +203,31 @@ wxControl *OptionPage::OptionAddColor(wxFlexGridSizer *flex, const wxString &nam
 	return cb;
 }
 
-void OptionPage::OptionChoice(wxFlexGridSizer *flex, const wxString &name, const wxArrayString &choices, const char *opt_name) {
+void OptionPage::OptionChoiceInt(wxFlexGridSizer *flex, const wxString &name, const wxArrayString &choices, const char *opt_name) {
 	parent->AddChangeableOption(opt_name);
 	const auto opt = OPT_GET(opt_name);
 
 	auto cb = new wxComboBox(this, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, choices, wxCB_READONLY | wxCB_DROPDOWN);
 	Add(flex, name, cb);
 
-	switch (opt->GetType()) {
-		case agi::OptionType::Int: {
-			int val = opt->GetInt();
-			cb->Select(val < (int)choices.size() ? val : 0);
-			cb->Bind(wxEVT_COMBOBOX, IntCBUpdater(opt_name, parent));
-			break;
-		}
-		case agi::OptionType::String: {
-			wxString val(to_wx(opt->GetString()));
-			if (cb->FindString(val) != wxNOT_FOUND)
-				cb->SetStringSelection(val);
-			else if (!choices.empty())
-				cb->SetSelection(0);
-			cb->Bind(wxEVT_COMBOBOX, StringUpdater(opt_name, parent));
-			break;
-		}
+	int val = opt->GetInt();
+	cb->Select(val < (int)choices.size() ? val : 0);
+	cb->Bind(wxEVT_COMBOBOX, IntCBUpdater(opt_name, parent));
+}
 
-		default:
-			throw agi::InternalError("Unsupported type");
-	}
+void OptionPage::OptionChoiceString(wxFlexGridSizer *flex, const wxString &name, const wxArrayString &choices, const char *opt_name) {
+	parent->AddChangeableOption(opt_name);
+	const auto opt = OPT_GET(opt_name);
+
+	auto cb = new wxComboBox(this, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, choices, wxCB_READONLY | wxCB_DROPDOWN);
+	Add(flex, name, cb);
+
+	wxString val(to_wx(opt->GetString()));
+	if (cb->FindString(val) != wxNOT_FOUND)
+		cb->SetStringSelection(val);
+	else if (!choices.empty())
+		cb->SetSelection(0);
+	cb->Bind(wxEVT_COMBOBOX, StringUpdater(opt_name, parent));
 }
 
 wxFlexGridSizer* OptionPage::PageSizer(wxString name) {
