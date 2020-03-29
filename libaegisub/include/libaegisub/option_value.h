@@ -58,12 +58,17 @@ class OptionValue {
 		throw TypeError(type);
 	}
 
-	template<typename T>
-	const T *As(OptionType type) const {
-		if (GetType() == type)
-			return static_cast<const T *>(this);
-		throw TypeError(type);
-	}
+	static std::string nullValueString;
+	static int64_t nullValueInt64;
+	static double nullValueDouble;
+	static Color nullValueColor;
+	static bool nullValueBool;
+
+	static std::vector<std::string> nullValueStringVector;
+	static std::vector<int64_t> nullValueInt64Vector;
+	static std::vector<double> nullValueDoubleVector;
+	static std::vector<Color> nullValueColorVector;
+	static std::vector<bool> nullValueBoolVector;
 
 protected:
 	void NotifyChanged() { ValueChanged(*this); }
@@ -78,11 +83,11 @@ public:
 	virtual bool IsDefault() const = 0;
 	virtual void Reset() = 0;
 
-	std::string const& GetString() const;
-	int64_t const& GetInt() const;
-	double const& GetDouble() const;
-	Color const& GetColor() const;
-	bool const& GetBool() const;
+	virtual std::string const& GetString() const { return nullValueString; };
+	virtual int64_t const& GetInt() const { return nullValueInt64; }
+	virtual double const& GetDouble() const { return nullValueDouble; };
+	virtual Color const& GetColor() const { return nullValueColor; };
+	virtual bool const& GetBool() const { return nullValueBool; };
 
 	void SetString(const std::string);
 	void SetInt(const int64_t);
@@ -90,11 +95,11 @@ public:
 	void SetColor(const Color);
 	void SetBool(const bool);
 
-	std::vector<std::string> const& GetListString() const;
-	std::vector<int64_t> const& GetListInt() const;
-	std::vector<double> const& GetListDouble() const;
-	std::vector<Color> const& GetListColor() const;
-	std::vector<bool> const& GetListBool() const;
+	virtual std::vector<std::string> const& GetListString() const { return nullValueStringVector; };
+	virtual std::vector<int64_t> const& GetListInt() const { return nullValueInt64Vector; };
+	virtual std::vector<double> const& GetListDouble() const { return nullValueDoubleVector; };
+	virtual std::vector<Color> const& GetListColor() const { return nullValueColorVector; };
+	virtual std::vector<bool> const& GetListBool() const { return nullValueBoolVector; };
 
 	void SetListString(std::vector<std::string>);
 	void SetListInt(std::vector<int64_t>);
@@ -115,7 +120,7 @@ class OptionValueString final : public OptionValue {
 		OptionValueString(std::string member_name, std::string member_value)
 		: OptionValue(std::move(member_name))
 		, value(member_value), value_default(member_value) { }
-		std::string const& GetValue() const { return value; }
+		std::string const& GetString() const { return value; };
 		void SetValue(std::string new_val) { value = std::move(new_val); NotifyChanged(); }
 		OptionType GetType() const { return OptionType::String; }
 		void Reset() { value = value_default; NotifyChanged(); }
@@ -131,7 +136,7 @@ class OptionValueInt final : public OptionValue {
 		OptionValueInt(std::string member_name, int64_t member_value)
 		: OptionValue(std::move(member_name))
 		, value(member_value), value_default(member_value) { }
-		int64_t const& GetValue() const { return value; }
+		int64_t const& GetInt() const { return value; }
 		void SetValue(int64_t new_val) { value = std::move(new_val); NotifyChanged(); }
 		OptionType GetType() const { return OptionType::Int; }
 		void Reset() { value = value_default; NotifyChanged(); }
@@ -147,7 +152,7 @@ class OptionValueDouble final : public OptionValue {
 		OptionValueDouble(std::string member_name, double member_value)
 		: OptionValue(std::move(member_name))
 		, value(member_value), value_default(member_value) { }
-		double const& GetValue() const { return value; }
+		double const& GetDouble() const { return value; };
 		void SetValue(double new_val) { value = std::move(new_val); NotifyChanged(); }
 		OptionType GetType() const { return OptionType::Double; }
 		void Reset() { value = value_default; NotifyChanged(); }
@@ -163,7 +168,7 @@ class OptionValueColor final : public OptionValue {
 		OptionValueColor(std::string member_name, Color member_value)
 		: OptionValue(std::move(member_name))
 		, value(member_value), value_default(member_value) { }
-		Color const& GetValue() const { return value; }
+		Color const& GetColor() const { return value; };
 		void SetValue(Color new_val) { value = std::move(new_val); NotifyChanged(); }
 		OptionType GetType() const { return OptionType::Color; }
 		void Reset() { value = value_default; NotifyChanged(); }
@@ -179,7 +184,7 @@ class OptionValueBool final : public OptionValue {
 		OptionValueBool(std::string member_name, bool member_value)
 		: OptionValue(std::move(member_name))
 		, value(member_value), value_default(member_value) { }
-		bool const& GetValue() const { return value; }
+		bool const& GetBool() const { return value; };
 		void SetValue(bool new_val) { value = std::move(new_val); NotifyChanged(); }
 		OptionType GetType() const { return OptionType::Bool; }
 		void Reset() { value = value_default; NotifyChanged(); }
@@ -196,7 +201,7 @@ class OptionValueListString final : public OptionValue {
 		OptionValueListString(std::string name, std::vector<std::string> const& value = std::vector<std::string>())
 		: OptionValue(std::move(name))
 		, array(value), array_default(value) { }
-		std::vector<std::string> const& GetValue() const { return array; }
+		std::vector<std::string> const& GetListString() const { return array; };
 		void SetValue(std::vector<std::string> val) { array = std::move(val); NotifyChanged(); }
 		OptionType GetType() const { return OptionType::ListString; }
 		void Reset() { array = array_default; NotifyChanged(); }
@@ -213,7 +218,7 @@ class OptionValueListInt final : public OptionValue {
 		OptionValueListInt(std::string name, std::vector<int64_t> const& value = std::vector<int64_t>())
 		: OptionValue(std::move(name))
 		, array(value), array_default(value) { }
-		std::vector<int64_t> const& GetValue() const { return array; }
+		std::vector<int64_t> const& GetListInt() const { return array; };
 		void SetValue(std::vector<int64_t> val) { array = std::move(val); NotifyChanged(); }
 		OptionType GetType() const { return OptionType::ListInt; }
 		void Reset() { array = array_default; NotifyChanged(); }
@@ -230,7 +235,7 @@ class OptionValueListDouble final : public OptionValue {
 		OptionValueListDouble(std::string name, std::vector<double> const& value = std::vector<double>())
 		: OptionValue(std::move(name))
 		, array(value), array_default(value) { }
-		std::vector<double> const& GetValue() const { return array; }
+		std::vector<double> const& GetListDouble() const { return array; };
 		void SetValue(std::vector<double> val) { array = std::move(val); NotifyChanged(); }
 		OptionType GetType() const { return OptionType::ListDouble; }
 		void Reset() { array = array_default; NotifyChanged(); }
@@ -247,7 +252,7 @@ class OptionValueListColor final : public OptionValue {
 		OptionValueListColor(std::string name, std::vector<Color> const& value = std::vector<Color>())
 		: OptionValue(std::move(name))
 		, array(value), array_default(value) { }
-		std::vector<Color> const& GetValue() const { return array; }
+		std::vector<Color> const& GetListColor() const { return array; };
 		void SetValue(std::vector<Color> val) { array = std::move(val); NotifyChanged(); }
 		OptionType GetType() const { return OptionType::ListColor; }
 		void Reset() { array = array_default; NotifyChanged(); }
@@ -264,7 +269,7 @@ class OptionValueListBool final : public OptionValue {
 		OptionValueListBool(std::string name, std::vector<bool> const& value = std::vector<bool>())
 		: OptionValue(std::move(name))
 		, array(value), array_default(value) { }
-		std::vector<bool> const& GetValue() const { return array; }
+		std::vector<bool> const& GetListBool() const { return array; };
 		void SetValue(std::vector<bool> val) { array = std::move(val); NotifyChanged(); }
 		OptionType GetType() const { return OptionType::ListBool; }
 		void Reset() { array = array_default; NotifyChanged(); }
@@ -272,34 +277,23 @@ class OptionValueListBool final : public OptionValue {
 		void Set(const OptionValue *nv);
 	};
 
-inline std::string const& OptionValue::GetString() const { return As<OptionValueString>(OptionType::String)->GetValue(); }
 inline void OptionValue::SetString(std::string v) { As<OptionValueString>(OptionType::String)->SetValue(std::move(v)); }
 
-inline int64_t const& OptionValue::GetInt() const { return As<OptionValueInt>(OptionType::Int)->GetValue(); }
 inline void OptionValue::SetInt(int64_t v) { As<OptionValueInt>(OptionType::Int)->SetValue(std::move(v)); }
-
-inline double const& OptionValue::GetDouble() const { return As<OptionValueDouble>(OptionType::Double)->GetValue(); }
 inline void OptionValue::SetDouble(double v) { As<OptionValueDouble>(OptionType::Double)->SetValue(std::move(v)); }
 
-inline Color const& OptionValue::GetColor() const { return As<OptionValueColor>(OptionType::Color)->GetValue(); }
 inline void OptionValue::SetColor(Color v) { As<OptionValueColor>(OptionType::Color)->SetValue(std::move(v)); }
 
-inline bool const& OptionValue::GetBool() const { return As<OptionValueBool>(OptionType::Bool)->GetValue(); }
 inline void OptionValue::SetBool(bool v) { As<OptionValueBool>(OptionType::Bool)->SetValue(std::move(v)); }
 
-inline std::vector<std::string> const& OptionValue::GetListString() const { return As<OptionValueListString>(OptionType::ListString)->GetValue(); }
 inline void OptionValue::SetListString(std::vector<std::string> v) { As<OptionValueListString>(OptionType::ListString)->SetValue(std::move(v)); }
 
-inline std::vector<int64_t> const& OptionValue::GetListInt() const { return As<OptionValueListInt>(OptionType::ListInt)->GetValue(); }
 inline void OptionValue::SetListInt(std::vector<int64_t> v) { As<OptionValueListInt>(OptionType::ListInt)->SetValue(std::move(v)); }
 
-inline std::vector<double> const& OptionValue::GetListDouble() const { return As<OptionValueListDouble>(OptionType::ListDouble)->GetValue(); }
 inline void OptionValue::SetListDouble(std::vector<double> v) { As<OptionValueListDouble>(OptionType::ListDouble)->SetValue(std::move(v)); }
 
-inline std::vector<Color> const& OptionValue::GetListColor() const { return As<OptionValueListColor>(OptionType::ListColor)->GetValue(); }
 inline void OptionValue::SetListColor(std::vector<Color> v) { As<OptionValueListColor>(OptionType::ListColor)->SetValue(std::move(v)); }
 
-inline std::vector<bool> const& OptionValue::GetListBool() const { return As<OptionValueListBool>(OptionType::ListBool)->GetValue(); }
 inline void OptionValue::SetListBool(std::vector<bool> v) { As<OptionValueListBool>(OptionType::ListBool)->SetValue(std::move(v)); }
 
 } // namespace agi

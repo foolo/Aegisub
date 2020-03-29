@@ -52,4 +52,17 @@ void OptionValueListColor::Set(const OptionValue *nv) { SetValue(nv->GetListColo
 
 void OptionValueBool::Set(const OptionValue *nv) { SetValue(nv->GetBool()); }
 void OptionValueListBool::Set(const OptionValue *nv) { SetValue(nv->GetListBool()); }
+
+std::string OptionValue::nullValueString;
+int64_t OptionValue::nullValueInt64 = 0;
+double OptionValue::nullValueDouble = 0.0;
+Color OptionValue::nullValueColor;
+bool OptionValue::nullValueBool = false;
+
+std::vector<std::string> OptionValue::nullValueStringVector;
+std::vector<int64_t> OptionValue::nullValueInt64Vector;
+std::vector<double> OptionValue::nullValueDoubleVector;
+std::vector<Color> OptionValue::nullValueColorVector;
+std::vector<bool> OptionValue::nullValueBoolVector;
+
 }
