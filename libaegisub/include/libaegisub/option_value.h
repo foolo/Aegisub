@@ -185,7 +185,6 @@ class OptionValueBool final : public OptionValue {
 class OptionValueListString final : public OptionValue {
 		std::vector<std::string> array;
 		std::vector<std::string> array_default;
-		std::string name;
 	public:
 		typedef std::vector<std::string> value_type;
 		OptionValueListString(std::string name, std::vector<std::string> const& value = std::vector<std::string>())
@@ -202,7 +201,6 @@ class OptionValueListString final : public OptionValue {
 class OptionValueListInt final : public OptionValue {
 		std::vector<int64_t> array;
 		std::vector<int64_t> array_default;
-		std::string name;
 	public:
 		typedef std::vector<int64_t> value_type;
 		OptionValueListInt(std::string name, std::vector<int64_t> const& value = std::vector<int64_t>())
@@ -219,7 +217,6 @@ class OptionValueListInt final : public OptionValue {
 class OptionValueListDouble final : public OptionValue {
 		std::vector<double> array;
 		std::vector<double> array_default;
-		std::string name;
 	public:
 		typedef std::vector<double> value_type;
 		OptionValueListDouble(std::string name, std::vector<double> const& value = std::vector<double>())
@@ -236,7 +233,6 @@ class OptionValueListDouble final : public OptionValue {
 class OptionValueListColor final : public OptionValue {
 		std::vector<Color> array;
 		std::vector<Color> array_default;
-		std::string name;
 	public:
 		typedef std::vector<Color> value_type;
 		OptionValueListColor(std::string name, std::vector<Color> const& value = std::vector<Color>())
@@ -253,7 +249,6 @@ class OptionValueListColor final : public OptionValue {
 class OptionValueListBool final : public OptionValue {
 		std::vector<bool> array;
 		std::vector<bool> array_default;
-		std::string name;
 	public:
 		typedef std::vector<bool> value_type;
 		OptionValueListBool(std::string name, std::vector<bool> const& value = std::vector<bool>())
