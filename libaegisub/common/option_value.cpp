@@ -17,41 +17,21 @@
 #include <libaegisub/option_value.h>
 
 namespace agi {
-	std::string OptionValue::TypeToString(OptionType type) const {
-		switch (type) {
-			case OptionType::String:     return "String";
-			case OptionType::Int:        return "Integer";
-			case OptionType::Double:     return "Double";
-			case OptionType::Color:      return "Color";
-			case OptionType::Bool:       return "Bool";
-			case OptionType::ListString: return "List of Strings";
-			case OptionType::ListInt:    return "List of Integers";
-			case OptionType::ListDouble: return "List of Doubles";
-			case OptionType::ListColor:  return "List of Colors";
-			case OptionType::ListBool:   return "List of Bools";
-		}
-		throw agi::InternalError("Invalid option type");
-	}
 
-	InternalError OptionValue::TypeError(OptionType type) const {
-		return InternalError("Invalid type for option " + name + ": expected " +
-			TypeToString(type) + ", got " + TypeToString(GetType()));
-	}
+void OptionValueString::Set(const OptionValue *nv) { SetString(nv->GetString()); }
+void OptionValueListString::Set(const OptionValue *nv) { SetListString(nv->GetListString()); }
 
-void OptionValueString::Set(const OptionValue *nv) { SetValue(nv->GetString()); }
-void OptionValueListString::Set(const OptionValue *nv) { SetValue(nv->GetListString()); }
+void OptionValueInt::Set(const OptionValue *nv) { SetInt(nv->GetInt()); }
+void OptionValueListInt::Set(const OptionValue *nv) { SetListInt(nv->GetListInt()); }
 
-void OptionValueInt::Set(const OptionValue *nv) { SetValue(nv->GetInt()); }
-void OptionValueListInt::Set(const OptionValue *nv) { SetValue(nv->GetListInt()); }
+void OptionValueDouble::Set(const OptionValue *nv) { SetDouble(nv->GetDouble()); }
+void OptionValueListDouble::Set(const OptionValue *nv) { SetListDouble(nv->GetListDouble()); }
 
-void OptionValueDouble::Set(const OptionValue *nv) { SetValue(nv->GetDouble()); }
-void OptionValueListDouble::Set(const OptionValue *nv) { SetValue(nv->GetListDouble()); }
+void OptionValueColor::Set(const OptionValue *nv) { SetColor(nv->GetColor()); }
+void OptionValueListColor::Set(const OptionValue *nv) { SetListColor(nv->GetListColor()); }
 
-void OptionValueColor::Set(const OptionValue *nv) { SetValue(nv->GetColor()); }
-void OptionValueListColor::Set(const OptionValue *nv) { SetValue(nv->GetListColor()); }
-
-void OptionValueBool::Set(const OptionValue *nv) { SetValue(nv->GetBool()); }
-void OptionValueListBool::Set(const OptionValue *nv) { SetValue(nv->GetListBool()); }
+void OptionValueBool::Set(const OptionValue *nv) { SetBool(nv->GetBool()); }
+void OptionValueListBool::Set(const OptionValue *nv) { SetListBool(nv->GetListBool()); }
 
 std::string OptionValue::nullValueString;
 int64_t OptionValue::nullValueInt64 = 0;

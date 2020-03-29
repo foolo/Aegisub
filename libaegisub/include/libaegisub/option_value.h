@@ -48,16 +48,6 @@ class OptionValue {
 	agi::signal::Signal<OptionValue const&> ValueChanged;
 	std::string name;
 
-	std::string TypeToString(OptionType type) const;
-	InternalError TypeError(OptionType type) const;
-
-	template<typename T>
-	T *As(OptionType type) {
-		if (GetType() == type)
-			return static_cast<T *>(this);
-		throw TypeError(type);
-	}
-
 	static std::string nullValueString;
 	static int64_t nullValueInt64;
 	static double nullValueDouble;
@@ -89,11 +79,11 @@ public:
 	virtual Color const& GetColor() const { return nullValueColor; };
 	virtual bool const& GetBool() const { return nullValueBool; };
 
-	void SetString(const std::string);
-	void SetInt(const int64_t);
-	void SetDouble(const double);
-	void SetColor(const Color);
-	void SetBool(const bool);
+	virtual void SetString(const std::string) { throw InternalError("SetString"); };
+	virtual void SetInt(const int64_t) { throw InternalError("SetInt"); };
+	virtual void SetDouble(const double) { throw InternalError("SetDouble"); };
+	virtual void SetColor(const Color) { throw InternalError("SetColor"); };
+	virtual void SetBool(const bool) { throw InternalError("SetBool"); };
 
 	virtual std::vector<std::string> const& GetListString() const { return nullValueStringVector; };
 	virtual std::vector<int64_t> const& GetListInt() const { return nullValueInt64Vector; };
@@ -101,11 +91,11 @@ public:
 	virtual std::vector<Color> const& GetListColor() const { return nullValueColorVector; };
 	virtual std::vector<bool> const& GetListBool() const { return nullValueBoolVector; };
 
-	void SetListString(std::vector<std::string>);
-	void SetListInt(std::vector<int64_t>);
-	void SetListDouble(std::vector<double>);
-	void SetListColor(std::vector<Color>);
-	void SetListBool(std::vector<bool>);
+	virtual void SetListString(std::vector<std::string>) { throw InternalError("SetListString"); };
+	virtual void SetListInt(std::vector<int64_t>) { throw InternalError("SetListInt"); };
+	virtual void SetListDouble(std::vector<double>) { throw InternalError("SetListDouble"); };
+	virtual void SetListColor(std::vector<Color>) { throw InternalError("SetListColor"); };
+	virtual void SetListBool(std::vector<bool>) { throw InternalError("SetListBool"); };
 
 	virtual void Set(const OptionValue *new_value)=0;
 
@@ -121,7 +111,7 @@ class OptionValueString final : public OptionValue {
 		: OptionValue(std::move(member_name))
 		, value(member_value), value_default(member_value) { }
 		std::string const& GetString() const { return value; };
-		void SetValue(std::string new_val) { value = std::move(new_val); NotifyChanged(); }
+		void SetString(const std::string s) { value = s; NotifyChanged(); }
 		OptionType GetType() const { return OptionType::String; }
 		void Reset() { value = value_default; NotifyChanged(); }
 		bool IsDefault() const { return value == value_default; }
@@ -137,7 +127,7 @@ class OptionValueInt final : public OptionValue {
 		: OptionValue(std::move(member_name))
 		, value(member_value), value_default(member_value) { }
 		int64_t const& GetInt() const { return value; }
-		void SetValue(int64_t new_val) { value = std::move(new_val); NotifyChanged(); }
+		void SetInt(const int64_t i) { value = i; NotifyChanged(); }
 		OptionType GetType() const { return OptionType::Int; }
 		void Reset() { value = value_default; NotifyChanged(); }
 		bool IsDefault() const { return value == value_default; }
@@ -153,7 +143,7 @@ class OptionValueDouble final : public OptionValue {
 		: OptionValue(std::move(member_name))
 		, value(member_value), value_default(member_value) { }
 		double const& GetDouble() const { return value; };
-		void SetValue(double new_val) { value = std::move(new_val); NotifyChanged(); }
+		void SetDouble(const double d) { value = d; NotifyChanged(); }
 		OptionType GetType() const { return OptionType::Double; }
 		void Reset() { value = value_default; NotifyChanged(); }
 		bool IsDefault() const { return value == value_default; }
@@ -169,7 +159,7 @@ class OptionValueColor final : public OptionValue {
 		: OptionValue(std::move(member_name))
 		, value(member_value), value_default(member_value) { }
 		Color const& GetColor() const { return value; };
-		void SetValue(Color new_val) { value = std::move(new_val); NotifyChanged(); }
+		void SetColor(const Color c) { value = c; NotifyChanged(); }
 		OptionType GetType() const { return OptionType::Color; }
 		void Reset() { value = value_default; NotifyChanged(); }
 		bool IsDefault() const { return value == value_default; }
@@ -185,7 +175,7 @@ class OptionValueBool final : public OptionValue {
 		: OptionValue(std::move(member_name))
 		, value(member_value), value_default(member_value) { }
 		bool const& GetBool() const { return value; };
-		void SetValue(bool new_val) { value = std::move(new_val); NotifyChanged(); }
+		void SetBool(const bool b) { value = b; NotifyChanged(); }
 		OptionType GetType() const { return OptionType::Bool; }
 		void Reset() { value = value_default; NotifyChanged(); }
 		bool IsDefault() const { return value == value_default; }
@@ -202,7 +192,7 @@ class OptionValueListString final : public OptionValue {
 		: OptionValue(std::move(name))
 		, array(value), array_default(value) { }
 		std::vector<std::string> const& GetListString() const { return array; };
-		void SetValue(std::vector<std::string> val) { array = std::move(val); NotifyChanged(); }
+		void SetListString(std::vector<std::string> v) { array = v; NotifyChanged(); }
 		OptionType GetType() const { return OptionType::ListString; }
 		void Reset() { array = array_default; NotifyChanged(); }
 		bool IsDefault() const { return array == array_default; }
@@ -219,7 +209,7 @@ class OptionValueListInt final : public OptionValue {
 		: OptionValue(std::move(name))
 		, array(value), array_default(value) { }
 		std::vector<int64_t> const& GetListInt() const { return array; };
-		void SetValue(std::vector<int64_t> val) { array = std::move(val); NotifyChanged(); }
+		void SetListInt(std::vector<int64_t> v) { array = v; NotifyChanged(); }
 		OptionType GetType() const { return OptionType::ListInt; }
 		void Reset() { array = array_default; NotifyChanged(); }
 		bool IsDefault() const { return array == array_default; }
@@ -236,7 +226,7 @@ class OptionValueListDouble final : public OptionValue {
 		: OptionValue(std::move(name))
 		, array(value), array_default(value) { }
 		std::vector<double> const& GetListDouble() const { return array; };
-		void SetValue(std::vector<double> val) { array = std::move(val); NotifyChanged(); }
+		void SetListDouble(std::vector<double> v) { array = v; NotifyChanged(); }
 		OptionType GetType() const { return OptionType::ListDouble; }
 		void Reset() { array = array_default; NotifyChanged(); }
 		bool IsDefault() const { return array == array_default; }
@@ -253,7 +243,7 @@ class OptionValueListColor final : public OptionValue {
 		: OptionValue(std::move(name))
 		, array(value), array_default(value) { }
 		std::vector<Color> const& GetListColor() const { return array; };
-		void SetValue(std::vector<Color> val) { array = std::move(val); NotifyChanged(); }
+		void SetListColor(std::vector<Color> v) { array = v; NotifyChanged(); }
 		OptionType GetType() const { return OptionType::ListColor; }
 		void Reset() { array = array_default; NotifyChanged(); }
 		bool IsDefault() const { return array == array_default; }
@@ -270,30 +260,11 @@ class OptionValueListBool final : public OptionValue {
 		: OptionValue(std::move(name))
 		, array(value), array_default(value) { }
 		std::vector<bool> const& GetListBool() const { return array; };
-		void SetValue(std::vector<bool> val) { array = std::move(val); NotifyChanged(); }
+		void SetListBool(std::vector<bool> v) { array = v; NotifyChanged(); }
 		OptionType GetType() const { return OptionType::ListBool; }
 		void Reset() { array = array_default; NotifyChanged(); }
 		bool IsDefault() const { return array == array_default; }
 		void Set(const OptionValue *nv);
 	};
-
-inline void OptionValue::SetString(std::string v) { As<OptionValueString>(OptionType::String)->SetValue(std::move(v)); }
-
-inline void OptionValue::SetInt(int64_t v) { As<OptionValueInt>(OptionType::Int)->SetValue(std::move(v)); }
-inline void OptionValue::SetDouble(double v) { As<OptionValueDouble>(OptionType::Double)->SetValue(std::move(v)); }
-
-inline void OptionValue::SetColor(Color v) { As<OptionValueColor>(OptionType::Color)->SetValue(std::move(v)); }
-
-inline void OptionValue::SetBool(bool v) { As<OptionValueBool>(OptionType::Bool)->SetValue(std::move(v)); }
-
-inline void OptionValue::SetListString(std::vector<std::string> v) { As<OptionValueListString>(OptionType::ListString)->SetValue(std::move(v)); }
-
-inline void OptionValue::SetListInt(std::vector<int64_t> v) { As<OptionValueListInt>(OptionType::ListInt)->SetValue(std::move(v)); }
-
-inline void OptionValue::SetListDouble(std::vector<double> v) { As<OptionValueListDouble>(OptionType::ListDouble)->SetValue(std::move(v)); }
-
-inline void OptionValue::SetListColor(std::vector<Color> v) { As<OptionValueListColor>(OptionType::ListColor)->SetValue(std::move(v)); }
-
-inline void OptionValue::SetListBool(std::vector<bool> v) { As<OptionValueListBool>(OptionType::ListBool)->SetValue(std::move(v)); }
 
 } // namespace agi
