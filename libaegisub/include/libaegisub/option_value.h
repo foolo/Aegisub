@@ -19,6 +19,8 @@
 #include <cstdint>
 #include <vector>
 
+#include "libaegisub/cajun/elements.h"
+#include "libaegisub/option.h"
 #include <libaegisub/color.h>
 #include <libaegisub/exception.h>
 #include <libaegisub/signal.h>
@@ -99,6 +101,8 @@ public:
 
 	virtual void Set(const OptionValue *new_value)=0;
 
+	virtual void Store(json::Object &obj) = 0;
+
 	DEFINE_SIGNAL_ADDERS(ValueChanged, Subscribe)
 };
 
@@ -116,6 +120,7 @@ class OptionValueString final : public OptionValue {
 		void Reset() { value = value_default; NotifyChanged(); }
 		bool IsDefault() const { return value == value_default; }
 		void Set(const OptionValue *nv);
+		void Store(json::Object &obj) { Options::put_option(obj, GetName(), value); };
 	};
 
 class OptionValueInt final : public OptionValue {
@@ -132,6 +137,7 @@ class OptionValueInt final : public OptionValue {
 		void Reset() { value = value_default; NotifyChanged(); }
 		bool IsDefault() const { return value == value_default; }
 		void Set(const OptionValue *nv);
+		void Store(json::Object &obj) { Options::put_option(obj, GetName(), value); };
 	};
 
 class OptionValueDouble final : public OptionValue {
@@ -148,6 +154,7 @@ class OptionValueDouble final : public OptionValue {
 		void Reset() { value = value_default; NotifyChanged(); }
 		bool IsDefault() const { return value == value_default; }
 		void Set(const OptionValue *nv);
+		void Store(json::Object &obj) { Options::put_option(obj, GetName(), value); };
 	};
 
 class OptionValueColor final : public OptionValue {
@@ -164,6 +171,7 @@ class OptionValueColor final : public OptionValue {
 		void Reset() { value = value_default; NotifyChanged(); }
 		bool IsDefault() const { return value == value_default; }
 		void Set(const OptionValue *nv);
+		void Store(json::Object &obj) { Options::put_option(obj, GetName(), value.GetRgbFormatted()); };
 	};
 
 class OptionValueBool final : public OptionValue {
@@ -180,6 +188,7 @@ class OptionValueBool final : public OptionValue {
 		void Reset() { value = value_default; NotifyChanged(); }
 		bool IsDefault() const { return value == value_default; }
 		void Set(const OptionValue *nv);
+		void Store(json::Object &obj) { Options::put_option(obj, GetName(), value); };
 	};
 
 class OptionValueListString final : public OptionValue {
@@ -196,6 +205,7 @@ class OptionValueListString final : public OptionValue {
 		void Reset() { array = array_default; NotifyChanged(); }
 		bool IsDefault() const { return array == array_default; }
 		void Set(const OptionValue *nv);
+		void Store(json::Object &obj) { Options::put_array(obj, GetName(), "string", array); };
 	};
 
 class OptionValueListInt final : public OptionValue {
@@ -212,6 +222,7 @@ class OptionValueListInt final : public OptionValue {
 		void Reset() { array = array_default; NotifyChanged(); }
 		bool IsDefault() const { return array == array_default; }
 		void Set(const OptionValue *nv);
+		void Store(json::Object &obj) { Options::put_array(obj, GetName(), "int", array); };
 	};
 
 class OptionValueListDouble final : public OptionValue {
@@ -228,6 +239,7 @@ class OptionValueListDouble final : public OptionValue {
 		void Reset() { array = array_default; NotifyChanged(); }
 		bool IsDefault() const { return array == array_default; }
 		void Set(const OptionValue *nv);
+		void Store(json::Object &obj) { Options::put_array(obj, GetName(), "double", array); };
 	};
 
 class OptionValueListColor final : public OptionValue {
@@ -244,6 +256,7 @@ class OptionValueListColor final : public OptionValue {
 		void Reset() { array = array_default; NotifyChanged(); }
 		bool IsDefault() const { return array == array_default; }
 		void Set(const OptionValue *nv);
+		void Store(json::Object &obj) { Options::put_array(obj, GetName(), "color", array); };
 	};
 
 class OptionValueListBool final : public OptionValue {
@@ -260,6 +273,7 @@ class OptionValueListBool final : public OptionValue {
 		void Reset() { array = array_default; NotifyChanged(); }
 		bool IsDefault() const { return array == array_default; }
 		void Set(const OptionValue *nv);
+		void Store(json::Object &obj) { Options::put_array(obj, GetName(), "bool", array); };
 	};
 
 } // namespace agi

@@ -24,6 +24,7 @@
 #include <memory>
 #include <vector>
 
+#include "libaegisub/cajun/elements.h"
 #include <libaegisub/fs_fwd.h>
 
 namespace json {
@@ -89,6 +90,18 @@ public:
 
 	/// Write the user configuration to disk, throws an exception if something goes wrong.
 	void Flush() const;
+
+	static void put_option(json::Object &obj, const std::string &path, json::UnknownElement value);
+
+	template<class T>
+	static void put_array(json::Object &obj, const std::string &path, const char *element_key, std::vector<T> const& value) {
+		json::Array array;
+		array.resize(value.size());
+		for (size_t i = 0, size = value.size(); i < size; ++i)
+			static_cast<json::Object&>(array[i])[element_key] = (json::UnknownElement)value[i];
+		put_option(obj, path, std::move(array));
+	}
+
 };
 
 } // namespace agi

@@ -140,30 +140,6 @@ public:
 	std::vector<std::unique_ptr<OptionValue>> Values() { return std::move(values); }
 };
 
-/// @brief Write an option to a json object
-/// @param[out] obj  Parent object
-/// @param[in] path  Path option should be stored in.
-/// @param[in] value Value to write.
-void put_option(json::Object &obj, const std::string &path, json::UnknownElement value) {
-	std::string::size_type pos = path.find('/');
-	// Not having a '/' denotes it is a leaf.
-	if (pos == std::string::npos) {
-		assert(obj.find(path) == obj.end());
-		obj[path] = std::move(value);
-	}
-	else
-		put_option(obj[path.substr(0, pos)], path.substr(pos + 1), std::move(value));
-}
-
-template<class T>
-void put_array(json::Object &obj, const std::string &path, const char *element_key, std::vector<T> const& value) {
-	json::Array array;
-	array.resize(value.size());
-	for (size_t i = 0, size = value.size(); i < size; ++i)
-		static_cast<json::Object&>(array[i])[element_key] = (json::UnknownElement)value[i];
-	put_option(obj, path, std::move(array));
-}
-
 struct option_name_cmp {
 	bool operator()(std::unique_ptr<OptionValue> const& a, std::unique_ptr<OptionValue> const& b) const {
 		return a->GetName() < b->GetName();
@@ -269,52 +245,25 @@ OptionValue *Options::Get(const char *name) {
 
 void Options::Flush() const {
 	json::Object obj_out;
-
 	for (auto const& ov : values) {
-		switch (ov->GetType()) {
-			case OptionType::String:
-				put_option(obj_out, ov->GetName(), ov->GetString());
-				break;
-
-			case OptionType::Int:
-				put_option(obj_out, ov->GetName(), ov->GetInt());
-				break;
-
-			case OptionType::Double:
-				put_option(obj_out, ov->GetName(), ov->GetDouble());
-				break;
-
-			case OptionType::Color:
-				put_option(obj_out, ov->GetName(), ov->GetColor().GetRgbFormatted());
-				break;
-
-			case OptionType::Bool:
-				put_option(obj_out, ov->GetName(), ov->GetBool());
-				break;
-
-			case OptionType::ListString:
-				put_array(obj_out, ov->GetName(), "string", ov->GetListString());
-				break;
-
-			case OptionType::ListInt:
-				put_array(obj_out, ov->GetName(), "int", ov->GetListInt());
-				break;
-
-			case OptionType::ListDouble:
-				put_array(obj_out, ov->GetName(), "double", ov->GetListDouble());
-				break;
-
-			case OptionType::ListColor:
-				put_array(obj_out, ov->GetName(), "color", ov->GetListColor());
-				break;
-
-			case OptionType::ListBool:
-				put_array(obj_out, ov->GetName(), "bool", ov->GetListBool());
-				break;
-		}
+		ov->Store(obj_out);
 	}
-
 	agi::JsonWriter::Write(obj_out, io::Save(config_file).Get());
+}
+
+/// @brief Write an option to a json object
+/// @param[out] obj  Parent object
+/// @param[in] path  Path option should be stored in.
+/// @param[in] value Value to write.
+void Options::put_option(json::Object &obj, const std::string &path, json::UnknownElement value) {
+	std::string::size_type pos = path.find('/');
+	// Not having a '/' denotes it is a leaf.
+	if (pos == std::string::npos) {
+		assert(obj.find(path) == obj.end());
+		obj[path] = std::move(value);
+	}
+	else
+		put_option(obj[path.substr(0, pos)], path.substr(pos + 1), std::move(value));
 }
 
 } // namespace agi
